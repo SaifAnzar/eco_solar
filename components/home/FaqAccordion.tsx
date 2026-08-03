@@ -9,34 +9,34 @@ export default function FaqAccordion() {
 
   const faqs = [
     {
-      question: "What is the PM Surya Ghar Subsidy structure for Odisha homeowners?",
+      question: "How much government subsidy will I get for solar?",
       answer:
-        "Under the PM Surya Ghar: Muft Bijli Yojana, residential rooftop solar systems receive direct central financial assistance (subsidy) transferred into your bank account: ₹30,000 for 1 kW system, ₹60,000 for 2 kW system, and ₹78,000 maximum for systems between 3 kW and 10 kW. Pragati EcoSolar manages your full subsidy portal application from Patia, Bhubaneswar.",
+        "Under the PM Surya Ghar scheme, the government gives you money directly into your bank account: ₹30,000 for a 1 kW system, ₹60,000 for a 2 kW system, and ₹78,000 for systems of 3 kW or more. Pragati EcoSolar handles your entire application from our Bhubaneswar office — you don't have to do anything.",
     },
     {
-      question: "How long does DISCOM Net Metering approval take in Bhubaneswar & Odisha?",
+      question: "How long does it take to get electricity meter approval in Odisha?",
       answer:
-        "Net metering approval across TPCODL (Central), TPNODL (North), TPSODL (South), and TPWODL (West) typically takes 15 to 30 working days from initial feasibility submission. Pragati EcoSolar handles all technical drawings, load sanctioning, site inspection coordination, and bi-directional meter testing.",
+        "Meter approval from the electricity office (TPCODL, TPNODL, TPSODL, or TPWODL) usually takes 15 to 30 working days. We handle all the forms, technical drawings, inspections, and follow-ups on your behalf. You just sit back and wait for the good news.",
     },
     {
-      question: "Are rooftop solar structures safe during coastal Odisha cyclones?",
+      question: "Are solar panels safe during Odisha's cyclones?",
       answer:
-        "Yes. We use custom Hot-Dip Galvanized Module Mounting Structures (MMS) with 80-micron zinc coating and high-tensile stainless steel fasteners engineered for 150 km/h wind load resistance. Structures are anchored into RCC roof beams using chemical fasteners without causing roof leakage.",
+        "Yes, absolutely. We use custom-made heavy steel mounting frames with a rust-proof zinc coating, designed and tested to withstand winds up to 150 km/h. We also use special chemical fasteners that attach to your roof without causing any water leakage.",
     },
     {
-      question: "What tax benefits are available for Commercial & Industrial (C&I) solar in Odisha?",
+      question: "What tax benefit does my factory or business get from solar?",
       answer:
-        "Commercial and industrial businesses can claim 80% Accelerated Depreciation (AD) under Section 32 of the Income Tax Act in the first year of operation. This allows business owners to write off substantial corporate tax while reducing their monthly factory electricity bills by 60% to 80%.",
+        "Businesses and factories can claim 80% of the solar system's cost as a tax deduction in the very first year. This means your business saves a lot on income tax while also cutting your electricity bill by 60–80% every month. It's one of the best investments a business can make.",
     },
     {
-      question: "What hardware components and warranties are included in a Pragati EcoSolar package?",
+      question: "What products and warranties are included in your solar installation?",
       answer:
-        "Every turnkey package includes Tier-1 ALMM listed Waaree or Adani 600W+ TOPCon panels (25-30 year performance warranty), Statcon or Sunora dual MPPT inverters (5-10 year replacement warranty), Polycab/KEI XLPO DC cables, and IS 3043 Chemical Earthing with lightning arrestors.",
+        "Every installation includes trusted Waaree or Adani solar panels (25–30 year performance warranty), a smart Statcon or Sunora inverter (5–10 year warranty), good quality Polycab or KEI wires, and a safety earthing system. All components are government-approved and certified.",
     },
     {
-      question: "How does net metering billing work on my TPCODL electricity bill?",
+      question: "How does a solar meter work — will I get credit for extra electricity?",
       answer:
-        "Your bi-directional net meter tracks energy consumed from the grid vs solar units exported to the grid. If your solar system exports more electricity than you consume in a month, the excess units are banked and carried forward to credit your future electricity bills.",
+        "When your solar panels make more electricity than your home or office uses, the extra units go back into the electricity grid. Your two-way meter records this and your electricity bill is reduced accordingly. Some months your bill can come down to almost zero or even be a credit.",
     },
   ];
 
@@ -47,17 +47,17 @@ export default function FaqAccordion() {
         {/* Section Header */}
         <div className="text-center space-y-4 mb-16">
           <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold px-3.5 py-1 bg-amber-50 border border-amber-200 rounded-full inline-block">
-            LOCAL AUTHORITY & TECHNICAL FAQ
+            COMMON QUESTIONS
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             Frequently Asked Questions
           </h2>
           <p className="text-slate-600 text-sm max-w-2xl mx-auto">
-            Clear, transparent technical and regulatory guidance for rooftop solar projects in Bhubaneswar, Cuttack, and across Odisha.
+            Simple answers to the most common solar questions from homeowners and businesses in Odisha.
           </p>
         </div>
 
-        {/* Accordion Container */}
+        {/* Accordion */}
         <div className="space-y-4">
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
@@ -107,8 +107,8 @@ export default function FaqAccordion() {
               <HelpCircle className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="text-base font-bold text-slate-900">Have specific roof structural or load questions?</h4>
-              <p className="text-xs text-slate-600">Speak directly with our Chief Solar Engineers in Patia, Bhubaneswar.</p>
+              <h4 className="text-base font-bold text-slate-900">Still have questions?</h4>
+              <p className="text-xs text-slate-600">Our team in Patia, Bhubaneswar is happy to help. Call us anytime.</p>
             </div>
           </div>
           <a

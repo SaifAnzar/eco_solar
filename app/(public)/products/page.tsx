@@ -18,16 +18,16 @@ export default function ProductsPage() {
     <div className="bg-[#FAFAFA] min-h-screen py-12 md:py-16 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
-        {/* Editorial Showcase Header */}
+        {/* Page Header */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="text-xs font-mono uppercase tracking-widest text-emerald-600 font-bold">
-            ALMM & BIS APPROVED HARDWARE
+            GOVERNMENT-APPROVED SOLAR EQUIPMENT
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Tier-1 Hardware Specifications
+            Solar Products We Install
           </h1>
           <p className="text-slate-600 text-sm leading-relaxed">
-            Precision-engineered solar PV modules, string inverters, HDG mounting structures, and BOS protection components deployed across Odisha.
+            We use only trusted, certified solar panels, inverters, and accessories — all covered with long-term warranties.
           </p>
         </div>
 
@@ -37,7 +37,7 @@ export default function ProductsPage() {
           onSelectCategory={(cat) => setActiveCategory(cat)}
         />
 
-        {/* 3-Column Responsive Grid */}
+        {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {filteredProducts.map((product) => (
             <ProductCard
@@ -48,14 +48,14 @@ export default function ProductsPage() {
           ))}
         </div>
 
-        {/* OEM Partner Strip */}
+        {/* Brand Partners Strip */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row items-center justify-between border-b border-slate-100 pb-4 gap-2">
             <span className="text-xs font-semibold text-slate-900 uppercase tracking-wider font-mono">
-              ALMM LIST-I APPROVED OEM PARTNERS
+              OUR TRUSTED BRAND PARTNERS
             </span>
             <div className="flex gap-2 text-[11px] font-medium text-slate-600 font-mono">
-              <span>ALMM Approved</span>
+              <span>Government Approved</span>
               <span>•</span>
               <span>BIS Certified</span>
               <span>•</span>

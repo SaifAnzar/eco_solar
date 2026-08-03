@@ -10,65 +10,65 @@ export default function ServicesSection() {
   const services = [
     {
       id: "residential",
-      badgeText: "Up to ₹78,000 Central Subsidy",
+      badgeText: "Up to ₹78,000 Government Subsidy",
       badgeStyle: "bg-emerald-600 text-white font-semibold text-xs px-3 py-1 rounded-full shadow",
-      title: "Residential Rooftop Solar",
-      capacity: "1 kW TO 10 kW CUSTOM PACKAGES",
+      title: "Solar for Your Home",
+      capacity: "1 kW TO 10 kW PACKAGES",
       description:
-        "Complete turnkey solar rooftop solutions under PM Surya Ghar. We handle site survey, 3D shadow modeling, tier-1 hardware supply, installation, and 100% DISCOM net-metering liaison.",
+        "We install rooftop solar panels on your home and take care of everything — from site visit and design to installation and meter approval. Save up to 90% on your electricity bill every month.",
       image: RESIDENTIAL_IMAGE,
-      alt: "Rooftop solar panel installation on residential concrete home in Bhubaneswar Odisha",
+      alt: "Rooftop solar panel installation on a home in Bhubaneswar Odisha",
       icon: Home,
       category: "residential" as const,
       features: [
-        "Up to ₹78,000 Direct Central Subsidy via National Portal",
-        "Waaree / Adani TOPCon 600W+ High Efficiency Modules",
-        "Hot-Dip Galvanized Mounting Structures (150 km/h Wind Rating)",
-        "Zero-Hassle TPCODL / TPNODL / TPSODL / TPWODL Net Metering",
+        "Get up to ₹78,000 directly in your bank account",
+        "Trusted Waaree & Adani panels with 25-year warranty",
+        "Strong steel structure — safe during Odisha cyclones",
+        "We handle all meter approvals — zero hassle for you",
       ],
-      ctaText: "Calculate Residential Subsidy",
+      ctaText: "Check My Home Savings",
       ctaHref: "/services/residential",
     },
     {
       id: "commercial",
-      badgeText: "80% Accelerated Depreciation",
+      badgeText: "80% Tax Benefit in Year 1",
       badgeStyle: "bg-amber-500 text-slate-900 font-bold text-xs px-3 py-1 rounded-full shadow",
-      title: "Commercial & Industrial (C&I) EPC",
-      capacity: "10 kW TO 500 kW+ CAPEX & OPEX",
+      title: "Solar for Offices & Factories",
+      capacity: "10 kW TO 500 kW+ SYSTEMS",
       description:
-        "Turnkey solar power plant installation for factories, warehouses, educational institutes, and commercial complexes in Odisha with 80% Accelerated Depreciation tax benefits.",
+        "Cut your business electricity bill by 60–80%. We install solar systems for offices, factories, warehouses, and schools across Odisha. Easy payment options available.",
       image: COMMERCIAL_IMAGE,
-      alt: "Commercial industrial rooftop solar power plant setup in Cuttack Odisha",
+      alt: "Commercial rooftop solar plant on an office building in Odisha",
       icon: Building2,
       category: "commercial" as const,
       features: [
-        "CAPEX (Direct Purchase) & OPEX/PPA Zero Upfront Investment Options",
-        "80% Accelerated Depreciation Tax Write-Off in Year 1",
-        "Statcon / Servotech Grid-Tied Inverters with Remote Telemetry",
-        "Payback Period: 2.8 to 3.5 Years with ~30% Annual ROI",
+        "Pay upfront or start with zero upfront cost",
+        "80% tax benefit on your solar investment in year 1",
+        "Smart inverters with phone monitoring app",
+        "Typically pays for itself in 3–4 years",
       ],
-      ctaText: "Request C&I Energy Audit",
+      ctaText: "Get a Business Solar Quote",
       ctaHref: "/services/commercial",
     },
     {
       id: "agricultural",
       badgeText: "PM-KUSUM Approved",
       badgeStyle: "bg-teal-600 text-white font-semibold text-xs px-3 py-1 rounded-full shadow",
-      title: "Agricultural Solar Water Pumps",
-      capacity: "3 HP TO 10 HP SOLAR PUMP SETS",
+      title: "Solar Water Pumps for Farmers",
+      capacity: "3 HP TO 10 HP PUMP SYSTEMS",
       description:
-        "Empowering farmers across Odisha with reliable solar irrigation pumps under PM-KUSUM for uninterrupted daytime water supply without diesel generator dependency.",
+        "Give your farm reliable water supply using solar energy. No electricity bills, no diesel costs. We install government-approved solar pumps under the PM-KUSUM scheme.",
       image: AGRICULTURAL_IMAGE,
-      alt: "Agricultural PM-KUSUM solar water pump installation on Odisha farmland in Pipili Puri",
+      alt: "Solar water pump installation on a farm in Odisha",
       icon: Sprout,
       category: "pumps" as const,
       features: [
-        "Up to 90% Subsidy combining Central & Odisha Govt grants",
-        "High-head Submersible & Surface Solar DC/AC Controllers",
-        "IS 3043 Chemical Earthing & Lightning Protection Systems",
-        "Eliminates Diesel Generator cost & reliance on erratic grid supply",
+        "Up to 90% cost paid by the government",
+        "Works for both surface and borewell pumps",
+        "No diesel, no electricity bills — use sunlight for free",
+        "Safe and weatherproof for outdoor Odisha conditions",
       ],
-      ctaText: "Inquire PM-KUSUM Eligibility",
+      ctaText: "Check PM-KUSUM Eligibility",
       ctaHref: "/services/solar-pumps",
     },
   ];
@@ -80,17 +80,17 @@ export default function ServicesSection() {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full inline-block">
-            ENGINEERING SPECIALIZATION
+            WHAT WE INSTALL
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Turnkey Solar EPC Services Tailored for Odisha
+            Solar Solutions for Every Home & Business
           </h2>
           <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-            From quick-payback home solar installations under PM Surya Ghar to megawatt-scale industrial solar power plants with full DISCOM liaisoning.
+            From small home systems to large factory installations — we have an affordable solar solution for everyone in Odisha.
           </p>
         </div>
 
-        {/* Services Premium Visual Cards Grid */}
+        {/* Services Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service) => {
             const Icon = service.icon;
@@ -100,7 +100,7 @@ export default function ServicesSection() {
                 className="bg-white border border-slate-200/80 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden group"
               >
                 <div>
-                  {/* Card Header Image Frame (16:9 Aspect Ratio) */}
+                  {/* Card Image */}
                   <div className="aspect-video w-full overflow-hidden relative bg-slate-900">
                     <SolarImageFallback
                       src={service.image}
@@ -109,7 +109,6 @@ export default function ServicesSection() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"></div>
                     
-                    {/* Floating Overlay Badge on Image */}
                     <div className="absolute top-3 left-3">
                       <span className={service.badgeStyle}>
                         {service.badgeText}
@@ -123,7 +122,7 @@ export default function ServicesSection() {
                     </div>
                   </div>
 
-                  {/* Card Body Content */}
+                  {/* Card Body */}
                   <div className="p-6 space-y-3">
                     <span className="text-xs font-bold text-amber-600 tracking-wider uppercase block">
                       {service.capacity}
@@ -148,7 +147,7 @@ export default function ServicesSection() {
                   </div>
                 </div>
 
-                {/* Card CTA Button */}
+                {/* Card CTA */}
                 <div className="p-6 pt-2">
                   <Link
                     href={service.ctaHref}

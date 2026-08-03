@@ -4,45 +4,45 @@ import { Cpu, ShieldCheck, Zap, Layers, Check, Wrench } from "lucide-react";
 export default function HardwarePartners() {
   const hardwareItems = [
     {
-      category: "SOLAR PV MODULES",
+      category: "SOLAR PANELS",
       brand: "Waaree & Adani Solar",
-      specs: "600W+ Wp MonoPERC / TOPCon Bifacial",
-      description: "Tier-1 ALMM listed panels with 22.8% module efficiency and 30-year linear performance warranty.",
+      specs: "600W+ High-Efficiency Glass Panels",
+      description: "Top-quality solar panels made in India with 25-year performance warranty. Approved for government subsidy.",
       icon: Cpu,
     },
     {
-      category: "STRING INVERTERS",
+      category: "SOLAR INVERTERS",
       brand: "Sunora & Statcon",
-      specs: "Grid-Tied Dual MPPT with Wi-Fi Telemetry",
-      description: "98.6% peak efficiency inverters with IP65 weatherproofing, anti-islanding protection, and online monitoring.",
+      specs: "Smart Grid Inverters with Phone App",
+      description: "Reliable inverters that convert solar power to electricity for your home or business. Monitor from your phone anytime.",
       icon: Zap,
     },
     {
-      category: "POWER ELECTRONICS",
+      category: "BACKUP INVERTERS",
       brand: "Servotech Power",
-      specs: "Heavy-Duty Hybrid & Off-Grid PCUs",
-      description: "DSP controlled power units designed for harsh coastal Odisha voltage fluctuations and grid outages.",
+      specs: "Works with Battery & Grid Together",
+      description: "Perfect for areas with power cuts. Keeps your home running on solar even when the grid is down.",
       icon: ShieldCheck,
     },
     {
-      category: "SOLAR CABLE & CABLING",
+      category: "SOLAR WIRING",
       brand: "Polycab & KEI Cables",
-      specs: "Tinned Copper Cross-Linked Polyolefin (XLPO)",
-      description: "UV-resistant, flame-retardant DC cables rated for 1500V system voltage and 25-year outdoor durability.",
+      specs: "Heavy-Duty UV-Resistant Cables",
+      description: "Heat-proof, weatherproof wires designed for outdoor use. Safe for 25+ years in Odisha's climate.",
       icon: Layers,
     },
     {
-      category: "MOUNTING STRUCTURES (MMS)",
-      brand: "Custom Industrial MMS",
-      specs: "Hot-Dip Galvanized Iron (80 Micron Coating)",
-      description: "Engineered specifically for coastal Odisha cyclone conditions with 150 km/h wind load capacity.",
+      category: "MOUNTING FRAMES",
+      brand: "Custom Steel Structures",
+      specs: "Rust-Proof Cyclone-Rated Steel Frame",
+      description: "Strong steel frames custom-built to hold your panels safely — even during heavy Odisha cyclones at 150 km/h winds.",
       icon: Wrench,
     },
     {
-      category: "SAFETY & GROUNDING",
-      brand: "IS 3043 Chemical Earthing",
-      specs: "Maintenance-Free Gel Fill Grounding Rods",
-      description: "Dedicated earthing pits for AC, DC, and Type-II Surge Protection Devices (SPD) with lightning arrestors.",
+      category: "SAFETY EARTHING",
+      brand: "IS 3043 Certified Earthing",
+      specs: "Maintenance-Free Grounding System",
+      description: "Keeps your solar system safe from lightning and electrical faults. Mandatory for all safe solar installations.",
       icon: ShieldCheck,
     },
   ];
@@ -55,18 +55,18 @@ export default function HardwarePartners() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 pb-6 border-b border-slate-200">
           <div>
             <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold">
-              TIER-1 HARDWARE SPECIFICATIONS
+              WHAT GOES INTO YOUR SYSTEM
             </span>
             <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
-              Industrial-Grade Components Only
+              Only the Best Equipment — No Shortcuts
             </h2>
           </div>
           <p className="text-xs text-slate-600 max-w-md mt-3 md:mt-0">
-            Pragati EcoSolar exclusively deploys ALMM-approved Tier-1 equipment to guarantee maximum solar yield and uninterrupted 25-year plant operation in Odisha weather.
+            We only use government-approved, branded solar equipment so your system runs perfectly for 25 years or more.
           </p>
         </div>
 
-        {/* Vendor & Specs Grid */}
+        {/* Hardware Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {hardwareItems.map((item, idx) => {
             const Icon = item.icon;
@@ -99,17 +99,17 @@ export default function HardwarePartners() {
 
                 <div className="mt-4 pt-3 border-t border-slate-200/80 flex items-center space-x-1 text-[11px] text-slate-600 font-mono">
                   <Check className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>25-Year Performance Guarantee Deployed</span>
+                  <span>25-Year Warranty Included</span>
                 </div>
               </div>
             );
           })}
         </div>
 
-        {/* Component Vendor Badges Bar */}
+        {/* Brand Badges */}
         <div className="mt-12 p-6 bg-slate-50 rounded-2xl border border-slate-200 text-center">
           <span className="text-[11px] font-mono uppercase text-slate-500 tracking-wider block mb-4 font-bold">
-            APPROVED OEM & VENDOR PARTNERS IN ODISHA
+            OUR TRUSTED BRAND PARTNERS
           </span>
           <div className="flex flex-wrap items-center justify-center gap-3 font-mono text-xs font-bold text-slate-800">
             {["WAAREE SOLAR", "ADANI SOLAR", "SUNORA", "STATCON POWER", "SERVOTECH", "POLYCAB", "KEI CABLE", "IS 3043 EARTHING"].map((partner, idx) => (

@@ -2,34 +2,34 @@ import React from "react";
 import { CheckCircle2, ArrowRight, Zap, FileCheck } from "lucide-react";
 
 export default function DiscomLiaison() {
-  const discomSteps = [
+  const steps = [
     {
       step: "01",
-      title: "Technical Feasibility Application",
-      description: "We file the rooftop solar application on the National PM Surya Ghar Portal / DISCOM Unified Portal within 24 hours.",
+      title: "We Apply on Your Behalf",
+      description: "We fill and submit your solar application on the PM Surya Ghar portal and your local electricity office within 24 hours of installation.",
     },
     {
       step: "02",
-      title: "DISCOM Feasibility Approval",
-      description: "Discom engineers verify local transformer capacity and issue formal technical approval (15-30 day SLA).",
+      title: "Electricity Office Inspection",
+      description: "The electricity department sends their team to inspect your solar system. We coordinate and handle this for you — no stress.",
     },
     {
       step: "03",
-      title: "Precision EPC Installation",
-      description: "Our certified engineering team installs hot-dip MMS, Tier-1 TOPCon panels, and chemical earthing to DISCOM standards.",
+      title: "Panel & Inverter Installation",
+      description: "Our trained team installs your solar panels, inverter, and all connections to the highest safety standards.",
     },
     {
       step: "04",
-      title: "Bi-Directional Meter Sync",
-      description: "DISCOM safety inspection, bi-directional net-meter testing, and commissioning certificate issuance for solar bill credits.",
+      title: "New Meter Fitted — You Start Saving",
+      description: "A two-way meter is fitted so the extra electricity your panels make goes back to the grid, reducing your next bill further.",
     },
   ];
 
   const discoms = [
-    { name: "TPCODL", region: "Central Odisha (Bhubaneswar, Cuttack, Puri, Khordha, Nayagarh)" },
-    { name: "TPNODL", region: "Northern Odisha (Balasore, Bhadrak, Mayurbhanj, Keonjhar)" },
-    { name: "TPSODL", region: "Southern Odisha (Ganjam, Gajapati, Rayagada, Koraput)" },
-    { name: "TPWODL", region: "Western Odisha (Sambalpur, Jharsuguda, Rourkela, Bargarh)" },
+    { name: "TPCODL", region: "Central Odisha — Bhubaneswar, Cuttack, Puri, Khordha, Nayagarh" },
+    { name: "TPNODL", region: "North Odisha — Balasore, Bhadrak, Mayurbhanj, Keonjhar" },
+    { name: "TPSODL", region: "South Odisha — Ganjam, Gajapati, Rayagada, Koraput" },
+    { name: "TPWODL", region: "West Odisha — Sambalpur, Jharsuguda, Rourkela, Bargarh" },
   ];
 
   return (
@@ -38,23 +38,23 @@ export default function DiscomLiaison() {
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          {/* Left Column: Information */}
+          {/* Left Column */}
           <div className="lg:col-span-5 space-y-6">
             <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full inline-block">
-              ZERO-HASSLE NET METERING
+              WE HANDLE ALL PAPERWORK
             </span>
 
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Complete Odisha DISCOM Liaison & Approval Guarantee
+              We Get Your Electricity Meter Approved — You Relax.
             </h2>
 
             <p className="text-sm text-slate-600 leading-relaxed">
-              Navigating utility net-metering approvals can be daunting for homeowners and business owners. Pragati EcoSolar manages 100% of the DISCOM paperwork, meter procurement, testing, and grid synchronization.
+              Getting meter approval from the electricity office can be confusing. We handle all of it — forms, inspections, and follow-ups — across all parts of Odisha.
             </p>
 
             <div className="p-5 bg-white border border-slate-200 rounded-2xl space-y-3 shadow-sm">
               <div className="text-xs font-mono font-bold text-amber-700 uppercase">
-                COVERED UTILITY DISCOMS IN ODISHA:
+                WE SERVE ALL ODISHA ELECTRICITY ZONES:
               </div>
               <div className="space-y-2 text-xs">
                 {discoms.map((d, i) => (
@@ -73,27 +73,27 @@ export default function DiscomLiaison() {
                 href="/calculator"
                 className="inline-flex items-center space-x-2 py-3 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/20 transition-all"
               >
-                <span>Check Net Metering Feasibility</span>
+                <span>Check If I Am Eligible</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>
           </div>
 
-          {/* Right Column: Process Workflow Timeline */}
+          {/* Right Column: Process Steps */}
           <div className="lg:col-span-7 bg-white p-8 rounded-3xl border border-slate-200 shadow-xl relative">
             <div className="flex justify-between items-center pb-4 mb-6 border-b border-slate-100">
               <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-                Net-Metering Approval Timeline
+                How We Get Your Meter Approved
               </h3>
               <span className="text-xs font-mono text-emerald-800 font-bold px-3 py-1 bg-emerald-50 rounded-full border border-emerald-200">
-                15 - 30 Days SLA
+                Done in 15–30 Days
               </span>
             </div>
 
             <div className="space-y-6">
-              {discomSteps.map((item, idx) => (
+              {steps.map((item, idx) => (
                 <div key={idx} className="flex items-start space-x-4 relative">
-                  {idx !== discomSteps.length - 1 && (
+                  {idx !== steps.length - 1 && (
                     <div className="absolute left-5 top-10 bottom-0 w-0.5 bg-slate-200"></div>
                   )}
                   <div className="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 font-mono font-bold text-sm flex items-center justify-center shrink-0 z-10">
@@ -114,7 +114,7 @@ export default function DiscomLiaison() {
             <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600 font-mono">
               <span className="flex items-center space-x-1 font-bold text-emerald-700">
                 <FileCheck className="w-4 h-4" />
-                <span>100% Subsidy Direct Bank Credit Assistance</span>
+                <span>We also help you claim your government subsidy</span>
               </span>
             </div>
           </div>

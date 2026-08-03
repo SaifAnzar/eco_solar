@@ -5,29 +5,29 @@ export default function MetricsStrip() {
   const metrics = [
     {
       value: "400+",
-      label: "Executed Plant Installations",
-      subtext: "Across Patia, Bhubaneswar, Cuttack & Coastal Odisha",
+      label: "Solar Systems Installed",
+      subtext: "Across Bhubaneswar, Cuttack, and all of Odisha",
       icon: Award,
       accent: "text-emerald-600 bg-emerald-50 border-emerald-200",
     },
     {
       value: "₹78,000",
-      label: "Max Central Subsidy Deduction",
-      subtext: "PM Surya Ghar Direct Bank Transfer (DBT)",
+      label: "Max Government Subsidy",
+      subtext: "Directly transferred to your bank account",
       icon: Zap,
       accent: "text-amber-600 bg-amber-50 border-amber-200",
     },
     {
       value: "1,460 Units",
-      label: "Annual Generation per kW",
-      subtext: "Based on 4.5 Peak Sun Hours (Odisha Average)",
+      label: "Free Electricity per kW Every Year",
+      subtext: "Based on Odisha's average sunshine hours",
       icon: Sun,
       accent: "text-emerald-600 bg-emerald-50 border-emerald-200",
     },
     {
       value: "15-Day",
-      label: "DISCOM Net-Metering Turnaround",
-      subtext: "TPCODL, TPNODL, TPSODL & TPWODL Liaison",
+      label: "Meter Approval — Guaranteed",
+      subtext: "We manage all DISCOM paperwork for you",
       icon: Clock,
       accent: "text-amber-600 bg-amber-50 border-amber-200",
     },
@@ -49,7 +49,7 @@ export default function MetricsStrip() {
                     <Icon className="w-5 h-5" />
                   </div>
                   <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400">
-                    BENCHMARK
+                    OUR TRACK RECORD
                   </span>
                 </div>
                 <div>

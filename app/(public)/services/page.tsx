@@ -1,40 +1,52 @@
 import React from "react";
 import Link from "next/link";
-import { CheckCircle2, ArrowRight, Home, Building2, Sprout, ShieldCheck } from "lucide-react";
+import { CheckCircle2, ArrowRight } from "lucide-react";
 
 export const metadata = {
-  title: "Solar EPC Services Odisha | Pragati EcoSolar Bhubaneswar",
-  description: "Turnkey rooftop solar installation services under PM Surya Ghar (Residential), C&I CAPEX/OPEX (80% AD), and PM-KUSUM (Solar Pumps) across Odisha.",
+  title: "Solar Installation Services Odisha | Pragati EcoSolar Bhubaneswar",
+  description: "Solar panel installation for homes, factories, and farms in Odisha. Get government subsidy up to ₹78,000 under PM Surya Ghar. Full meter approval support included.",
 };
 
 export default function ServicesPage() {
   const services = [
     {
       id: "residential",
-      title: "Residential Rooftop Solar (PM Surya Ghar)",
-      capacity: "1 kW to 10 kW Packages",
-      subsidy: "Up to ₹78,000 Direct Central Subsidy",
+      title: "Solar for Your Home",
+      capacity: "1 kW to 10 kW Systems",
+      subsidy: "Get up to ₹78,000 Government Subsidy",
       href: "/services/residential",
-      description: "Complete turnkey solar installation for Odisha homeowners. Includes 3D roof analysis, Waaree/Adani TOPCon panels, and full DISCOM net-metering liaison.",
-      features: ["₹30,000 for 1 kW | ₹60,000 for 2 kW | ₹78,000 for 3–10 kW", "150 km/h Wind Load Hot-Dip Galvanized Mounting", "TPCODL / TPNODL / TPSODL / TPWODL Meter Approval"],
+      description: "We install rooftop solar panels on your home and handle everything — site visit, panels, installation, and electricity meter approval. You don't have to deal with any paperwork.",
+      features: [
+        "₹30,000 for 1 kW | ₹60,000 for 2 kW | ₹78,000 for 3 kW or more",
+        "Strong steel frames built to survive Odisha cyclones",
+        "Electricity meter approval for all Odisha districts",
+      ],
     },
     {
       id: "commercial",
-      title: "Commercial & Industrial (C&I) EPC",
-      capacity: "10 kW to 500 kW+ CAPEX & OPEX",
-      subsidy: "80% Accelerated Depreciation Tax Write-Off",
+      title: "Solar for Offices & Factories",
+      capacity: "10 kW to 500 kW+ Systems",
+      subsidy: "Save 80% on Business Tax in Year 1",
       href: "/services/commercial",
-      description: "High-yield solar power plant installation for factories, warehouses, schools, and commercial buildings across Odisha with 2.8 to 3.5 year payback horizon.",
-      features: ["CAPEX & Zero Upfront OPEX / PPA Financing Models", "80% Accelerated Depreciation Tax Benefits", "Statcon / Servotech Grid Inverters with Telemetry"],
+      description: "Cut your factory or office electricity bill by up to 80%. We install large solar systems for businesses across Odisha with easy payment options and guaranteed returns.",
+      features: [
+        "Pay upfront (CAPEX) or start with zero upfront cost (OPEX/PPA)",
+        "80% tax saving on solar investment in the first year",
+        "Smart inverters with phone-based monitoring app",
+      ],
     },
     {
       id: "solar-pumps",
-      title: "Agricultural Solar Water Pumps (PM-KUSUM)",
-      capacity: "3 HP to 10 HP Solar Pumps",
-      subsidy: "Up to 90% Combined Govt Subsidy",
+      title: "Solar Water Pumps for Farmers",
+      capacity: "3 HP to 10 HP Pump Systems",
+      subsidy: "Up to 90% Subsidy from Government",
       href: "/services/solar-pumps",
-      description: "Empowering farmers across Odisha with reliable off-grid and grid-tied solar irrigation pumps under the PM-KUSUM scheme.",
-      features: ["High-head Submersible & Surface Solar DC/AC Pumps", "IS 3043 Chemical Earthing & Surge Protection", "Eliminates Diesel Generator Costs"],
+      description: "Power your farm's water pump with solar energy. No more electricity bills or diesel costs. We install government-approved solar pumps under the PM-KUSUM scheme.",
+      features: [
+        "Up to 90% cost covered by government subsidy",
+        "Works for both surface and borewell pumps",
+        "No diesel, no electricity bill — water all day using sunlight",
+      ],
     },
   ];
 
@@ -42,20 +54,20 @@ export default function ServicesPage() {
     <div className="bg-[#FAFAFA] min-h-screen py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
-        {/* Header */}
+        {/* Page Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold px-3.5 py-1 bg-amber-50 border border-amber-200 rounded-full inline-block">
-            ENGINEERING SERVICES & CAPABILITIES
+            SOLAR SERVICES IN ODISHA
           </span>
           <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
-            Turnkey Solar EPC Engineering Across Odisha
+            We Install Solar for Every Need
           </h1>
           <p className="text-slate-600 text-sm leading-relaxed">
-            From quick-payback home solar under PM Surya Ghar to industrial rooftop power plants and agricultural irrigation solar pumps.
+            Whether you are a homeowner, a business owner, or a farmer — we have the right solar solution for you. All our installations come with full government support and long-term warranty.
           </p>
         </div>
 
-        {/* Services Grid */}
+        {/* Services Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {services.map((svc) => (
             <div
@@ -84,7 +96,7 @@ export default function ServicesPage() {
                   href={svc.href}
                   className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all"
                 >
-                  <span>Explore Service Specs</span>
+                  <span>Learn More</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>

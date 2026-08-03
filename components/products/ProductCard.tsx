@@ -21,8 +21,23 @@ interface ProductCardProps {
   onRequestQuote: (product: ProductItem) => void;
 }
 
+// Per-category fallback images — each product type shows a relevant photo
+const CATEGORY_FALLBACKS: Record<string, string> = {
+  modules:
+    "https://images.unsplash.com/photo-1559302504-64aae6ca6890?w=800&auto=format&fit=crop&q=80",
+  inverters:
+    "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80",
+  structures:
+    "https://images.unsplash.com/photo-1611365892117-00ac5ef43c90?w=800&auto=format&fit=crop&q=80",
+  "cables-earthing":
+    "https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?w=800&auto=format&fit=crop&q=80",
+  "street-lights":
+    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&auto=format&fit=crop&q=80",
+};
+
 export default function ProductCard({ product, onRequestQuote }: ProductCardProps) {
   const defaultFallback =
+    CATEGORY_FALLBACKS[product.category] ??
     "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&auto=format&fit=crop&q=80";
 
   const [imgSrc, setImgSrc] = useState(product.image);

@@ -163,6 +163,100 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ═══════════════════════════════════════════════
+          CORE TEAM
+      ═══════════════════════════════════════════════ */}
+      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-14 space-y-3">
+          <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full inline-block">
+            OUR PEOPLE
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            Meet the Core Team
+          </h2>
+          <p className="text-sm text-slate-500 max-w-xl mx-auto">
+            The dedicated professionals behind every solar installation, subsidy claim, and customer smile across Odisha.
+          </p>
+        </div>
+
+        {/* Team Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            {
+              name: "Kalpna Sahoo",
+              designation: "Managing Director",
+              photo: "/kalpana sahoo.jpeg",
+              accent: "bg-amber-50 border-amber-200 text-amber-700",
+              badge: "Leadership",
+            },
+            {
+              name: "Akash Kumar Behera",
+              designation: "General Manager",
+              photo: "/akash kumar behera.jpeg",
+              accent: "bg-emerald-50 border-emerald-200 text-emerald-700",
+              badge: "Operations",
+            },
+            {
+              name: "Pratap Kumar Das",
+              designation: "Operation Head",
+              photo: "/Pratap kumar das.jpeg",
+              accent: "bg-emerald-50 border-emerald-200 text-emerald-700",
+              badge: "Operations",
+            },
+            {
+              name: "Monalisa Dalai",
+              designation: "Business Development Manager",
+              photo: "/Monalisa Dalai.jpeg",
+              accent: "bg-sky-50 border-sky-200 text-sky-700",
+              badge: "Growth",
+            },
+            {
+              name: "Arpita Biswal",
+              designation: "Customer Relationship Manager",
+              photo: "/Arpita biswal.jpeg",
+              accent: "bg-violet-50 border-violet-200 text-violet-700",
+              badge: "Customer Care",
+            },
+            {
+              name: "Banti Jena",
+              designation: "Customer Relationship Manager",
+              photo: "/Banty jena.jpeg",
+              accent: "bg-violet-50 border-violet-200 text-violet-700",
+              badge: "Customer Care",
+            },
+          ].map((member) => (
+            <div
+              key={member.name}
+              className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 group"
+            >
+              {/* Photo */}
+              <div className="aspect-[4/3] w-full bg-slate-100 overflow-hidden">
+                <img
+                  src={member.photo}
+                  alt={member.name}
+                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+
+              {/* Info */}
+              <div className="p-5">
+                <span
+                  className={`inline-block text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border mb-3 ${member.accent}`}
+                >
+                  {member.badge}
+                </span>
+                <h3 className="text-base font-extrabold text-slate-900 leading-tight">
+                  {member.name}
+                </h3>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  {member.designation}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-10 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 text-center md:text-left shadow-xl">
