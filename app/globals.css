@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --color-solar-amber: #D97706;
+  --color-solar-[#D97706]: #D97706;
+  --color-solar-gold: #F59E0B;
+  --color-solar-emerald: #059669;
+  --color-solar-emerald-hover: #047857;
+  --color-solar-ink: #0F172A;
+  --color-solar-slate: #334155;
+  --color-solar-bg: #FAFAFA;
+  --color-solar-card: #FFFFFF;
+  --color-solar-border: #E2E8F0;
+}
+
+:root {
+  --background: #FAFAFA;
+  --foreground: #0F172A;
+}
+
+body {
+  background-color: #FAFAFA;
+  color: #0F172A;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Light industrial grid pattern */
+.bg-grid-pattern {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+}
+
+.bg-radial-gradient-light {
+  background: radial-gradient(circle at 50% 0%, rgba(217, 119, 6, 0.08) 0%, rgba(250, 250, 250, 0) 75%);
+}
+
+.text-gradient-amber {
+  background: linear-gradient(135deg, #D97706 0%, #B45309 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-emerald {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAFAFA;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D97706;
+}
+
+
