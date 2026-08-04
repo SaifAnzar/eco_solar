@@ -156,21 +156,39 @@ export function CalculatorConfigEditor({ initialConfig }: Props) {
         </div>
       </section>
 
-      {/* ─── Section 3: PM Surya Ghar Subsidy ─── */}
+      {/* ─── Section 3A: Central Govt Subsidy (PM Surya Ghar) ─── */}
       <section className="cfg-section">
         <h2 className="cfg-section-title">
-          <span className="cfg-section-num">03</span>
-          PM Surya Ghar Subsidy Tiers
+          <span className="cfg-section-num">03A</span>
+          Central Govt Subsidy Tiers (PM Surya Ghar)
         </h2>
         <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.4)", marginBottom: "1rem" }}>
-          Applies only to residential systems (≤ 10 kW).
+          Central Government subsidy tiers for residential rooftop solar systems (≤ 10 kW).
         </p>
         <div className="cfg-grid">
-          <CfgField name="subsidyTier1Kw" label="Tier 1 — Max kW" hint="e.g. 1" defaultValue={initialConfig.subsidyTier1Kw} step="1" min="1" />
-          <CfgField name="subsidyTier1Amount" label="Tier 1 — Subsidy (₹)" hint="e.g. 30000" defaultValue={initialConfig.subsidyTier1Amount} step="500" min="0" />
-          <CfgField name="subsidyTier2Kw" label="Tier 2 — Max kW" hint="e.g. 2" defaultValue={initialConfig.subsidyTier2Kw} step="1" min="1" />
-          <CfgField name="subsidyTier2Amount" label="Tier 2 — Subsidy (₹)" hint="e.g. 60000" defaultValue={initialConfig.subsidyTier2Amount} step="500" min="0" />
-          <CfgField name="subsidyTier3PlusAmount" label="Tier 3+ — Subsidy (₹)" hint="Flat cap for 3kW+ residential" defaultValue={initialConfig.subsidyTier3PlusAmount} step="500" min="0" />
+          <CfgField name="subsidyTier1Kw" label="Tier 1 — Max kW" hint="e.g. 1 kW" defaultValue={initialConfig.subsidyTier1Kw} step="1" min="1" />
+          <CfgField name="subsidyTier1Amount" label="Tier 1 — Central Subsidy (₹)" hint="e.g. 30000" defaultValue={initialConfig.subsidyTier1Amount} step="500" min="0" />
+          <CfgField name="subsidyTier2Kw" label="Tier 2 — Max kW" hint="e.g. 2 kW" defaultValue={initialConfig.subsidyTier2Kw} step="1" min="1" />
+          <CfgField name="subsidyTier2Amount" label="Tier 2 — Central Subsidy (₹)" hint="e.g. 60000" defaultValue={initialConfig.subsidyTier2Amount} step="500" min="0" />
+          <CfgField name="subsidyTier3PlusAmount" label="Tier 3+ — Central Subsidy (₹)" hint="Flat central cap for 3kW+ residential" defaultValue={initialConfig.subsidyTier3PlusAmount} step="500" min="0" />
+        </div>
+      </section>
+
+      {/* ─── Section 3B: State Govt Subsidy Top-Up ─── */}
+      <section className="cfg-section">
+        <h2 className="cfg-section-title">
+          <span className="cfg-section-num" style={{ background: "rgba(16,185,129,0.15)", color: "#10B981" }}>03B</span>
+          State Govt Subsidy Tiers (Odisha Top-Up)
+        </h2>
+        <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.4)", marginBottom: "1rem" }}>
+          State Government top-up subsidy tiers for residential rooftop solar systems (≤ 10 kW).
+        </p>
+        <div className="cfg-grid">
+          <CfgField name="stateSubsidyTier1Kw" label="Tier 1 — Max kW" hint="e.g. 1 kW" defaultValue={initialConfig.stateSubsidyTier1Kw ?? 1} step="1" min="1" />
+          <CfgField name="stateSubsidyTier1Amount" label="Tier 1 — State Subsidy (₹)" hint="e.g. 20000" defaultValue={initialConfig.stateSubsidyTier1Amount ?? 20000} step="500" min="0" />
+          <CfgField name="stateSubsidyTier2Kw" label="Tier 2 — Max kW" hint="e.g. 2 kW" defaultValue={initialConfig.stateSubsidyTier2Kw ?? 2} step="1" min="1" />
+          <CfgField name="stateSubsidyTier2Amount" label="Tier 2 — State Subsidy (₹)" hint="e.g. 40000" defaultValue={initialConfig.stateSubsidyTier2Amount ?? 40000} step="500" min="0" />
+          <CfgField name="stateSubsidyTier3PlusAmount" label="Tier 3+ — State Subsidy (₹)" hint="Flat state cap for 3kW+ residential" defaultValue={initialConfig.stateSubsidyTier3PlusAmount ?? 60000} step="500" min="0" />
         </div>
       </section>
 

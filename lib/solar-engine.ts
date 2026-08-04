@@ -154,13 +154,26 @@ export function calculatePMSuryaGharSubsidy(
 
 export function calculateOdishaStateSubsidy(
   systemKw: number,
-  isResidential: boolean
+  isResidential: boolean,
+  stateSubsidyConfig?: {
+    tier1Kw?: number;
+    tier1Amount?: number;
+    tier2Kw?: number;
+    tier2Amount?: number;
+    tier3PlusAmount?: number;
+  }
 ): number {
   if (!isResidential) return 0;
   const kw = Math.round(systemKw);
-  if (kw <= 1) return 20000;
-  if (kw === 2) return 40000;
-  if (kw >= 3) return 60000; // Flat cap for 3kW to 10kW residential (Odisha State Top-up)
+  const t1Kw = stateSubsidyConfig?.tier1Kw ?? 1;
+  const t1Amount = stateSubsidyConfig?.tier1Amount ?? 20000;
+  const t2Kw = stateSubsidyConfig?.tier2Kw ?? 2;
+  const t2Amount = stateSubsidyConfig?.tier2Amount ?? 40000;
+  const t3PlusAmount = stateSubsidyConfig?.tier3PlusAmount ?? 60000;
+
+  if (kw <= t1Kw) return t1Amount;
+  if (kw === t2Kw) return t2Amount;
+  if (kw >= 3) return t3PlusAmount; // Flat cap for 3kW to 10kW residential (Odisha State Top-up)
   return 0;
 }
 
@@ -186,6 +199,11 @@ export function calculateSolarQuote(
     subsidyTier2Kw?: number;
     subsidyTier2Amount?: number;
     subsidyTier3PlusAmount?: number;
+    stateSubsidyTier1Kw?: number;
+    stateSubsidyTier1Amount?: number;
+    stateSubsidyTier2Kw?: number;
+    stateSubsidyTier2Amount?: number;
+    stateSubsidyTier3PlusAmount?: number;
     equipmentBands?: EquipmentBand[];
   }
 ): SolarCalculationResult {
@@ -222,7 +240,13 @@ export function calculateSolarQuote(
     tier2Amount: config?.subsidyTier2Amount,
     tier3PlusAmount: config?.subsidyTier3PlusAmount,
   });
-  const stateSubsidy = calculateOdishaStateSubsidy(systemKw, isResidential);
+  const stateSubsidy = calculateOdishaStateSubsidy(systemKw, isResidential, {
+    tier1Kw: config?.stateSubsidyTier1Kw,
+    tier1Amount: config?.stateSubsidyTier1Amount,
+    tier2Kw: config?.stateSubsidyTier2Kw,
+    tier2Amount: config?.stateSubsidyTier2Amount,
+    tier3PlusAmount: config?.stateSubsidyTier3PlusAmount,
+  });
   const totalSubsidy = centralSubsidy + stateSubsidy;
   const pmSuryaGharSubsidy = centralSubsidy; // Alias for backwards compatibility
   const taxBenefit80AD = !isResidential ? Math.round(grossSystemCost * 0.25) : 0; // ~25% tax benefit under 80% AD

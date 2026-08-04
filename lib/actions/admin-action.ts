@@ -75,6 +75,11 @@ export async function saveSolarConfigAction(
       subsidyTier2Kw: Number(formData.get("subsidyTier2Kw")),
       subsidyTier2Amount: Number(formData.get("subsidyTier2Amount")),
       subsidyTier3PlusAmount: Number(formData.get("subsidyTier3PlusAmount")),
+      stateSubsidyTier1Kw: Number(formData.get("stateSubsidyTier1Kw")),
+      stateSubsidyTier1Amount: Number(formData.get("stateSubsidyTier1Amount")),
+      stateSubsidyTier2Kw: Number(formData.get("stateSubsidyTier2Kw")),
+      stateSubsidyTier2Amount: Number(formData.get("stateSubsidyTier2Amount")),
+      stateSubsidyTier3PlusAmount: Number(formData.get("stateSubsidyTier3PlusAmount")),
       // Equipment bands come as a JSON string from the hidden input
       equipmentBands: JSON.parse(formData.get("equipmentBands") as string),
     };
@@ -86,6 +91,8 @@ export async function saveSolarConfigAction(
       "gridTariffRate", "defaultPsh", "performanceRatio",
       "subsidyTier1Kw", "subsidyTier1Amount", "subsidyTier2Kw",
       "subsidyTier2Amount", "subsidyTier3PlusAmount",
+      "stateSubsidyTier1Kw", "stateSubsidyTier1Amount", "stateSubsidyTier2Kw",
+      "stateSubsidyTier2Amount", "stateSubsidyTier3PlusAmount",
     ] as const;
 
     for (const field of numericFields) {

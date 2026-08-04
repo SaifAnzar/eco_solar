@@ -240,12 +240,18 @@ export interface SolarConfigOverride {
   gridTariffRate: number;
   defaultPsh: number;
   performanceRatio: number;
-  // Subsidy tiers
+  // Central Subsidy tiers (PM Surya Ghar)
   subsidyTier1Kw: number;   // e.g. 1 kW -> ₹30,000
   subsidyTier1Amount: number;
   subsidyTier2Kw: number;   // e.g. 2 kW -> ₹60,000
   subsidyTier2Amount: number;
   subsidyTier3PlusAmount: number; // 3 kW+ -> ₹78,000
+  // Odisha State Subsidy tiers
+  stateSubsidyTier1Kw: number;   // e.g. 1 kW -> ₹20,000
+  stateSubsidyTier1Amount: number;
+  stateSubsidyTier2Kw: number;   // e.g. 2 kW -> ₹40,000
+  stateSubsidyTier2Amount: number;
+  stateSubsidyTier3PlusAmount: number; // 3 kW+ -> ₹60,000
   // Equipment bands
   equipmentBands: EquipmentBand[];
 }
@@ -264,6 +270,11 @@ const DEFAULT_CONFIG: SolarConfigOverride = {
   subsidyTier2Kw: 2,
   subsidyTier2Amount: 60000,
   subsidyTier3PlusAmount: 78000,
+  stateSubsidyTier1Kw: 1,
+  stateSubsidyTier1Amount: 20000,
+  stateSubsidyTier2Kw: 2,
+  stateSubsidyTier2Amount: 40000,
+  stateSubsidyTier3PlusAmount: 60000,
   equipmentBands: [
     {
       minKw: 1, maxKw: 3,

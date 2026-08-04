@@ -186,6 +186,11 @@ export async function lookupPincodeAndCalculate(
     subsidyTier2Kw: solarConfig.subsidyTier2Kw,
     subsidyTier2Amount: solarConfig.subsidyTier2Amount,
     subsidyTier3PlusAmount: solarConfig.subsidyTier3PlusAmount,
+    stateSubsidyTier1Kw: solarConfig.stateSubsidyTier1Kw,
+    stateSubsidyTier1Amount: solarConfig.stateSubsidyTier1Amount,
+    stateSubsidyTier2Kw: solarConfig.stateSubsidyTier2Kw,
+    stateSubsidyTier2Amount: solarConfig.stateSubsidyTier2Amount,
+    stateSubsidyTier3PlusAmount: solarConfig.stateSubsidyTier3PlusAmount,
     equipmentBands: solarConfig.equipmentBands,
   });
 
