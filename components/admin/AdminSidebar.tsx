@@ -1,7 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
+import { Sun, Moon } from "lucide-react";
 import { logoutAction } from "@/lib/actions/auth-action";
 
 const NAV_LINKS = [
@@ -55,6 +58,18 @@ const NAV_LINKS = [
 
 export function AdminSidebar({ adminEmail }: { adminEmail: string }) {
   const pathname = usePathname();
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const currentTheme = resolvedTheme || theme;
+
+  const toggleTheme = () => {
+    setTheme(currentTheme === "dark" ? "light" : "dark");
+  };
 
   return (
     <aside className="admin-sidebar">
@@ -67,7 +82,8 @@ export function AdminSidebar({ adminEmail }: { adminEmail: string }) {
             <path d="M11 14H21L18 26H14L11 14Z" fill="white" fillOpacity="0.55" />
             <defs>
               <linearGradient id="slg" x1="0" y1="0" x2="32" y2="32">
-                <stop stopColor="#F59E0B" /><stop offset="1" stopColor="#D97706" />
+                <stop stopColor="#F59E0B" />
+                <stop offset="1" stopColor="#D97706" />
               </linearGradient>
             </defs>
           </svg>
@@ -95,7 +111,7 @@ export function AdminSidebar({ adminEmail }: { adminEmail: string }) {
         })}
       </nav>
 
-      {/* User + Logout */}
+      {/* Footer: User Info + Theme Toggle + Logout */}
       <div className="sidebar-footer">
         <div className="sidebar-user">
           <div className="sidebar-avatar">
@@ -106,6 +122,24 @@ export function AdminSidebar({ adminEmail }: { adminEmail: string }) {
             <div className="sidebar-user-email" title={adminEmail}>{adminEmail}</div>
           </div>
         </div>
+
+        {/* Theme Switcher Icon Button */}
+        {mounted && (
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="sidebar-logout"
+            title={`Switch to ${currentTheme === "dark" ? "Light" : "Dark"} Mode`}
+          >
+            {currentTheme === "dark" ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4 text-slate-300" />
+            )}
+          </button>
+        )}
+
+        {/* Sign Out Button */}
         <form action={logoutAction}>
           <button
             type="submit"

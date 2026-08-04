@@ -19,13 +19,13 @@ export function LeadsTable({ leads }: { leads: LeadRecord[] }) {
 
   if (leads.length === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "4rem 0", color: "rgba(255,255,255,0.25)" }}>
+      <div className="dash-table-sub" style={{ textAlign: "center", padding: "4rem 0" }}>
         <svg viewBox="0 0 48 48" fill="none" width="48" height="48" style={{ margin: "0 auto 1rem" }}>
-          <circle cx="24" cy="24" r="24" fill="rgba(255,255,255,0.04)" />
-          <path d="M16 20h16M16 24h10M16 28h8" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="24" cy="24" r="24" fill="rgba(245,158,11,0.1)" />
+          <path d="M16 20h16M16 24h10M16 28h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
-        <p style={{ fontSize: "0.95rem" }}>No quotation submissions yet.</p>
-        <p style={{ fontSize: "0.8rem", marginTop: "0.5rem" }}>When customers submit via the solar calculator, leads appear here.</p>
+        <p className="dash-table-title" style={{ fontSize: "0.95rem" }}>No quotation submissions yet.</p>
+        <p className="dash-table-sub" style={{ fontSize: "0.8rem", marginTop: "0.5rem" }}>When customers submit via the solar calculator, leads appear here.</p>
       </div>
     );
   }
@@ -65,19 +65,19 @@ export function LeadsTable({ leads }: { leads: LeadRecord[] }) {
           <tbody>
             {leads.map((lead) => (
               <tr key={lead.leadId}>
-                <td style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.72rem", color: "rgba(255,255,255,0.3)" }}>
+                <td className="dash-table-sub font-mono text-[11px]">
                   {lead.leadId}
                 </td>
-                <td style={{ fontWeight: 600, color: "#F9FAFB", whiteSpace: "nowrap" }}>
+                <td className="dash-table-title font-bold text-sm whitespace-nowrap">
                   {lead.customerName}
                 </td>
-                <td style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.8rem", whiteSpace: "nowrap" }}>
+                <td className="font-mono text-xs text-amber-600 dark:text-amber-400 font-semibold whitespace-nowrap">
                   {lead.phone}
                 </td>
-                <td style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.5)", whiteSpace: "nowrap" }}>
+                <td className="dash-table-sub text-xs whitespace-nowrap">
                   {lead.email || "—"}
                 </td>
-                <td style={{ fontSize: "0.8rem", maxWidth: "160px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <td className="dash-table-title text-xs whitespace-nowrap max-w-[160px] truncate">
                   {lead.locationLabel}
                 </td>
                 <td style={{ fontSize: "0.75rem" }}>
@@ -93,16 +93,16 @@ export function LeadsTable({ leads }: { leads: LeadRecord[] }) {
                     {lead.calculation?.propertyType ?? "—"}
                   </span>
                 </td>
-                <td style={{ fontWeight: 600, color: "#F9FAFB", whiteSpace: "nowrap" }}>
+                <td className="dash-table-title font-extrabold text-xs whitespace-nowrap">
                   ₹{lead.calculation?.netPayableCost?.toLocaleString() ?? "—"}
                 </td>
-                <td style={{ color: "#6EE7B7", fontWeight: 600, whiteSpace: "nowrap" }}>
+                <td className="text-emerald-600 dark:text-emerald-400 font-bold text-xs whitespace-nowrap">
                   ₹{lead.calculation?.monthlySavingsRs?.toLocaleString() ?? "—"}
                 </td>
-                <td style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.72rem", color: "rgba(255,255,255,0.4)" }}>
+                <td className="dash-table-sub font-mono text-[11px]">
                   {lead.quotationRef}
                 </td>
-                <td style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.4)", whiteSpace: "nowrap" }}>
+                <td className="dash-table-sub text-[11px] whitespace-nowrap">
                   {new Date(lead.createdAt).toLocaleString("en-IN", {
                     day: "2-digit", month: "short", year: "numeric",
                     hour: "2-digit", minute: "2-digit",

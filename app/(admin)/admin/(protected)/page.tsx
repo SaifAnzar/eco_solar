@@ -49,22 +49,22 @@ export default async function AdminDashboardPage() {
       <div className="admin-stat-grid">
         <div className="admin-stat-card">
           <div className="admin-stat-label">Total Quotations</div>
-          <div className="admin-stat-value" style={{ color: "#F59E0B" }}>{totalLeads}</div>
+          <div className="admin-stat-value text-amber-500 font-extrabold">{totalLeads}</div>
           <div className="admin-stat-note">All-time lead records</div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-label">Total Capacity Quoted</div>
-          <div className="admin-stat-value" style={{ color: "#34D399" }}>{totalKw.toFixed(1)}</div>
+          <div className="admin-stat-value text-emerald-500 dark:text-emerald-400 font-extrabold">{totalKw.toFixed(1)}</div>
           <div className="admin-stat-note">kW across all leads</div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-label">Avg System Size</div>
-          <div className="admin-stat-value">{avgKw}</div>
+          <div className="admin-stat-value text-slate-900 dark:text-slate-100 font-extrabold">{avgKw}</div>
           <div className="admin-stat-note">kW per lead</div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-label">Residential</div>
-          <div className="admin-stat-value" style={{ color: "#60A5FA" }}>{residentialCount}</div>
+          <div className="admin-stat-value text-blue-500 dark:text-blue-400 font-extrabold">{residentialCount}</div>
           <div className="admin-stat-note">{commercialCount} commercial</div>
         </div>
       </div>
@@ -77,10 +77,10 @@ export default async function AdminDashboardPage() {
             {distribution.map((d) => (
               <div key={d.label}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.3rem" }}>
-                  <span style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.55)" }}>{d.label}</span>
-                  <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "rgba(255,255,255,0.8)" }}>{d.count}</span>
+                  <span className="dash-muted-label text-xs font-semibold">{d.label}</span>
+                  <span className="dash-value-label text-xs font-bold">{d.count}</span>
                 </div>
-                <div style={{ height: "6px", background: "rgba(255,255,255,0.06)", borderRadius: "9999px", overflow: "hidden" }}>
+                <div className="dash-track" style={{ height: "6px", borderRadius: "9999px", overflow: "hidden" }}>
                   <div
                     style={{
                       height: "100%",
@@ -94,7 +94,7 @@ export default async function AdminDashboardPage() {
               </div>
             ))}
             {totalLeads === 0 && (
-              <p style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.85rem", textAlign: "center", padding: "1rem 0" }}>
+              <p className="dash-table-sub text-xs text-center py-4">
                 No quotation data yet
               </p>
             )}
@@ -115,8 +115,8 @@ export default async function AdminDashboardPage() {
               ["Performance Ratio", `${(config.performanceRatio * 100).toFixed(0)}%`],
             ].map(([label, value]) => (
               <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.4)" }}>{label}</span>
-                <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "#F9FAFB" }}>{value}</span>
+                <span className="dash-muted-label text-xs font-medium">{label}</span>
+                <span className="dash-value-label text-xs font-bold">{value}</span>
               </div>
             ))}
           </div>
@@ -134,12 +134,12 @@ export default async function AdminDashboardPage() {
       <div className="admin-card">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
           <h2 className="admin-section-title" style={{ margin: 0 }}>Recent Quotations</h2>
-          <Link href="/admin/leads" className="admin-btn" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)", fontSize: "0.8rem", padding: "0.4rem 0.875rem" }}>
+          <Link href="/admin/leads" className="admin-btn dash-subtle-btn text-xs px-3 py-1.5 rounded-lg font-semibold">
             View All →
           </Link>
         </div>
         {recentLeads.length === 0 ? (
-          <p style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.875rem", textAlign: "center", padding: "2rem 0" }}>
+          <p className="dash-table-sub text-sm text-center py-8">
             No quotations submitted yet. They&apos;ll appear here when customers use the calculator.
           </p>
         ) : (
@@ -158,8 +158,8 @@ export default async function AdminDashboardPage() {
               <tbody>
                 {recentLeads.map((lead) => (
                   <tr key={lead.leadId}>
-                    <td style={{ color: "#F9FAFB", fontWeight: 500 }}>{lead.customerName}</td>
-                    <td style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.8rem" }}>{lead.phone}</td>
+                    <td className="dash-table-title font-semibold text-sm">{lead.customerName}</td>
+                    <td className="font-mono text-xs text-amber-600 dark:text-amber-400">{lead.phone}</td>
                     <td>
                       <span className="admin-badge admin-badge-amber">
                         {lead.calculation?.systemKw} kW
@@ -170,10 +170,10 @@ export default async function AdminDashboardPage() {
                         {lead.calculation?.propertyType ?? "—"}
                       </span>
                     </td>
-                    <td style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.75rem", color: "rgba(255,255,255,0.4)" }}>
+                    <td className="dash-table-sub font-mono text-xs">
                       {lead.quotationRef}
                     </td>
-                    <td style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.4)" }}>
+                    <td className="dash-table-sub text-xs">
                       {new Date(lead.createdAt).toLocaleDateString("en-IN", {
                         day: "2-digit", month: "short", year: "numeric",
                       })}

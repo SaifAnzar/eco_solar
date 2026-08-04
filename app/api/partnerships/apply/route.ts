@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  savePartnershipApplication,
-  getAllPartnerships,
-  updatePartnershipStatus,
-  deletePartnership,
-  PartnershipType,
-  PartnershipStatus
-} from "@/lib/data-store";
+import prisma from "@/lib/prisma";
+import { PartnershipType, ApplicationStatus } from "@prisma/client";
 
 // POST /api/partnerships/apply
 export async function POST(req: NextRequest) {
@@ -22,81 +16,87 @@ export async function POST(req: NextRequest) {
     }
 
     if (type === "FRANCHISE") {
-      const {
-        fullName,
-        mobileNumber,
-        emailAddress,
-        proposedCity,
-        showroomSpace,
-        investmentCapacity,
-        businessBackground
-      } = body;
+      const fullName = body.fullName || body.contactPersonName;
+      const phone = body.phone || body.mobileNumber;
+      const email = body.email || body.emailAddress;
+      const district = body.district || body.proposedCity || body.primaryDistrict;
+      const showroomSpaceSqFt = body.showroomSpaceSqFt || body.showroomSpace;
+      const investmentCapacity = body.investmentCapacity;
+      const businessExperience = body.businessExperience || body.businessBackground;
+      const notes = body.notes || "";
 
-      if (!fullName || !mobileNumber || !emailAddress || !proposedCity) {
+      if (!fullName || !phone || !email || !district) {
         return NextResponse.json(
-          { error: "Full Name, Mobile, Email, and Proposed City are required for Franchise." },
+          { error: "Full Name, Phone, Email, and District/City are required for Franchise application." },
           { status: 400 }
         );
       }
 
-      const application = savePartnershipApplication({
-        type,
-        fullName,
-        mobileNumber,
-        emailAddress,
-        proposedCity,
-        showroomSpace: showroomSpace || "",
-        investmentCapacity: investmentCapacity || "",
-        businessBackground: businessBackground || ""
+      const application = await prisma.partnershipApplication.create({
+        data: {
+          type: PartnershipType.FRANCHISE,
+          fullName,
+          phone,
+          email,
+          district,
+          notes: notes || null,
+          showroomSpaceSqFt: showroomSpaceSqFt || null,
+          investmentCapacity: investmentCapacity || null,
+          businessExperience: businessExperience || null,
+        },
       });
 
       return NextResponse.json({ success: true, data: application }, { status: 201 });
     } else {
       // DEALERSHIP
-      const {
-        businessName,
-        contactPersonName,
-        mobileNumber,
-        emailAddress,
-        gstin,
-        primaryDistrict,
-        productsInterested
-      } = body;
+      const fullName = body.fullName || body.contactPersonName;
+      const phone = body.phone || body.mobileNumber;
+      const email = body.email || body.emailAddress;
+      const district = body.district || body.primaryDistrict || body.proposedCity;
+      const businessName = body.businessName;
+      const gstin = body.gstin;
+      const interestedProducts = body.interestedProducts || body.productsInterested || [];
+      const notes = body.notes || "";
 
-      if (!businessName || !contactPersonName || !mobileNumber || !emailAddress || !primaryDistrict) {
+      if (!fullName || !phone || !email || !district) {
         return NextResponse.json(
-          { error: "Business Name, Contact Person, Mobile, Email, and Primary District are required for Dealership." },
+          { error: "Contact Name, Phone, Email, and District are required for Dealership application." },
           { status: 400 }
         );
       }
 
-      const application = savePartnershipApplication({
-        type,
-        businessName,
-        contactPersonName,
-        mobileNumber,
-        emailAddress,
-        gstin: gstin || "",
-        primaryDistrict,
-        productsInterested: productsInterested || []
+      const application = await prisma.partnershipApplication.create({
+        data: {
+          type: PartnershipType.DEALERSHIP,
+          fullName,
+          phone,
+          email,
+          district,
+          notes: notes || null,
+          businessName: businessName || null,
+          gstin: gstin || null,
+          interestedProducts,
+        },
       });
 
       return NextResponse.json({ success: true, data: application }, { status: 201 });
     }
   } catch (error: any) {
     console.error("Error in partnership application API:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
   }
 }
 
 // GET /api/partnerships/apply (Used by admin panel to fetch all applications)
 export async function GET() {
   try {
-    const list = getAllPartnerships();
+    const list = await prisma.partnershipApplication.findMany({
+      orderBy: { createdAt: "desc" },
+    });
     return NextResponse.json({ success: true, data: list });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching partnerships:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -113,26 +113,23 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const validStatuses: PartnershipStatus[] = ["PENDING", "CONTACTED", "APPROVED"];
-    if (!validStatuses.includes(status)) {
+    const validStatuses: ApplicationStatus[] = ["PENDING", "CONTACTED", "REVIEWED", "APPROVED", "REJECTED"];
+    if (!validStatuses.includes(status as ApplicationStatus)) {
       return NextResponse.json(
         { error: "Invalid status value." },
         { status: 400 }
       );
     }
 
-    const updated = updatePartnershipStatus(id, status);
-    if (!updated) {
-      return NextResponse.json(
-        { error: "Application not found." },
-        { status: 404 }
-      );
-    }
+    const updated = await prisma.partnershipApplication.update({
+      where: { id },
+      data: { status: status as ApplicationStatus },
+    });
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
+    return NextResponse.json({ success: true, data: updated });
+  } catch (error: any) {
     console.error("Error updating partnership status:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -146,14 +143,13 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Application ID is required." }, { status: 400 });
     }
 
-    const deleted = deletePartnership(id);
-    if (!deleted) {
-      return NextResponse.json({ error: "Application not found." }, { status: 404 });
-    }
+    await prisma.partnershipApplication.delete({
+      where: { id },
+    });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting partnership:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
   }
 }

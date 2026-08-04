@@ -32,6 +32,7 @@ export default async function AdminLayout({
           min-height: 100vh;
           background: #0A0F1E;
           font-family: var(--font-sans, system-ui, sans-serif);
+          transition: background-color 0.2s, color 0.2s;
         }
         .admin-main {
           flex: 1;
@@ -53,6 +54,7 @@ export default async function AdminLayout({
           height: 100vh;
           overflow-y: auto;
           flex-shrink: 0;
+          transition: background-color 0.2s, border-color 0.2s;
         }
         .sidebar-brand {
           display: flex;
@@ -330,6 +332,154 @@ export default async function AdminLayout({
           display: inline-block;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── Light Mode Theme Overrides ─── */
+        html:not(.dark) .admin-shell {
+          background: #F8FAFC;
+          color: #0F172A;
+        }
+        html:not(.dark) .admin-sidebar {
+          background: #FFFFFF;
+          border-right: 1px solid #E2E8F0;
+        }
+        html:not(.dark) .sidebar-brand {
+          border-bottom: 1px solid #E2E8F0;
+        }
+        html:not(.dark) .sidebar-brand-name {
+          color: #0F172A;
+        }
+        html:not(.dark) .sidebar-link {
+          color: #64748B;
+        }
+        html:not(.dark) .sidebar-link:hover {
+          background: #F1F5F9;
+          color: #0F172A;
+        }
+        html:not(.dark) .sidebar-link.active {
+          background: rgba(245,158,11,0.15);
+          color: #D97706;
+        }
+        html:not(.dark) .sidebar-footer {
+          border-top: 1px solid #E2E8F0;
+        }
+        html:not(.dark) .sidebar-user-role {
+          color: #94A3B8;
+        }
+        html:not(.dark) .sidebar-user-email {
+          color: #475569;
+        }
+        html:not(.dark) .sidebar-logout {
+          background: #F8FAFC;
+          border: 1px solid #E2E8F0;
+          color: #64748B;
+        }
+        html:not(.dark) .sidebar-logout:hover {
+          background: #F1F5F9;
+          color: #0F172A;
+        }
+        html:not(.dark) .admin-page-title {
+          color: #0F172A;
+        }
+        html:not(.dark) .admin-page-subtitle {
+          color: #64748B;
+        }
+        html:not(.dark) .admin-card {
+          background: #FFFFFF;
+          border: 1px solid #E2E8F0;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        html:not(.dark) .admin-stat-card {
+          background: #FFFFFF;
+          border: 1px solid #E2E8F0;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        html:not(.dark) .admin-stat-label {
+          color: #64748B;
+        }
+        html:not(.dark) .admin-stat-value {
+          color: #0F172A;
+        }
+        html:not(.dark) .admin-stat-note {
+          color: #94A3B8;
+        }
+        html:not(.dark) .admin-section-title {
+          color: #0F172A;
+        }
+        html:not(.dark) .admin-table th {
+          color: #64748B;
+          border-bottom: 1px solid #E2E8F0;
+        }
+        html:not(.dark) .admin-table td {
+          color: #334155;
+          border-bottom: 1px solid #E2E8F0;
+        }
+        html:not(.dark) .admin-table tr:hover td {
+          background: #F8FAFC;
+        }
+
+        /* Light Mode Badge Overrides */
+        html:not(.dark) .admin-badge-amber {
+          background: #FEF3C7;
+          color: #B45309;
+          border: 1px solid #FDE68A;
+        }
+        html:not(.dark) .admin-badge-green {
+          background: #D1FAE5;
+          color: #047857;
+          border: 1px solid #A7F3D0;
+        }
+        html:not(.dark) .admin-badge-blue {
+          background: #DBEAFE;
+          color: #1D4ED8;
+          border: 1px solid #BFDBFE;
+        }
+
+        /* ─── Dashboard Utility Classes (Dark & Light Mode High-Contrast) ─── */
+        .dash-muted-label {
+          color: rgba(255, 255, 255, 0.6) !important;
+        }
+        html:not(.dark) .dash-muted-label {
+          color: #64748B !important;
+        }
+
+        .dash-value-label {
+          color: #F9FAFB !important;
+        }
+        html:not(.dark) .dash-value-label {
+          color: #0F172A !important;
+        }
+
+        .dash-track {
+          background: rgba(255, 255, 255, 0.08);
+        }
+        html:not(.dark) .dash-track {
+          background: #E2E8F0;
+        }
+
+        .dash-subtle-btn {
+          background: rgba(255, 255, 255, 0.06);
+          color: rgba(255, 255, 255, 0.7);
+        }
+        html:not(.dark) .dash-subtle-btn {
+          background: #F1F5F9;
+          color: #475569;
+          border: 1px solid #CBD5E1;
+        }
+
+        .dash-table-title {
+          color: #F9FAFB !important;
+        }
+        html:not(.dark) .dash-table-title {
+          color: #0F172A !important;
+        }
+
+        .dash-table-sub {
+          color: rgba(255, 255, 255, 0.45) !important;
+        }
+        html:not(.dark) .dash-table-sub {
+          color: #64748B !important;
+        }
+
         @media (max-width: 768px) {
           .admin-sidebar { display: none; }
           .admin-page { padding: 1.25rem; }

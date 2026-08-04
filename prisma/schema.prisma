@@ -1,0 +1,60 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum PartnershipType {
+  FRANCHISE
+  DEALERSHIP
+}
+
+enum ApplicationStatus {
+  PENDING
+  CONTACTED
+  REVIEWED
+  APPROVED
+  REJECTED
+}
+
+model PartnershipApplication {
+  id                 String            @id @default(cuid())
+  type               PartnershipType
+  status             ApplicationStatus @default(PENDING)
+  
+  // Contact Information
+  fullName           String
+  phone              String
+  email              String
+  district           String
+  notes              String?
+  
+  // Franchise Fields
+  showroomSpaceSqFt String?
+  investmentCapacity String?
+  businessExperience String?
+  
+  // Dealership Fields
+  businessName       String?
+  gstin              String?
+  interestedProducts String[]          // Array of product categories
+  
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+}
+
+model SolarQuoteRequest {
+  id              String            @id @default(cuid())
+  fullName        String
+  phone           String
+  pincode         String
+  monthlyBill     Float
+  calculatedKw    Float
+  estimatedCost   Float
+  subsidyAmount   Float
+  status          ApplicationStatus @default(PENDING)
+  createdAt       DateTime          @default(now())
+}

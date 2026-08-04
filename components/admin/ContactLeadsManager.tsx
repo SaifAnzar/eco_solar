@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   Clock,
   MessageSquare,
-  Zap,
   Building2,
   Home,
   RefreshCw,
@@ -143,7 +142,7 @@ export default function ContactLeadsManager({ initialInquiries }: ContactLeadsMa
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by name, phone, email, location, or message..."
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-900/60 border border-slate-700/60 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-amber-500 transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900/60 border border-slate-300 dark:border-slate-700/60 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-amber-500 transition-colors"
             />
           </div>
 
@@ -152,7 +151,7 @@ export default function ContactLeadsManager({ initialInquiries }: ContactLeadsMa
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2.5 bg-slate-900/60 border border-slate-700/60 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-amber-500 cursor-pointer"
+              className="px-3 py-2.5 bg-white dark:bg-slate-900/60 border border-slate-300 dark:border-slate-700/60 rounded-xl text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-amber-500 cursor-pointer"
             >
               <option value="ALL">All Statuses ({totalCount})</option>
               <option value="NEW">New ({newCount})</option>
@@ -163,7 +162,7 @@ export default function ContactLeadsManager({ initialInquiries }: ContactLeadsMa
             <button
               onClick={fetchInquiries}
               title="Refresh Inquiries"
-              className="p-2.5 bg-slate-900/60 hover:bg-slate-800 border border-slate-700/60 text-slate-300 rounded-xl transition-colors"
+              className="p-2.5 bg-white dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 rounded-xl transition-colors cursor-pointer"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -175,7 +174,7 @@ export default function ContactLeadsManager({ initialInquiries }: ContactLeadsMa
       <div className="admin-card overflow-hidden">
         {filteredInquiries.length === 0 ? (
           <div className="text-center py-12 text-slate-400 space-y-3">
-            <MessageSquare className="w-10 h-10 mx-auto text-slate-600 opacity-60" />
+            <MessageSquare className="w-10 h-10 mx-auto text-slate-400 dark:text-slate-600 opacity-60" />
             <p className="text-sm">No contact inquiries found matching your filters.</p>
           </div>
         ) : (
@@ -192,9 +191,9 @@ export default function ContactLeadsManager({ initialInquiries }: ContactLeadsMa
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60">
                 {filteredInquiries.map((inq) => (
-                  <tr key={inq.id} className="hover:bg-slate-800/40 transition-colors">
+                  <tr key={inq.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
                     {/* Status Dropdown */}
                     <td className="py-3.5 px-4 align-top">
                       <select
@@ -205,33 +204,33 @@ export default function ContactLeadsManager({ initialInquiries }: ContactLeadsMa
                         disabled={isUpdating === inq.id}
                         className={`text-[11px] font-bold rounded-lg px-2.5 py-1 border focus:outline-none cursor-pointer ${
                           inq.status === "NEW"
-                            ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
+                            ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30"
                             : inq.status === "CONTACTED"
-                            ? "bg-blue-500/10 text-blue-400 border-blue-500/30"
-                            : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                            ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30"
+                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
                         }`}
                       >
-                        <option value="NEW" className="bg-slate-900 text-rose-400">
+                        <option value="NEW" className="bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400">
                           NEW
                         </option>
-                        <option value="CONTACTED" className="bg-slate-900 text-blue-400">
+                        <option value="CONTACTED" className="bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400">
                           CONTACTED
                         </option>
-                        <option value="RESOLVED" className="bg-slate-900 text-emerald-400">
+                        <option value="RESOLVED" className="bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400">
                           RESOLVED
                         </option>
                       </select>
                     </td>
 
                     {/* Date */}
-                    <td className="py-3.5 px-4 align-top text-slate-400 font-mono text-[11px] whitespace-nowrap">
+                    <td className="py-3.5 px-4 align-top dash-table-sub font-mono text-[11px] whitespace-nowrap">
                       {new Date(inq.createdAt).toLocaleDateString("en-IN", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
                       })}
                       <br />
-                      <span className="text-slate-500 text-[10px]">
+                      <span className="text-[10px]">
                         {new Date(inq.createdAt).toLocaleTimeString("en-IN", {
                           hour: "2-digit",
                           minute: "2-digit",
@@ -241,16 +240,16 @@ export default function ContactLeadsManager({ initialInquiries }: ContactLeadsMa
 
                     {/* Contact Info */}
                     <td className="py-3.5 px-4 align-top space-y-1">
-                      <div className="font-bold text-white text-sm">{inq.fullName}</div>
-                      <div className="flex items-center gap-1.5 text-amber-400 font-mono">
+                      <div className="font-bold text-slate-900 dark:text-white text-sm">{inq.fullName}</div>
+                      <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-mono">
                         <Phone className="w-3 h-3 text-amber-500" />
                         <a href={`tel:${inq.phone}`} className="hover:underline">
                           {inq.phone}
                         </a>
                       </div>
                       {inq.email && (
-                        <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                          <Mail className="w-3 h-3 text-slate-500" />
+                        <div className="flex items-center gap-1.5 dash-table-sub text-[11px]">
+                          <Mail className="w-3 h-3 text-slate-400" />
                           <a href={`mailto:${inq.email}`} className="hover:underline">
                             {inq.email}
                           </a>
@@ -260,12 +259,12 @@ export default function ContactLeadsManager({ initialInquiries }: ContactLeadsMa
 
                     {/* Location & DISCOM */}
                     <td className="py-3.5 px-4 align-top space-y-1">
-                      <div className="flex items-start gap-1.5 text-slate-200 font-medium">
-                        <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                      <div className="flex items-start gap-1.5 text-slate-800 dark:text-slate-200 font-semibold">
+                        <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                         <span>{inq.location}</span>
                       </div>
                       {inq.discomRegion && (
-                        <span className="inline-block text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                        <span className="inline-block text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
                           {inq.discomRegion}
                         </span>
                       )}
@@ -273,22 +272,22 @@ export default function ContactLeadsManager({ initialInquiries }: ContactLeadsMa
 
                     {/* Project Scope */}
                     <td className="py-3.5 px-4 align-top space-y-1">
-                      <div className="capitalize font-semibold text-slate-200 flex items-center gap-1">
+                      <div className="capitalize font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1">
                         {inq.systemType === "commercial" ? (
-                          <Building2 className="w-3.5 h-3.5 text-blue-400" />
+                          <Building2 className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                         ) : (
-                          <Home className="w-3.5 h-3.5 text-amber-400" />
+                          <Home className="w-3.5 h-3.5 text-amber-500" />
                         )}
                         <span>{inq.systemType || "Residential"}</span>
                       </div>
                       {inq.monthlyBill && (
-                        <div className="text-[11px] text-slate-400">
-                          Bill: <span className="font-mono text-emerald-400">₹{Number(inq.monthlyBill).toLocaleString()}/mo</span>
+                        <div className="text-[11px] dash-table-sub">
+                          Bill: <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">₹{Number(inq.monthlyBill).toLocaleString()}/mo</span>
                         </div>
                       )}
                       {inq.rooftopArea && (
-                        <div className="text-[11px] text-slate-400">
-                          Area: <span className="font-mono text-amber-300">{inq.rooftopArea} Sq. Ft.</span>
+                        <div className="text-[11px] dash-table-sub">
+                          Area: <span className="font-mono text-amber-600 dark:text-amber-300 font-semibold">{inq.rooftopArea} Sq. Ft.</span>
                         </div>
                       )}
                     </td>
@@ -296,11 +295,11 @@ export default function ContactLeadsManager({ initialInquiries }: ContactLeadsMa
                     {/* Message / Requirements */}
                     <td className="py-3.5 px-4 align-top max-w-xs">
                       {inq.message ? (
-                        <div className="text-slate-300 text-[11px] bg-slate-900/60 p-2.5 rounded-lg border border-slate-800 leading-relaxed max-h-24 overflow-y-auto">
+                        <div className="text-slate-800 dark:text-slate-300 text-[11px] bg-slate-100 dark:bg-slate-900/60 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 leading-relaxed max-h-24 overflow-y-auto">
                           {inq.message}
                         </div>
                       ) : (
-                        <span className="text-slate-600 italic">No message provided</span>
+                        <span className="dash-table-sub italic">No message provided</span>
                       )}
                     </td>
 
@@ -310,7 +309,7 @@ export default function ContactLeadsManager({ initialInquiries }: ContactLeadsMa
                         onClick={() => handleDelete(inq.id)}
                         disabled={isUpdating === inq.id}
                         title="Delete Inquiry"
-                        className="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors border border-transparent hover:border-rose-500/20 disabled:opacity-50"
+                        className="p-2 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors border border-transparent hover:border-rose-200 dark:hover:border-rose-500/20 disabled:opacity-50 cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

@@ -352,6 +352,39 @@ export function CalculatorConfigEditor({ initialConfig }: Props) {
           grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
           gap: 0.75rem;
         }
+
+        /* ─── Light Mode Theme Overrides ─── */
+        html:not(.dark) .cfg-section {
+          background: #FFFFFF;
+          border: 1px solid #E2E8F0;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        html:not(.dark) .cfg-section-title {
+          color: #0F172A;
+        }
+        html:not(.dark) .cfg-label {
+          color: #475569;
+        }
+        html:not(.dark) .cfg-hint {
+          color: #94A3B8;
+        }
+        html:not(.dark) .cfg-input {
+          background: #F8FAFC;
+          border: 1px solid #CBD5E1;
+          color: #0F172A;
+        }
+        html:not(.dark) .cfg-input:focus {
+          background: #FFFFFF;
+          border-color: #F59E0B;
+          box-shadow: 0 0 0 2px rgba(245,158,11,0.15);
+        }
+        html:not(.dark) .band-card {
+          background: #F8FAFC;
+          border: 1px solid #E2E8F0;
+        }
+        html:not(.dark) .band-label {
+          color: #D97706;
+        }
       `}</style>
     </form>
   );
