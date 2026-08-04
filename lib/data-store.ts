@@ -16,6 +16,7 @@ const DATA_DIR = path.join(process.cwd(), "data");
 const LEADS_FILE = path.join(DATA_DIR, "leads.json");
 const CONFIG_FILE = path.join(DATA_DIR, "solar-config.json");
 const PARTNERSHIPS_FILE = path.join(DATA_DIR, "partnerships.json");
+const CONTACT_INQUIRIES_FILE = path.join(DATA_DIR, "contact-inquiries.json");
 
 function ensureDataDir() {
   if (!fs.existsSync(DATA_DIR)) {
@@ -101,6 +102,78 @@ export function deletePartnership(id: string): boolean {
   if (!store[id]) return false;
   delete store[id];
   writePartnerships(store);
+  return true;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Contact Inquiries Store
+// ─────────────────────────────────────────────────────────────────────────────
+export type ContactInquiryStatus = "NEW" | "CONTACTED" | "RESOLVED";
+
+export interface ContactInquiry {
+  id: string;
+  fullName: string;
+  phone: string;
+  email?: string;
+  location: string;
+  discomRegion?: string;
+  systemType?: string;
+  monthlyBill?: string;
+  rooftopArea?: string;
+  message?: string;
+  status: ContactInquiryStatus;
+  createdAt: string;
+}
+
+function readContactInquiries(): Record<string, ContactInquiry> {
+  ensureDataDir();
+  if (!fs.existsSync(CONTACT_INQUIRIES_FILE)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(CONTACT_INQUIRIES_FILE, "utf-8"));
+  } catch {
+    return {};
+  }
+}
+
+function writeContactInquiries(store: Record<string, ContactInquiry>) {
+  ensureDataDir();
+  fs.writeFileSync(CONTACT_INQUIRIES_FILE, JSON.stringify(store, null, 2), "utf-8");
+}
+
+export function saveContactInquiry(payload: Omit<ContactInquiry, "id" | "status" | "createdAt">): ContactInquiry {
+  const store = readContactInquiries();
+  const id = "inq_" + Math.random().toString(36).substring(2, 11);
+  const inquiry: ContactInquiry = {
+    ...payload,
+    id,
+    status: "NEW",
+    createdAt: new Date().toISOString(),
+  };
+  store[id] = inquiry;
+  writeContactInquiries(store);
+  return inquiry;
+}
+
+export function getAllContactInquiries(): ContactInquiry[] {
+  const store = readContactInquiries();
+  return Object.values(store).sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+}
+
+export function updateContactInquiryStatus(id: string, status: ContactInquiryStatus): boolean {
+  const store = readContactInquiries();
+  if (!store[id]) return false;
+  store[id].status = status;
+  writeContactInquiries(store);
+  return true;
+}
+
+export function deleteContactInquiry(id: string): boolean {
+  const store = readContactInquiries();
+  if (!store[id]) return false;
+  delete store[id];
+  writeContactInquiries(store);
   return true;
 }
 

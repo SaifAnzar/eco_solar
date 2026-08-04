@@ -5,6 +5,8 @@ import { MapPin, Phone, Mail, FileText, Send, CheckCircle2, CreditCard } from "l
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
@@ -17,9 +19,31 @@ export default function ContactPage() {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData.error || "Failed to submit inquiry.");
+      }
+
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error("Contact submit error:", err);
+      setErrorMessage(err.message || "Failed to submit inquiry. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -173,6 +197,11 @@ export default function ContactPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+                {errorMessage && (
+                  <div className="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-xs font-medium">
+                    {errorMessage}
+                  </div>
+                )}
                 
                 {/* Form Row 1 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -315,10 +344,20 @@ export default function ContactPage() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center space-x-2 py-4 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-md shadow-emerald-600/20 transition-all"
+                  disabled={isSubmitting}
+                  className="w-full flex items-center justify-center space-x-2 py-4 px-6 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-sm rounded-xl shadow-md shadow-emerald-600/20 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>Submit Inquiry to Engineering Desk</span>
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                      <span>Submitting Inquiry...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Submit Inquiry to Engineering Desk</span>
+                    </>
+                  )}
                 </button>
               </form>
             )}
