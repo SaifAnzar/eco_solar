@@ -44,6 +44,9 @@ export interface SolarCalculationResult {
   bom: BOMItem[];
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Hardcoded fallback defaults (used if no config override is saved)
+// ─────────────────────────────────────────────────────────────────────────────
 export const PANEL_WP = 600; // 600 Wp MonoPERC/TOPCon
 export const DEFAULT_PANEL_UNIT_RATE = 14033.25; // ₹14,033.25 / panel incl. GST & margin
 export const ROOF_AREA_PER_KW = 90; // 90 sq.ft per kW
@@ -109,57 +112,109 @@ export const EQUIPMENT_BANDS: EquipmentBand[] = [
   },
 ];
 
-export function getEquipmentBand(systemKw: number): EquipmentBand {
+export function getEquipmentBand(systemKw: number, bands?: EquipmentBand[]): EquipmentBand {
+  const activeBands = bands || EQUIPMENT_BANDS;
   const roundedKw = Math.max(1, Math.min(100, Math.round(systemKw)));
-  const found = EQUIPMENT_BANDS.find(
+  const found = activeBands.find(
     (b) => roundedKw >= b.minKw && roundedKw <= b.maxKw
   );
   return (
     found ||
-    EQUIPMENT_BANDS[EQUIPMENT_BANDS.length - 1] // Fallback to highest band
+    activeBands[activeBands.length - 1] // Fallback to highest band
   );
 }
 
-export function calculatePMSuryaGharSubsidy(systemKw: number, isResidential: boolean): number {
+export function calculatePMSuryaGharSubsidy(
+  systemKw: number,
+  isResidential: boolean,
+  subsidyConfig?: {
+    tier1Kw?: number;
+    tier1Amount?: number;
+    tier2Kw?: number;
+    tier2Amount?: number;
+    tier3PlusAmount?: number;
+  }
+): number {
   if (!isResidential) return 0;
   const kw = Math.round(systemKw);
-  if (kw <= 1) return 30000;
-  if (kw === 2) return 60000;
-  if (kw >= 3) return 78000; // Flat cap for 3kW to 10kW residential
+  const t1Kw = subsidyConfig?.tier1Kw ?? 1;
+  const t1Amount = subsidyConfig?.tier1Amount ?? 30000;
+  const t2Kw = subsidyConfig?.tier2Kw ?? 2;
+  const t2Amount = subsidyConfig?.tier2Amount ?? 60000;
+  const t3PlusAmount = subsidyConfig?.tier3PlusAmount ?? 78000;
+
+  if (kw <= t1Kw) return t1Amount;
+  if (kw === t2Kw) return t2Amount;
+  if (kw >= 3) return t3PlusAmount; // Flat cap for 3kW to 10kW residential
   return 0;
 }
 
+/**
+ * Core solar quote calculation engine.
+ * Accepts an optional `config` override from the admin panel.
+ * Falls back to hardcoded defaults if no override provided.
+ */
 export function calculateSolarQuote(
   systemKwInput: number,
   pshInput = 4.5,
-  isResidentialInput = true
+  isResidentialInput = true,
+  config?: {
+    panelWp?: number;
+    panelUnitRate?: number;
+    roofAreaPerKw?: number;
+    residentialBenchmarkRate?: number;
+    commercialBenchmarkRate?: number;
+    gridTariffRate?: number;
+    performanceRatio?: number;
+    subsidyTier1Kw?: number;
+    subsidyTier1Amount?: number;
+    subsidyTier2Kw?: number;
+    subsidyTier2Amount?: number;
+    subsidyTier3PlusAmount?: number;
+    equipmentBands?: EquipmentBand[];
+  }
 ): SolarCalculationResult {
+  // Resolve config values (admin overrides take precedence over defaults)
+  const panelWp = config?.panelWp ?? PANEL_WP;
+  const panelUnitRate = config?.panelUnitRate ?? DEFAULT_PANEL_UNIT_RATE;
+  const roofAreaPerKw = config?.roofAreaPerKw ?? ROOF_AREA_PER_KW;
+  const residentialBenchmarkRate = config?.residentialBenchmarkRate ?? RESIDENTIAL_BENCHMARK_RATE;
+  const commercialBenchmarkRate = config?.commercialBenchmarkRate ?? COMMERCIAL_BENCHMARK_RATE;
+  const gridTariffRate = config?.gridTariffRate ?? GRID_TARIFF_RATE;
+  const performanceRatio = config?.performanceRatio ?? 0.78;
+  const activeBands = config?.equipmentBands ?? EQUIPMENT_BANDS;
+
   // Normalize kW to 1 - 100 range
   const systemKw = Math.max(1, Math.min(100, Number(systemKwInput.toFixed(1))));
   const isResidential = isResidentialInput && systemKw <= 10;
   const propertyType: "residential" | "commercial" = isResidential ? "residential" : "commercial";
 
   // 1. Panel calculation
-  const panelCount = Math.ceil((systemKw * 1000) / PANEL_WP);
-  const panelUnitPrice = DEFAULT_PANEL_UNIT_RATE;
+  const panelCount = Math.ceil((systemKw * 1000) / panelWp);
+  const panelUnitPrice = panelUnitRate;
   const totalPanelCost = Math.round(panelCount * panelUnitPrice);
 
   // 2. Roof Area & Benchmark Costs
-  const requiredRoofAreaSqFt = Math.round(systemKw * ROOF_AREA_PER_KW);
-  const benchmarkRatePerKw = isResidential ? RESIDENTIAL_BENCHMARK_RATE : COMMERCIAL_BENCHMARK_RATE;
+  const requiredRoofAreaSqFt = Math.round(systemKw * roofAreaPerKw);
+  const benchmarkRatePerKw = isResidential ? residentialBenchmarkRate : commercialBenchmarkRate;
   const grossSystemCost = Math.round(systemKw * benchmarkRatePerKw);
 
   // 3. Subsidies & Financial Write-offs
-  const pmSuryaGharSubsidy = calculatePMSuryaGharSubsidy(systemKw, isResidential);
+  const pmSuryaGharSubsidy = calculatePMSuryaGharSubsidy(systemKw, isResidential, {
+    tier1Kw: config?.subsidyTier1Kw,
+    tier1Amount: config?.subsidyTier1Amount,
+    tier2Kw: config?.subsidyTier2Kw,
+    tier2Amount: config?.subsidyTier2Amount,
+    tier3PlusAmount: config?.subsidyTier3PlusAmount,
+  });
   const taxBenefit80AD = !isResidential ? Math.round(grossSystemCost * 0.25) : 0; // ~25% tax benefit under 80% AD
   const netPayableCost = Math.max(0, grossSystemCost - pmSuryaGharSubsidy - taxBenefit80AD);
 
   // 4. Generation & Annual Returns
   const pshUsed = pshInput;
-  const performanceRatio = 0.78;
   const annualGenerationKwh = Math.round(systemKw * pshUsed * 365 * performanceRatio);
   const monthlyGenerationKwh = Math.round(annualGenerationKwh / 12);
-  const avoidedTariffPerUnit = GRID_TARIFF_RATE;
+  const avoidedTariffPerUnit = gridTariffRate;
   const annualSavingsRs = Math.round(annualGenerationKwh * avoidedTariffPerUnit);
   const monthlySavingsRs = Math.round(annualSavingsRs / 12);
   const paybackPeriodYears = Number(
@@ -168,7 +223,7 @@ export function calculateSolarQuote(
   const co2OffsetTonsPerYear = Number((annualGenerationKwh * 0.00082).toFixed(2)); // ~0.82 kg CO2 per kWh
 
   // 5. Equipment Band Lookup
-  const equipmentBand = getEquipmentBand(systemKw);
+  const equipmentBand = getEquipmentBand(systemKw, activeBands);
 
   // 6. Generate 15-Item Bill of Materials (BOM)
   const bomCostRatio = grossSystemCost;
@@ -177,7 +232,7 @@ export function calculateSolarQuote(
       slNo: 1,
       itemCategory: "Solar PV Modules",
       description: "600 Wp MonoPERC / TOPCon Bifacial Solar Panels",
-      specification: `Waaree/Adani Tier-1 ALMM 600W Wp (${panelCount} panels, 22.8% efficiency)`,
+      specification: `Waaree/Adani Tier-1 ALMM ${panelWp}W Wp (${panelCount} panels, 22.8% efficiency)`,
       quantity: panelCount,
       unit: "Nos",
       unitRate: panelUnitPrice,
@@ -329,7 +384,7 @@ export function calculateSolarQuote(
     systemKw,
     propertyType,
     panelCount,
-    panelWp: PANEL_WP,
+    panelWp,
     panelUnitPrice,
     totalPanelCost,
     requiredRoofAreaSqFt,
