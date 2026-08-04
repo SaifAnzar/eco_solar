@@ -363,14 +363,24 @@ export function QuotationPdfDocument({
               </Text>
             </View>
             {calc.propertyType === "residential" ? (
-              <View style={styles.financialRow}>
-                <Text style={{ fontSize: 8, color: "#00A86B", fontWeight: "bold" }}>
-                  Less: PM Surya Ghar Central Subsidy:
-                </Text>
-                <Text style={{ fontSize: 8, fontWeight: "bold", color: "#00A86B" }}>
-                  - ₹{calc.pmSuryaGharSubsidy.toLocaleString()}
-                </Text>
-              </View>
+              <>
+                <View style={styles.financialRow}>
+                  <Text style={{ fontSize: 8, color: "#00A86B", fontWeight: "bold" }}>
+                    Less: PM Surya Ghar Central Subsidy:
+                  </Text>
+                  <Text style={{ fontSize: 8, fontWeight: "bold", color: "#00A86B" }}>
+                    - ₹{(calc.centralSubsidy || calc.pmSuryaGharSubsidy).toLocaleString()}
+                  </Text>
+                </View>
+                <View style={styles.financialRow}>
+                  <Text style={{ fontSize: 8, color: "#B45309", fontWeight: "bold" }}>
+                    Less: Odisha State Govt Subsidy Top-Up:
+                  </Text>
+                  <Text style={{ fontSize: 8, fontWeight: "bold", color: "#B45309" }}>
+                    - ₹{(calc.stateSubsidy || 0).toLocaleString()}
+                  </Text>
+                </View>
+              </>
             ) : (
               <View style={styles.financialRow}>
                 <Text style={{ fontSize: 8, color: "#059669", fontWeight: "bold" }}>

@@ -357,9 +357,29 @@ export default function SolarCalculator() {
                 </div>
 
                 {propertyType === "residential" ? (
-                  <div className="flex justify-between items-center text-sm text-emerald-800 bg-emerald-50 p-3 rounded-xl border border-emerald-200 font-bold">
-                    <span>PM Surya Ghar Central Subsidy:</span>
-                    <span>- ₹{calc.pmSuryaGharSubsidy.toLocaleString()}</span>
+                  <div className="space-y-2.5">
+                    <div className="flex justify-between items-center text-xs text-emerald-900 bg-emerald-50/90 p-3 rounded-xl border border-emerald-200 font-bold">
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                        Central Govt Subsidy (PM Surya Ghar):
+                      </span>
+                      <span className="font-mono text-sm">- ₹{(calc.centralSubsidy || calc.pmSuryaGharSubsidy).toLocaleString()}</span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-xs text-amber-950 bg-amber-50/90 p-3 rounded-xl border border-amber-200/80 font-bold">
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-amber-600"></span>
+                        Odisha State Govt Subsidy Top-Up:
+                      </span>
+                      <span className="font-mono text-sm">- ₹{(calc.stateSubsidy || 0).toLocaleString()}</span>
+                    </div>
+
+                    <div className="flex justify-between items-center text-[11px] text-slate-600 px-2 py-0.5 font-semibold">
+                      <span>Total Government Subsidy Benefit:</span>
+                      <span className="text-emerald-700 font-bold font-mono text-xs">
+                        - ₹{(calc.totalSubsidy || (calc.pmSuryaGharSubsidy + (calc.stateSubsidy || 0))).toLocaleString()}
+                      </span>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex justify-between items-center text-sm text-emerald-800 bg-emerald-50 p-3 rounded-xl border border-emerald-200 font-bold">

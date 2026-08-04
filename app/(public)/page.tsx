@@ -219,9 +219,17 @@ export default function HomePage() {
                   <span className="text-slate-400">Recommended Size</span>
                   <strong className="text-amber-400">{quote.systemKw} kW System</strong>
                 </div>
-                <div className="flex justify-between items-center text-sm border-b border-slate-700 pb-3">
-                  <span className="text-slate-400">Government Subsidy</span>
-                  <strong className="text-emerald-400">₹{quote.pmSuryaGharSubsidy.toLocaleString()}</strong>
+                <div className="flex justify-between items-center text-xs border-b border-slate-700 pb-2">
+                  <span className="text-slate-400">Central Subsidy (PM Surya Ghar)</span>
+                  <strong className="text-emerald-400">₹{quote.centralSubsidy.toLocaleString()}</strong>
+                </div>
+                <div className="flex justify-between items-center text-xs border-b border-slate-700 pb-2">
+                  <span className="text-slate-400">Odisha State Subsidy</span>
+                  <strong className="text-amber-400">₹{quote.stateSubsidy.toLocaleString()}</strong>
+                </div>
+                <div className="flex justify-between items-center text-xs border-b border-slate-700 pb-2">
+                  <span className="text-slate-300 font-bold">Total Govt Subsidy</span>
+                  <strong className="text-emerald-300 font-bold">₹{quote.totalSubsidy.toLocaleString()}</strong>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-slate-400">Yearly Savings</span>

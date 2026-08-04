@@ -34,8 +34,8 @@ export default function Header() {
         {/* ── TOP ANNOUNCEMENT STRIP ── */}
         <div className="bg-slate-900 text-white text-center py-1.5 px-4 text-[11px] font-semibold tracking-wide hidden sm:block">
           <span className="text-amber-400 mr-1.5">⚡</span>
-          PM Surya Ghar — Get up to{" "}
-          <span className="text-emerald-400 font-bold">₹78,000 Government Subsidy</span> on your
+          PM Surya Ghar & Odisha Govt — Get up to{" "}
+          <span className="text-emerald-400 font-bold">₹1,38,000 Combined Subsidy</span> on your
           home solar system.{" "}
           <button
             onClick={() => setIsCalculatorOpen(true)}

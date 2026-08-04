@@ -8,10 +8,10 @@
   "defaultPsh": 4.5,
   "performanceRatio": 0.78,
   "subsidyTier1Kw": 1,
-  "subsidyTier1Amount": 40000,
+  "subsidyTier1Amount": 30000,
   "subsidyTier2Kw": 2,
   "subsidyTier2Amount": 60000,
-  "subsidyTier3PlusAmount": 128000,
+  "subsidyTier3PlusAmount": 78000,
   "equipmentBands": [
     {
       "minKw": 1,

@@ -30,6 +30,9 @@ export interface SolarCalculationResult {
   benchmarkRatePerKw: number;
   grossSystemCost: number;
   pmSuryaGharSubsidy: number;
+  centralSubsidy: number;
+  stateSubsidy: number;
+  totalSubsidy: number;
   taxBenefit80AD: number;
   netPayableCost: number;
   pshUsed: number;
@@ -149,6 +152,18 @@ export function calculatePMSuryaGharSubsidy(
   return 0;
 }
 
+export function calculateOdishaStateSubsidy(
+  systemKw: number,
+  isResidential: boolean
+): number {
+  if (!isResidential) return 0;
+  const kw = Math.round(systemKw);
+  if (kw <= 1) return 20000;
+  if (kw === 2) return 40000;
+  if (kw >= 3) return 60000; // Flat cap for 3kW to 10kW residential (Odisha State Top-up)
+  return 0;
+}
+
 /**
  * Core solar quote calculation engine.
  * Accepts an optional `config` override from the admin panel.
@@ -200,15 +215,18 @@ export function calculateSolarQuote(
   const grossSystemCost = Math.round(systemKw * benchmarkRatePerKw);
 
   // 3. Subsidies & Financial Write-offs
-  const pmSuryaGharSubsidy = calculatePMSuryaGharSubsidy(systemKw, isResidential, {
+  const centralSubsidy = calculatePMSuryaGharSubsidy(systemKw, isResidential, {
     tier1Kw: config?.subsidyTier1Kw,
     tier1Amount: config?.subsidyTier1Amount,
     tier2Kw: config?.subsidyTier2Kw,
     tier2Amount: config?.subsidyTier2Amount,
     tier3PlusAmount: config?.subsidyTier3PlusAmount,
   });
+  const stateSubsidy = calculateOdishaStateSubsidy(systemKw, isResidential);
+  const totalSubsidy = centralSubsidy + stateSubsidy;
+  const pmSuryaGharSubsidy = centralSubsidy; // Alias for backwards compatibility
   const taxBenefit80AD = !isResidential ? Math.round(grossSystemCost * 0.25) : 0; // ~25% tax benefit under 80% AD
-  const netPayableCost = Math.max(0, grossSystemCost - pmSuryaGharSubsidy - taxBenefit80AD);
+  const netPayableCost = Math.max(0, grossSystemCost - totalSubsidy - taxBenefit80AD);
 
   // 4. Generation & Annual Returns
   const pshUsed = pshInput;
@@ -391,6 +409,9 @@ export function calculateSolarQuote(
     benchmarkRatePerKw,
     grossSystemCost,
     pmSuryaGharSubsidy,
+    centralSubsidy,
+    stateSubsidy,
+    totalSubsidy,
     taxBenefit80AD,
     netPayableCost,
     pshUsed,
