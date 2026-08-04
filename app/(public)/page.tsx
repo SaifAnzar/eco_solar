@@ -148,6 +148,27 @@ export default function HomePage() {
                 </a>
               </div>
 
+              {/* Partnership CTAs */}
+              <div className="pt-4 border-t border-slate-100 flex flex-col gap-2.5">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block">
+                  🚀 Grow with Odisha's Leading Solar Network
+                </span>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href="/franchise"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-900 font-bold text-sm rounded-xl transition-all shadow-md shadow-amber-500/20 hover:scale-[1.01] active:scale-[0.99] border border-amber-400"
+                  >
+                    Apply for Franchise 🏢
+                  </Link>
+                  <Link
+                    href="/dealership"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white hover:bg-emerald-50 text-emerald-700 hover:text-emerald-800 font-bold text-sm rounded-xl border-2 border-emerald-500 shadow-sm hover:shadow-emerald-500/10 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                  >
+                    Become a Dealer 📦
+                  </Link>
+                </div>
+              </div>
+
               {/* Trust row */}
               <div className="flex flex-wrap gap-5 pt-2 text-xs font-semibold text-slate-500">
                 <span className="flex items-center gap-1.5">

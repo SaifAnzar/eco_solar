@@ -15,12 +15,95 @@ import type { EquipmentBand } from "./solar-engine";
 const DATA_DIR = path.join(process.cwd(), "data");
 const LEADS_FILE = path.join(DATA_DIR, "leads.json");
 const CONFIG_FILE = path.join(DATA_DIR, "solar-config.json");
+const PARTNERSHIPS_FILE = path.join(DATA_DIR, "partnerships.json");
 
 function ensureDataDir() {
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Partnerships Store
+// ─────────────────────────────────────────────────────────────────────────────
+export type PartnershipType = "FRANCHISE" | "DEALERSHIP";
+export type PartnershipStatus = "PENDING" | "CONTACTED" | "APPROVED";
+
+export interface PartnershipApplication {
+  id: string;
+  type: PartnershipType;
+  status: PartnershipStatus;
+  createdAt: string;
+  
+  // Franchise fields
+  fullName?: string;
+  mobileNumber?: string;
+  emailAddress?: string;
+  proposedCity?: string;
+  showroomSpace?: string;
+  investmentCapacity?: string;
+  businessBackground?: string;
+
+  // Dealership fields
+  businessName?: string;
+  contactPersonName?: string;
+  gstin?: string;
+  primaryDistrict?: string;
+  productsInterested?: string[];
+}
+
+function readPartnerships(): Record<string, PartnershipApplication> {
+  ensureDataDir();
+  if (!fs.existsSync(PARTNERSHIPS_FILE)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(PARTNERSHIPS_FILE, "utf-8"));
+  } catch {
+    return {};
+  }
+}
+
+function writePartnerships(store: Record<string, PartnershipApplication>) {
+  ensureDataDir();
+  fs.writeFileSync(PARTNERSHIPS_FILE, JSON.stringify(store, null, 2), "utf-8");
+}
+
+export function savePartnershipApplication(payload: Omit<PartnershipApplication, "id" | "status" | "createdAt">): PartnershipApplication {
+  const store = readPartnerships();
+  const id = "part_" + Math.random().toString(36).substring(2, 11);
+  const application: PartnershipApplication = {
+    ...payload,
+    id,
+    status: "PENDING",
+    createdAt: new Date().toISOString(),
+  };
+  store[id] = application;
+  writePartnerships(store);
+  return application;
+}
+
+export function getAllPartnerships(): PartnershipApplication[] {
+  const store = readPartnerships();
+  return Object.values(store).sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+}
+
+export function updatePartnershipStatus(id: string, status: PartnershipStatus): boolean {
+  const store = readPartnerships();
+  if (!store[id]) return false;
+  store[id].status = status;
+  writePartnerships(store);
+  return true;
+}
+
+export function deletePartnership(id: string): boolean {
+  const store = readPartnerships();
+  if (!store[id]) return false;
+  delete store[id];
+  writePartnerships(store);
+  return true;
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Lead Store
