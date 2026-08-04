@@ -10,7 +10,7 @@ export default function Footer() {
         {/* Column 1: Brand Info */}
         <div>
           <img
-            src="/logo.png"
+            src="/logo-white.png"
             alt="Pragati EcoSolar"
             className="h-9 w-auto object-contain mb-4"
           />

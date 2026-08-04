@@ -56,22 +56,13 @@ export default function Header() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16 gap-6">
 
-              {/* ── BRAND LOGO + NAME ── */}
-              <Link href="/" className="flex items-center gap-3 shrink-0 group">
+              {/* ── BRAND LOGO ── */}
+              <Link href="/" className="flex items-center shrink-0 group">
                 <img
                   src="/logo.png"
                   alt="Pragati EcoSolar"
-                  className="h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+                  className="h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
                 />
-                <div className="hidden sm:flex flex-col leading-tight">
-                  <span className="text-[13px] font-extrabold text-slate-900 tracking-tight leading-none">
-                    PRAGATI
-                    <span className="text-emerald-600"> ECOSOLAR</span>
-                  </span>
-                  <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-[0.15em] mt-0.5">
-                    Solar Installer · Odisha
-                  </span>
-                </div>
               </Link>
 
               {/* ── DESKTOP NAV LINKS ── */}
