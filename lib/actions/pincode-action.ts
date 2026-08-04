@@ -1,6 +1,7 @@
 "use server";
 
 import { calculateSolarQuote, SolarCalculationResult } from "../solar-engine";
+import { getSolarConfig } from "../data-store";
 
 export interface PincodeSolarMasterRecord {
   pincode: string;
@@ -158,18 +159,35 @@ export async function lookupPincodeAndCalculate(
     };
   }
 
+  // Load admin-configurable solar parameters
+  const solarConfig = getSolarConfig();
+
   // Calculate target system capacity (kW)
   let targetKw = directKwInput || 3;
   if (!directKwInput && monthlyBillAmount > 0) {
-    // Tariff ~ ₹7.0 / unit. Units needed/month = bill / 7.0
-    const monthlyUnits = monthlyBillAmount / 7.0;
+    // Use admin-configured grid tariff rate for kW estimation
+    const monthlyUnits = monthlyBillAmount / solarConfig.gridTariffRate;
     // 1 kW yields ~120 units per month in Odisha
     const estimatedKw = monthlyUnits / 120;
     targetKw = Math.max(1, Math.min(100, Math.round(estimatedKw)));
   }
 
-  // Execute calculation engine
-  const calculation = calculateSolarQuote(targetKw, record.peakSunHours, isResidential);
+  // Execute calculation engine with admin config overrides
+  const calculation = calculateSolarQuote(targetKw, record.peakSunHours, isResidential, {
+    panelWp: solarConfig.panelWp,
+    panelUnitRate: solarConfig.panelUnitRate,
+    roofAreaPerKw: solarConfig.roofAreaPerKw,
+    residentialBenchmarkRate: solarConfig.residentialBenchmarkRate,
+    commercialBenchmarkRate: solarConfig.commercialBenchmarkRate,
+    gridTariffRate: solarConfig.gridTariffRate,
+    performanceRatio: solarConfig.performanceRatio,
+    subsidyTier1Kw: solarConfig.subsidyTier1Kw,
+    subsidyTier1Amount: solarConfig.subsidyTier1Amount,
+    subsidyTier2Kw: solarConfig.subsidyTier2Kw,
+    subsidyTier2Amount: solarConfig.subsidyTier2Amount,
+    subsidyTier3PlusAmount: solarConfig.subsidyTier3PlusAmount,
+    equipmentBands: solarConfig.equipmentBands,
+  });
 
   return {
     success: true,

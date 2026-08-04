@@ -1,6 +1,7 @@
 "use server";
 
 import { SolarCalculationResult } from "../solar-engine";
+import { saveLead } from "../data-store";
 
 export interface LeadSubmissionPayload {
   customerName: string;
@@ -21,21 +22,14 @@ export interface LeadActionResponse {
   message: string;
 }
 
-// In-memory fallback store for lead records
-const leadStore: Record<string, LeadSubmissionPayload & { createdAt: string }> = {};
-
 export async function saveLeadAndNotifyWhatsApp(
   payload: LeadSubmissionPayload
 ): Promise<LeadActionResponse> {
   const leadId = `PES-LEAD-${Date.now().toString().slice(-6)}`;
-  const timestamp = new Date().toISOString();
 
-  // 1. Persist lead record safely
+  // 1. Persist lead record to file store
   try {
-    leadStore[leadId] = {
-      ...payload,
-      createdAt: timestamp,
-    };
+    saveLead(leadId, payload);
     console.log(`[Lead Action] Saved Lead #${leadId} for ${payload.customerName} (${payload.phone})`);
   } catch (err) {
     console.error("[Lead Action] Error storing lead record:", err);
@@ -48,7 +42,8 @@ export async function saveLeadAndNotifyWhatsApp(
       ? payload.phone
       : `+91${payload.phone.replace(/\D/g, "").slice(-10)}`;
 
-    const whatsappMessage = `*Pragati EcoSolar Official Quotation*\n\n` +
+    const whatsappMessage =
+      `*Pragati EcoSolar Official Quotation*\n\n` +
       `Hello *${payload.customerName}*,\n` +
       `Thank you for calculating your rooftop solar requirements for *${payload.locationLabel}*.\n\n` +
       `*Solar Sizing Details:*\n` +
@@ -66,7 +61,7 @@ export async function saveLeadAndNotifyWhatsApp(
     if (webhookUrl) {
       const response = await fetch(webhookUrl, {
         method: "POST",
-        headers: { "Content-[#10]": "application/json", "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phone: formattedPhone,
           message: whatsappMessage,
@@ -74,14 +69,12 @@ export async function saveLeadAndNotifyWhatsApp(
           quotationRef: payload.quotationRef,
         }),
       });
-      if (response.ok) {
-        whatsappStatus = "sent";
-      } else {
-        whatsappStatus = "failed";
-      }
+      whatsappStatus = response.ok ? "sent" : "failed";
     } else {
       whatsappStatus = "mocked";
-      console.log(`[WhatsApp Webhook Dispatcher] (Mock Mode) Sent message to ${formattedPhone}:\n${whatsappMessage}`);
+      console.log(
+        `[WhatsApp Webhook Dispatcher] (Mock Mode) Sent message to ${formattedPhone}:\n${whatsappMessage}`
+      );
     }
   } catch (error) {
     console.error("[WhatsApp Webhook Error]:", error);
