@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { PartnershipType, ApplicationStatus } from "@prisma/client";
 
 /**
-/ * GET /api/admin/partnerships
+ * GET /api/admin/partnerships
  * Query Parameters:
  *  - type?: "FRANCHISE" | "DEALERSHIP"
  *  - status?: "PENDING" | "CONTACTED" | "REVIEWED" | "APPROVED" | "REJECTED"
@@ -116,6 +116,50 @@ export async function PATCH(req: NextRequest) {
     console.error("[Admin Partnerships PATCH Error]:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Failed to update partnership status" },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * DELETE /api/admin/partnerships?id=xxx
+ */
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: "Application ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if application exists
+    const existing = await prisma.partnershipApplication.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: "Partnership application not found." },
+        { status: 404 }
+      );
+    }
+
+    await prisma.partnershipApplication.delete({
+      where: { id },
+    });
+
+    return NextResponse.json(
+      { success: true, message: "Partnership application deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("[Admin Partnerships DELETE Error]:", error);
+    return NextResponse.json(
+      { success: false, error: error.message || "Failed to delete partnership application" },
       { status: 500 }
     );
   }
