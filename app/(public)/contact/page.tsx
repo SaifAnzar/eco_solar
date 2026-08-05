@@ -378,7 +378,7 @@ export default function ContactPage() {
           <div className="w-full h-80 bg-slate-100 relative flex items-center justify-center">
             <iframe
               title="Pragati EcoSolar Location Map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14963.854088913963!2d85.81180295!3d20.35478475!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m3!1s0x3a190938b813b52d%3A0xb3ff76c66cfdfd0!2sPatia%2C%20Bhubaneswar%2C%20Odisha!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+              src="https://maps.google.com/maps?q=20.3548,85.8173+(Patia,+Bhubaneswar)&t=&z=15&ie=UTF8&iwloc=&output=embed"
               className="w-full h-full border-0"
               allowFullScreen={false}
               loading="lazy"
