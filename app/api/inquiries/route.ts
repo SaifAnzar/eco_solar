@@ -91,6 +91,25 @@ export async function POST(request: Request) {
       },
     });
 
+    // Also persist to JSON file store to guarantee visibility in Admin Panel
+    try {
+      const { saveContactInquiry } = await import("@/lib/data-store");
+      saveContactInquiry({
+        fullName: fullName.trim(),
+        phone: mobileNumber.trim(),
+        email: email ? email.trim() : "",
+        location: `${district.trim()} (Pincode: ${pincode.trim()})`,
+        discomRegion: parsedDiscom || district.trim(),
+        systemType: parsedSystemType,
+        monthlyBill: monthlyBill ? `₹${monthlyBill}/month` : "",
+        rooftopArea: roofAreaSqFt ? `${roofAreaSqFt} sq.ft` : "",
+        message: message || "Site Visit Inquiry",
+        inquiryType: "SITE_VISIT",
+      });
+    } catch (fsErr) {
+      console.warn("[Inquiries Route] File store sync notice:", fsErr);
+    }
+
     return NextResponse.json(
       {
         success: true,

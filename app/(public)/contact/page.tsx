@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { MapPin, Phone, Mail, Clock, Zap, CheckCircle2, MessageSquare, PhoneCall, Calendar } from "lucide-react";
 import { SITE_CONFIG } from "@/config/site";
 import { saveLeadAndNotifyWhatsApp } from "@/lib/actions/lead-action";
+import { submitContactInquiryAction } from "@/lib/actions/contact-inquiry-actions";
 
 export default function ContactPage() {
   const [form, setForm] = useState({
@@ -24,8 +25,19 @@ export default function ContactPage() {
     setIsSubmitting(true);
 
     try {
+      await submitContactInquiryAction({
+        fullName: form.fullName,
+        phone: form.phone,
+        email: form.email,
+        location: form.location || "Odisha",
+        discomRegion: form.location || "TPCODL",
+        systemType: form.systemType,
+        message: `GENERAL CONTACT INQUIRY — Category: ${form.category}. ${form.message}`,
+        inquiryType: "GENERAL_CONTACT",
+      });
+
       // 1. Submit to Prisma database via /api/inquiries API Route
-      const res = await fetch("/api/inquiries", {
+      await fetch("/api/inquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

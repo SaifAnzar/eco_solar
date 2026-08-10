@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
       monthlyBill: monthlyBill || "",
       rooftopArea: rooftopArea || "",
       message: message || "",
+      inquiryType: body.inquiryType || (message?.includes("SITE VISIT") ? "SITE_VISIT" : "GENERAL_CONTACT"),
     });
 
     return NextResponse.json({ success: true, inquiry }, { status: 201 });

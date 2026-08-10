@@ -19,8 +19,17 @@ import {
   Lightbulb,
   Wrench,
   Phone,
+  Info,
+  Camera,
+  Award,
+  Package,
+  Store,
+  Briefcase,
+  MoreHorizontal,
+  Handshake,
 } from "lucide-react";
 import dynamic from "next/dynamic";
+import SiteVisitModal from "../common/SiteVisitModal";
 
 const SolarCalculatorModal = dynamic(() => import("../home/SolarCalculatorModal"), {
   ssr: false,
@@ -30,11 +39,13 @@ export default function Header() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
+  const [isSiteVisitOpen, setIsSiteVisitOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
-  const [mobileContactOpen, setMobileContactOpen] = useState(false);
+  const [mobilePartnershipsOpen, setMobilePartnershipsOpen] = useState(false);
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 12);
@@ -111,41 +122,72 @@ export default function Header() {
     },
     {
       name: "O&M (Operation & Maintenance)",
-      desc: "Comprehensive preventive maintenance, cleaning & annual contracts",
+      desc: "Preventive maintenance, routine panel washing & annual contracts",
       href: "/services#om",
       icon: Wrench,
       iconBg: "bg-rose-50 text-rose-600 border-rose-200",
     },
   ];
 
-  const contactDropdownItems = [
-    {
-      name: "Contact Us & Support",
-      desc: "General inquiries, registered office & helpline numbers",
-      href: "/contact",
-      icon: Phone,
-      iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200",
-    },
-    {
-      name: "Book Free Site Inspection",
-      desc: "Schedule an expert solar engineer visit anywhere in Odisha",
-      href: "/contact?type=site-visit",
-      icon: Calendar,
-      iconBg: "bg-blue-50 text-blue-600 border-blue-200",
-    },
+  const partnershipsDropdownItems = [
     {
       name: "Dealership Program",
-      desc: "Become an authorized solar equipment distributor & partner",
+      desc: "Become an authorized solar equipment distributor & regional partner",
       href: "/dealership",
-      icon: Building2,
-      iconBg: "bg-purple-50 text-purple-600 border-purple-200",
+      icon: Briefcase,
+      iconBg: "bg-teal-50 text-teal-600 border-teal-200",
     },
     {
       name: "Franchise Opportunity",
-      desc: "Start a lucrative district franchise with Pragati EcoSolar",
+      desc: "Launch an official Pragati EcoSolar retail store in your city",
       href: "/franchise",
-      icon: Home,
+      icon: Store,
+      iconBg: "bg-rose-50 text-rose-600 border-rose-200",
+    },
+  ];
+
+  const moreDropdownItems = [
+    {
+      name: "How It Works",
+      desc: "Step-by-step solar installation & grid net-metering roadmap",
+      href: "/how-it-works",
+      icon: Layers,
       iconBg: "bg-amber-50 text-amber-600 border-amber-200",
+    },
+    {
+      name: "About Us & Story",
+      desc: "Odisha solar leadership, DISCOM empanelment & core team",
+      href: "/about",
+      icon: Info,
+      iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200",
+    },
+    {
+      name: "Projects Portfolio",
+      desc: "120+ real installation site photos & videos across Odisha",
+      href: "/projects",
+      icon: Camera,
+      iconBg: "bg-blue-50 text-blue-600 border-blue-200",
+    },
+    {
+      name: "Govt Schemes & Subsidies",
+      desc: "PM Surya Ghar (up to ₹78,000) & Odisha state benefits",
+      href: "/government-schemes",
+      icon: Award,
+      iconBg: "bg-yellow-50 text-yellow-600 border-yellow-200",
+    },
+    {
+      name: "Approved Solar Products",
+      desc: "Tier-1 ALMM panels, hybrid inverters & mounting hardware",
+      href: "/products",
+      icon: Package,
+      iconBg: "bg-purple-50 text-purple-600 border-purple-200",
+    },
+    {
+      name: "Contact Us & Support",
+      desc: "Registered office, helpline numbers & site visit booking",
+      href: "/contact",
+      icon: Phone,
+      iconBg: "bg-indigo-50 text-indigo-600 border-indigo-200",
     },
   ];
 
@@ -153,26 +195,27 @@ export default function Header() {
     label: string;
     href: string;
     isDropdown?: boolean;
-    dropdownType?: "services" | "contact";
+    dropdownType?: "services" | "partnerships" | "more";
   }> = [
-    { label: "Home", href: "/" },
-    { label: "About Us", href: "/about" },
     {
       label: "Our Services",
       href: "/services",
       isDropdown: true,
       dropdownType: "services",
     },
-    { label: "How It Works", href: "/how-it-works" },
     { label: "Residential", href: "/residential" },
     { label: "Commercial", href: "/commercial" },
-    { label: "Projects", href: "/projects" },
-    { label: "Govt Schemes", href: "/government-schemes" },
     {
-      label: "Contact Us",
-      href: "/contact",
+      label: "Partnerships",
+      href: "#",
       isDropdown: true,
-      dropdownType: "contact",
+      dropdownType: "partnerships",
+    },
+    {
+      label: "More",
+      href: "#",
+      isDropdown: true,
+      dropdownType: "more",
     },
   ];
 
@@ -201,8 +244,9 @@ export default function Header() {
           }`}
         >
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16 gap-3">
-              {/* Brand Logo */}
+            <div className="flex items-center justify-between h-16 gap-4">
+              
+              {/* Brand Logo (Acts as Home / Landing Link) */}
               <Link href="/" onClick={() => setOpenDropdown(null)} className="flex items-center shrink-0 group">
                 <img
                   src="/logo.png"
@@ -212,20 +256,31 @@ export default function Header() {
               </Link>
 
               {/* Desktop Nav Links */}
-              <nav className="hidden xl:flex items-center gap-1 flex-1 justify-center">
+              <nav className="hidden xl:flex items-center gap-1.5 flex-1 justify-center">
                 {mainNavItems.map((item) => {
                   const isServices = item.dropdownType === "services";
-                  const dropdownItems = isServices ? servicesDropdownItems : contactDropdownItems;
+                  const isPartnerships = item.dropdownType === "partnerships";
+                  const isMore = item.dropdownType === "more";
+
+                  const dropdownItems = isServices
+                    ? servicesDropdownItems
+                    : isPartnerships
+                    ? partnershipsDropdownItems
+                    : moreDropdownItems;
+
                   const isOpen = openDropdown === item.dropdownType;
 
                   const isActive =
-                    pathname === item.href ||
+                    (item.href !== "#" && pathname === item.href) ||
                     (isServices && pathname.startsWith("/services")) ||
-                    (!isServices &&
-                      item.isDropdown &&
-                      (pathname.startsWith("/contact") ||
-                        pathname.startsWith("/dealership") ||
-                        pathname.startsWith("/franchise")));
+                    (isPartnerships && (pathname.startsWith("/dealership") || pathname.startsWith("/franchise"))) ||
+                    (isMore &&
+                      (pathname.startsWith("/how-it-works") ||
+                        pathname.startsWith("/about") ||
+                        pathname.startsWith("/projects") ||
+                        pathname.startsWith("/government-schemes") ||
+                        pathname.startsWith("/products") ||
+                        pathname.startsWith("/contact")));
 
                   if (item.isDropdown) {
                     return (
@@ -235,10 +290,9 @@ export default function Header() {
                         onMouseEnter={() => setOpenDropdown(item.dropdownType || null)}
                         onMouseLeave={() => setOpenDropdown(null)}
                       >
-                        <Link
-                          href={item.href}
-                          onClick={() => setOpenDropdown(null)}
-                          className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                        <button
+                          type="button"
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                             isActive
                               ? "text-emerald-700 bg-emerald-50/80"
                               : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
@@ -250,12 +304,16 @@ export default function Header() {
                               isOpen ? "rotate-180 text-emerald-600" : ""
                             }`}
                           />
-                        </Link>
+                        </button>
 
-                        {/* Mega / Standard Dropdown */}
+                        {/* Mega / Standard Dropdown Container */}
                         <div
-                          className={`absolute top-full left-1/2 -translate-x-1/2 ${
-                            isServices ? "w-[520px]" : "w-[420px]"
+                          className={`absolute top-full ${
+                            isServices
+                              ? "left-1/2 -translate-x-1/2 w-[500px]"
+                              : isPartnerships
+                              ? "left-1/2 -translate-x-1/2 w-[360px]"
+                              : "right-0 w-[420px]"
                           } bg-white border border-slate-200/90 rounded-2xl shadow-2xl p-3 transition-all duration-200 z-50 ${
                             isOpen
                               ? "opacity-100 visible translate-y-0 pointer-events-auto"
@@ -264,14 +322,18 @@ export default function Header() {
                         >
                           <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between mb-1">
                             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700">
-                              {isServices ? "SOLAR EPC SERVICES" : "CONTACT & PARTNERSHIPS"}
+                              {isServices
+                                ? "SOLAR EPC SERVICES"
+                                : isPartnerships
+                                ? "DEALERSHIP & FRANCHISE"
+                                : "MORE RESOURCES & EXPLORE"}
                             </span>
                             <span className="text-[10px] font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-bold">
-                              {isServices ? "VENDOR-AGNOSTIC EPC" : "GET IN TOUCH"}
+                              {isServices ? "VENDOR-AGNOSTIC EPC" : isPartnerships ? "GROW WITH US" : "PRAGATI ECOSOLAR"}
                             </span>
                           </div>
 
-                          <div className="grid grid-cols-1 gap-1">
+                          <div className="grid grid-cols-1 gap-1 max-h-[70vh] overflow-y-auto">
                             {dropdownItems.map((s) => {
                               const Icon = s.icon;
                               return (
@@ -306,7 +368,7 @@ export default function Header() {
                       key={item.label}
                       href={item.href}
                       onClick={(e) => handleNavClick(e, item.href)}
-                      className={`px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                      className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                         isActive
                           ? "text-emerald-700 bg-emerald-50/80"
                           : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
@@ -320,14 +382,16 @@ export default function Header() {
 
               {/* Desktop CTAs */}
               <div className="hidden xl:flex items-center gap-2 shrink-0">
-                <Link
-                  href="/contact?type=site-visit"
-                  onClick={(e) => handleNavClick(e, "/contact?type=site-visit")}
+                <button
+                  onClick={() => {
+                    setOpenDropdown(null);
+                    setIsSiteVisitOpen(true);
+                  }}
                   className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5"
                 >
                   <Calendar className="w-3.5 h-3.5" />
                   <span>Book Free Visit</span>
-                </Link>
+                </button>
 
                 <button
                   onClick={() => {
@@ -360,14 +424,24 @@ export default function Header() {
               {mainNavItems.map((item) => {
                 if (item.isDropdown) {
                   const isServices = item.dropdownType === "services";
-                  const dropdownItems = isServices ? servicesDropdownItems : contactDropdownItems;
-                  const isMobileSubOpen = isServices ? mobileServicesOpen : mobileContactOpen;
+                  const isPartnerships = item.dropdownType === "partnerships";
+
+                  const dropdownItems = isServices
+                    ? servicesDropdownItems
+                    : isPartnerships
+                    ? partnershipsDropdownItems
+                    : moreDropdownItems;
+
+                  const isMobileSubOpen = isServices
+                    ? mobileServicesOpen
+                    : isPartnerships
+                    ? mobilePartnershipsOpen
+                    : mobileMoreOpen;
+
                   const toggleSub = () => {
-                    if (isServices) {
-                      setMobileServicesOpen(!mobileServicesOpen);
-                    } else {
-                      setMobileContactOpen(!mobileContactOpen);
-                    }
+                    if (isServices) setMobileServicesOpen(!mobileServicesOpen);
+                    else if (isPartnerships) setMobilePartnershipsOpen(!mobilePartnershipsOpen);
+                    else setMobileMoreOpen(!mobileMoreOpen);
                   };
 
                   return (
@@ -420,14 +494,16 @@ export default function Header() {
             </div>
 
             <div className="pt-4 border-t border-slate-100 space-y-2">
-              <Link
-                href="/contact?type=site-visit"
-                onClick={() => setIsMobileMenuOpen(false)}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsSiteVisitOpen(true);
+                }}
                 className="w-full py-3 bg-emerald-600 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md"
               >
                 <Calendar className="w-4 h-4" />
                 <span>Book Free Visit</span>
-              </Link>
+              </button>
 
               <button
                 onClick={() => {
@@ -444,8 +520,9 @@ export default function Header() {
         )}
       </header>
 
-      {/* Calculator Modal */}
+      {/* Calculator & Site Visit Modals */}
       <SolarCalculatorModal isOpen={isCalculatorOpen} onClose={() => setIsCalculatorOpen(false)} />
+      <SiteVisitModal isOpen={isSiteVisitOpen} onClose={() => setIsSiteVisitOpen(false)} />
     </>
   );
 }

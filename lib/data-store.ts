@@ -125,6 +125,7 @@ export interface ContactInquiry {
   monthlyBill?: string;
   rooftopArea?: string;
   message?: string;
+  inquiryType?: "SITE_VISIT" | "GENERAL_CONTACT";
   status: ContactInquiryStatus;
   createdAt: string;
 }
