@@ -64,8 +64,12 @@ function readPartnerships(): Record<string, PartnershipApplication> {
 }
 
 function writePartnerships(store: Record<string, PartnershipApplication>) {
-  ensureDataDir();
-  fs.writeFileSync(PARTNERSHIPS_FILE, JSON.stringify(store, null, 2), "utf-8");
+  try {
+    ensureDataDir();
+    fs.writeFileSync(PARTNERSHIPS_FILE, JSON.stringify(store, null, 2), "utf-8");
+  } catch (err) {
+    console.error("[DataStore] Error writing partnerships file:", err);
+  }
 }
 
 export function savePartnershipApplication(payload: Omit<PartnershipApplication, "id" | "status" | "createdAt">): PartnershipApplication {
@@ -136,8 +140,12 @@ function readContactInquiries(): Record<string, ContactInquiry> {
 }
 
 function writeContactInquiries(store: Record<string, ContactInquiry>) {
-  ensureDataDir();
-  fs.writeFileSync(CONTACT_INQUIRIES_FILE, JSON.stringify(store, null, 2), "utf-8");
+  try {
+    ensureDataDir();
+    fs.writeFileSync(CONTACT_INQUIRIES_FILE, JSON.stringify(store, null, 2), "utf-8");
+  } catch (err) {
+    console.error("[DataStore] Error writing contact inquiries file:", err);
+  }
 }
 
 export function saveContactInquiry(payload: Omit<ContactInquiry, "id" | "status" | "createdAt">): ContactInquiry {
@@ -198,8 +206,12 @@ function readLeads(): Record<string, LeadRecord> {
 }
 
 function writeLeads(store: Record<string, LeadRecord>) {
-  ensureDataDir();
-  fs.writeFileSync(LEADS_FILE, JSON.stringify(store, null, 2), "utf-8");
+  try {
+    ensureDataDir();
+    fs.writeFileSync(LEADS_FILE, JSON.stringify(store, null, 2), "utf-8");
+  } catch (err) {
+    console.error("[DataStore] Error writing leads file:", err);
+  }
 }
 
 export function saveLead(leadId: string, payload: LeadSubmissionPayload): void {

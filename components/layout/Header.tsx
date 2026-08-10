@@ -20,7 +20,11 @@ import {
   Wrench,
   Phone,
 } from "lucide-react";
-import SolarCalculatorModal from "../home/SolarCalculatorModal";
+import dynamic from "next/dynamic";
+
+const SolarCalculatorModal = dynamic(() => import("../home/SolarCalculatorModal"), {
+  ssr: false,
+});
 
 export default function Header() {
   const pathname = usePathname();

@@ -3,8 +3,12 @@
 import React, { useState } from "react";
 import ProductFilterTabs, { ProductCategory } from "@/components/products/ProductFilterTabs";
 import ProductCard from "@/components/products/ProductCard";
-import SolarCalculatorModal from "@/components/home/SolarCalculatorModal";
+import dynamic from "next/dynamic";
 import { PRODUCTS } from "@/lib/data/products";
+
+const SolarCalculatorModal = dynamic(() => import("@/components/home/SolarCalculatorModal"), {
+  ssr: false,
+});
 
 export default function ProductsPage() {
   const [activeCategory, setActiveCategory] = useState<ProductCategory>("all");

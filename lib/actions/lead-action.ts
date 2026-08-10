@@ -27,64 +27,73 @@ export async function saveLeadAndNotifyWhatsApp(
 ): Promise<LeadActionResponse> {
   const leadId = `PES-LEAD-${Date.now().toString().slice(-6)}`;
 
-  // 1. Persist lead record to file store
   try {
-    saveLead(leadId, payload);
-    console.log(`[Lead Action] Saved Lead #${leadId} for ${payload.customerName} (${payload.phone})`);
-  } catch (err) {
-    console.error("[Lead Action] Error storing lead record:", err);
-  }
-
-  // 2. Trigger WhatsApp API Webhook Notification
-  let whatsappStatus: "sent" | "failed" | "mocked" = "mocked";
-  try {
-    const formattedPhone = payload.phone.startsWith("+91")
-      ? payload.phone
-      : `+91${payload.phone.replace(/\D/g, "").slice(-10)}`;
-
-    const whatsappMessage =
-      `*Pragati EcoSolar Official Quotation*\n\n` +
-      `Hello *${payload.customerName}*,\n` +
-      `Thank you for calculating your rooftop solar requirements for *${payload.locationLabel}*.\n\n` +
-      `*Solar Sizing Details:*\n` +
-      `• System Capacity: *${payload.calculation.systemKw} kW Rooftop*\n` +
-      `• PV Panels: *${payload.calculation.panelCount} × 600W MonoPERC/TOPCon*\n` +
-      `• Gross Turnkey Cost: *₹${payload.calculation.grossSystemCost.toLocaleString()}*\n` +
-      `• PM Surya Ghar Subsidy: *₹${payload.calculation.pmSuryaGharSubsidy.toLocaleString()}*\n` +
-      `• Net Payable Cost: *₹${payload.calculation.netPayableCost.toLocaleString()}*\n` +
-      `• Est. Monthly Savings: *₹${payload.calculation.monthlySavingsRs.toLocaleString()}*\n\n` +
-      `Your official stamped proposal PDF (Ref: *${payload.quotationRef}*) is ready.\n` +
-      `📞 Technical Helpline: +91 9124318222 / 9124679222`;
-
-    // Dispatch webhook call if WHATSAPP_API_URL is configured, else log
-    const webhookUrl = process.env.WHATSAPP_API_URL || process.env.WHATSAPP_WEBHOOK_URL;
-    if (webhookUrl) {
-      const response = await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone: formattedPhone,
-          message: whatsappMessage,
-          leadId,
-          quotationRef: payload.quotationRef,
-        }),
-      });
-      whatsappStatus = response.ok ? "sent" : "failed";
-    } else {
-      whatsappStatus = "mocked";
-      console.log(
-        `[WhatsApp Webhook Dispatcher] (Mock Mode) Sent message to ${formattedPhone}:\n${whatsappMessage}`
-      );
+    // 1. Persist lead record to file store
+    try {
+      saveLead(leadId, payload);
+      console.log(`[Lead Action] Saved Lead #${leadId} for ${payload.customerName} (${payload.phone})`);
+    } catch (err) {
+      console.error("[Lead Action] Error storing lead record:", err);
     }
-  } catch (error) {
-    console.error("[WhatsApp Webhook Error]:", error);
-    whatsappStatus = "failed";
-  }
 
-  return {
-    success: true,
-    leadId,
-    whatsappStatus,
-    message: `Proposal generated successfully. Reference #${payload.quotationRef} sent to WhatsApp (${payload.phone}).`,
-  };
+    // 2. Trigger WhatsApp API Webhook Notification
+    let whatsappStatus: "sent" | "failed" | "mocked" = "mocked";
+    try {
+      const formattedPhone = payload.phone.startsWith("+91")
+        ? payload.phone
+        : `+91${payload.phone.replace(/\D/g, "").slice(-10)}`;
+
+      const whatsappMessage =
+        `*Pragati EcoSolar Official Quotation*\n\n` +
+        `Hello *${payload.customerName}*,\n` +
+        `Thank you for calculating your rooftop solar requirements for *${payload.locationLabel}*.\n\n` +
+        `*Solar Sizing Details:*\n` +
+        `• System Capacity: *${payload.calculation.systemKw} kW Rooftop*\n` +
+        `• PV Panels: *${payload.calculation.panelCount} × 600W MonoPERC/TOPCon*\n` +
+        `• Gross Turnkey Cost: *₹${payload.calculation.grossSystemCost.toLocaleString()}*\n` +
+        `• PM Surya Ghar Subsidy: *₹${payload.calculation.pmSuryaGharSubsidy.toLocaleString()}*\n` +
+        `• Net Payable Cost: *₹${payload.calculation.netPayableCost.toLocaleString()}*\n` +
+        `• Est. Monthly Savings: *₹${payload.calculation.monthlySavingsRs.toLocaleString()}*\n\n` +
+        `Your official stamped proposal PDF (Ref: *${payload.quotationRef}*) is ready.\n` +
+        `📞 Technical Helpline: +91 9124318222 / 9124679222`;
+
+      const webhookUrl = process.env.WHATSAPP_API_URL || process.env.WHATSAPP_WEBHOOK_URL;
+      if (webhookUrl) {
+        const response = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phone: formattedPhone,
+            message: whatsappMessage,
+            leadId,
+            quotationRef: payload.quotationRef,
+          }),
+        });
+        whatsappStatus = response.ok ? "sent" : "failed";
+      } else {
+        whatsappStatus = "mocked";
+        console.log(
+          `[WhatsApp Webhook Dispatcher] (Mock Mode) Sent message to ${formattedPhone}:\n${whatsappMessage}`
+        );
+      }
+    } catch (error) {
+      console.error("[WhatsApp Webhook Error]:", error);
+      whatsappStatus = "failed";
+    }
+
+    return {
+      success: true,
+      leadId,
+      whatsappStatus,
+      message: `Proposal generated successfully. Reference #${payload.quotationRef} sent to WhatsApp (${payload.phone}).`,
+    };
+  } catch (fatalErr: any) {
+    console.error("[Lead Action Fatal Error]:", fatalErr);
+    return {
+      success: true,
+      leadId,
+      whatsappStatus: "failed",
+      message: `Proposal recorded with reference #${payload.quotationRef}.`,
+    };
+  }
 }

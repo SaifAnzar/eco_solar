@@ -21,7 +21,6 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { pdf } from "@react-pdf/renderer";
 import { lookupPincodeAndCalculate, PincodeLookupResponse } from "@/lib/actions/pincode-action";
 import { saveLeadAndNotifyWhatsApp } from "@/lib/actions/lead-action";
 import { calculateSolarQuote, SolarCalculationResult } from "@/lib/solar-engine";
@@ -111,20 +110,26 @@ export default function RoiCalculator() {
   // Recalculate quote whenever inputs or location metadata change
   useEffect(() => {
     startTransition(async () => {
-      const isRes = propertyType === "residential";
-      const targetKwInput = calcMode === "kw" ? directKw : undefined;
-      const mDistrict = isFallbackMode ? manualDistrict : undefined;
-      const mDiscom = isFallbackMode ? DISCOM_DESCRIPTIONS[manualDiscom] : undefined;
+      try {
+        const isRes = propertyType === "residential";
+        const targetKwInput = calcMode === "kw" ? directKw : undefined;
+        const mDistrict = isFallbackMode ? manualDistrict : undefined;
+        const mDiscom = isFallbackMode ? DISCOM_DESCRIPTIONS[manualDiscom] : undefined;
 
-      const res = await lookupPincodeAndCalculate(
-        pincode,
-        monthlyBill,
-        targetKwInput,
-        isRes,
-        mDistrict,
-        mDiscom
-      );
-      setCalcData(res);
+        const res = await lookupPincodeAndCalculate(
+          pincode,
+          monthlyBill,
+          targetKwInput,
+          isRes,
+          mDistrict,
+          mDiscom
+        );
+        if (res) {
+          setCalcData(res);
+        }
+      } catch (err) {
+        console.error("ROI calculation error caught safely:", err);
+      }
     });
   }, [calcMode, propertyType, monthlyBill, pincode, directKw, pincodeDetails, manualDistrict, manualDiscom, isFallbackMode]);
 
@@ -176,6 +181,7 @@ export default function RoiCalculator() {
         />
       );
 
+      const { pdf } = await import("@react-pdf/renderer");
       const asPdf = pdf(doc);
       const blob = await asPdf.toBlob();
       const url = URL.createObjectURL(blob);
