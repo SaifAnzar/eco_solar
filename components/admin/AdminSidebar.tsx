@@ -1,157 +1,207 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
-import { logoutAction } from "@/lib/actions/auth-action";
+import {
+  LayoutDashboard,
+  Users,
+  Mail,
+  Calculator,
+  Handshake,
+  FileText,
+  Package,
+  FolderKanban,
+  Award,
+  ExternalLink,
+  ShieldCheck,
+} from "lucide-react";
 
-const NAV_LINKS = [
-  {
-    href: "/admin",
-    label: "Dashboard",
-    icon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-      </svg>
-    ),
-  },
-  {
-    href: "/admin/leads",
-    label: "Leads / Quotations",
-    icon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
-      </svg>
-    ),
-  },
-  {
-    href: "/admin/calculator",
-    label: "Calculator Config",
-    icon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-        <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm-3 3a1 1 0 100 2h.01a1 1 0 100-2H10zm-4 1a1 1 0 011-1h.01a1 1 0 110 2H7a1 1 0 01-1-1z" clipRule="evenodd" />
-      </svg>
-    ),
-  },
-  {
-    href: "/admin/contact-leads",
-    label: "Contact Inquiries",
-    icon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-        <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-      </svg>
-    ),
-  },
-  {
-    href: "/admin/partnerships",
-    label: "Partnerships",
-    icon: (
-      <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
-        <path fillRule="evenodd" d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" clipRule="evenodd" />
-      </svg>
-    ),
-  },
-];
+interface AdminSidebarProps {
+  adminEmail?: string;
+}
 
-export function AdminSidebar({ adminEmail }: { adminEmail: string }) {
+export function AdminSidebar({ adminEmail }: AdminSidebarProps) {
   const pathname = usePathname();
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const primaryNavItems = [
+    {
+      label: "Dashboard Overview",
+      href: "/admin",
+      icon: LayoutDashboard,
+    },
+    {
+      label: "Calculator Quotations",
+      href: "/admin/leads",
+      icon: Users,
+      badge: "DISCOM Filters",
+    },
+    {
+      label: "Contact Inquiries",
+      href: "/admin/contact-leads",
+      icon: Mail,
+      badge: "Site Visits",
+    },
+    {
+      label: "Calculator Config",
+      href: "/admin/calculator",
+      icon: Calculator,
+      badge: "Benchmark Rates",
+    },
+    {
+      label: "Franchise & Dealer",
+      href: "/admin/partnerships",
+      icon: Handshake,
+      badge: "Applications",
+    },
+  ];
 
-  const currentTheme = resolvedTheme || theme;
-
-  const toggleTheme = () => {
-    setTheme(currentTheme === "dark" ? "light" : "dark");
-  };
+  const cmsNavItems = [
+    {
+      label: "Hero & Site Copy",
+      href: "/admin/site-content",
+      icon: FileText,
+      badge: "CMS 1",
+    },
+    {
+      label: "Solar Packages",
+      href: "/admin/packages",
+      icon: Package,
+      badge: "CMS 3",
+    },
+    {
+      label: "Projects Portfolio",
+      href: "/admin/projects",
+      icon: FolderKanban,
+      badge: "CMS 4",
+    },
+    {
+      label: "Services & Schemes",
+      href: "/admin/services-schemes",
+      icon: Award,
+      badge: "CMS 5",
+    },
+  ];
 
   return (
-    <aside className="admin-sidebar">
-      {/* Brand */}
-      <div className="sidebar-brand">
-        <div className="sidebar-logo">
-          <svg viewBox="0 0 32 32" fill="none">
-            <circle cx="16" cy="16" r="16" fill="url(#slg)" />
-            <path d="M16 6L21 14H11L16 6Z" fill="white" fillOpacity="0.9" />
-            <path d="M11 14H21L18 26H14L11 14Z" fill="white" fillOpacity="0.55" />
-            <defs>
-              <linearGradient id="slg" x1="0" y1="0" x2="32" y2="32">
-                <stop stopColor="#F59E0B" />
-                <stop offset="1" stopColor="#D97706" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-        <div>
-          <div className="sidebar-brand-name">Pragati EcoSolar</div>
-          <div className="sidebar-brand-sub">Admin Panel</div>
-        </div>
+    <aside className="w-64 bg-slate-900 text-white min-h-screen flex flex-col shrink-0 border-r border-slate-800 font-sans sticky top-0 h-screen overflow-y-auto z-40">
+      {/* Brand Header with Official White Logo */}
+      <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+        <Link href="/admin" className="flex items-center gap-2 group">
+          <img
+            src="/logo-white.png"
+            alt="Pragati EcoSolar"
+            className="h-8 sm:h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+          />
+        </Link>
       </div>
 
-      {/* Navigation */}
-      <nav className="sidebar-nav">
-        {NAV_LINKS.map((link) => {
-          const isActive = pathname === link.href;
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`sidebar-link ${isActive ? "active" : ""}`}
-            >
-              <span className="sidebar-icon">{link.icon}</span>
-              {link.label}
-            </Link>
-          );
-        })}
-      </nav>
+      {/* Nav Section */}
+      <nav className="p-4 space-y-6 flex-1">
+        {/* Original Setup Group */}
+        <div className="space-y-1.5">
+          <div className="px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-slate-400">
+            QUOTATIONS &amp; LEADS
+          </div>
+          {primaryNavItems.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
 
-      {/* Footer: User Info + Theme Toggle + Logout */}
-      <div className="sidebar-footer">
-        <div className="sidebar-user">
-          <div className="sidebar-avatar">
-            {adminEmail.charAt(0).toUpperCase()}
-          </div>
-          <div className="sidebar-user-info">
-            <div className="sidebar-user-role">Administrator</div>
-            <div className="sidebar-user-email" title={adminEmail}>{adminEmail}</div>
-          </div>
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                  isActive
+                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </div>
+                {item.badge && (
+                  <span
+                    className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
+                      isActive ? "bg-emerald-800 text-emerald-100" : "bg-slate-800 text-slate-400"
+                    }`}
+                  >
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
         </div>
 
-        {/* Theme Switcher Icon Button */}
-        {mounted && (
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="sidebar-logout"
-            title={`Switch to ${currentTheme === "dark" ? "Light" : "Dark"} Mode`}
-          >
-            {currentTheme === "dark" ? (
-              <Sun className="w-4 h-4 text-amber-400" />
-            ) : (
-              <Moon className="w-4 h-4 text-slate-300" />
-            )}
-          </button>
+        {/* New Feature Settings Group */}
+        <div className="space-y-1.5 pt-2 border-t border-slate-800">
+          <div className="px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-400">
+            WEBSITE CMS SETTINGS
+          </div>
+          {cmsNavItems.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                  isActive
+                    ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </div>
+                {item.badge && (
+                  <span
+                    className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
+                      isActive ? "bg-emerald-800 text-emerald-100" : "bg-slate-800 text-slate-400"
+                    }`}
+                  >
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* Public Site Quick Link */}
+      <div className="p-4 border-t border-slate-800 space-y-2">
+        {adminEmail && (
+          <div className="px-3 py-1.5 text-[10px] font-mono text-slate-400 truncate border-b border-slate-800 pb-2">
+            Logged in: <strong className="text-emerald-400">{adminEmail}</strong>
+          </div>
         )}
 
-        {/* Sign Out Button */}
-        <form action={logoutAction}>
-          <button
-            type="submit"
-            className="sidebar-logout"
-            title="Sign Out"
-          >
-            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
-              <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
-            </svg>
-          </button>
-        </form>
+        <div className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 text-[11px] space-y-1">
+          <div className="flex items-center gap-1.5 text-amber-400 font-bold">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>ROI Calculator Preserved</span>
+          </div>
+          <p className="text-[10px] text-slate-400 leading-tight">
+            Calculator logic &amp; postal lookup strictly isolated.
+          </p>
+        </div>
+
+        <Link
+          href="/"
+          target="_blank"
+          className="flex items-center justify-center gap-2 w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl transition-all border border-slate-700"
+        >
+          <span>View Public Site</span>
+          <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+        </Link>
       </div>
     </aside>
   );
 }
+
+export default AdminSidebar;

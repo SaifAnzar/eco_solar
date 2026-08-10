@@ -1,279 +1,200 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { ShieldCheck, Award, MapPin, CheckCircle2, Wind, Zap, UserCheck, ArrowRight } from "lucide-react";
-
-export const metadata = {
-  title: "About Pragati EcoSolar | Managing Director Kalpna Sahoo",
-  description: "Learn about Pragati EcoSolar's leadership under MD Kalpna Sahoo in Patia, Bhubaneswar, and coastal Odisha cyclone-resilient structural engineering standards.",
-};
+import { ShieldCheck, Award, Zap, CheckCircle2, UserCheck, Layers, ArrowRight } from "lucide-react";
+import { SITE_CONFIG } from "@/config/site";
 
 export default function AboutPage() {
-  const standards = [
+  const credentials = [
+    { label: "PM Surya Ghar Authorized", detail: "Empanelled Installer under National Solar Mission" },
+    { label: "4 DISCOM Zones Empanelled", detail: "TPCODL, TPNODL, TPSODL, and TPWODL" },
+    { label: "Pure EPC Positioning", detail: "Vendor-Agnostic engineering focused on high-yield specs" },
+    { label: "Single Point Accountable", detail: "In-house design, execution, net metering & O&M team" },
+  ];
+
+  const whyChooseUs = [
     {
-      title: "150 km/h Wind-Load MMS Structural Engineering",
-      description: "Odisha experiences frequent coastal tropical storms and cyclones. We construct custom Hot-Dip Galvanized Module Mounting Structures (MMS) with 80-micron zinc coating and heavy-gauge steel anchors.",
-      icon: Wind,
+      title: "Government-Authorized PM Surya Ghar Installer",
+      desc: "Empanelled installer under the national rooftop scheme facilitating seamless subsidy credit up to ₹78,000.",
+      icon: Award,
     },
     {
-      title: "IS 3043 Chemical Maintenance-Free Earthing",
-      description: "Electrical safety is non-negotiable. Every system features separate chemical earthing pits for AC, DC, and Lightning Arrestor circuits using bentonite compound backfill.",
-      icon: Zap,
-    },
-    {
-      title: "UV-Resistant & Flame-Retardant XLPO Cabling",
-      description: "We exclusively deploy Polycab and KEI cross-linked polyolefin (XLPO) solar DC cables designed for 1500V system voltage and 25 years of extreme sunlight exposure.",
+      title: "Empanelled Across All 4 Odisha DISCOM Zones",
+      desc: "Licensed for net-metering approvals and feasibility clearance across TPCODL, TPNODL, TPSODL, and TPWODL.",
       icon: ShieldCheck,
     },
     {
-      title: "Tier-1 ALMM Module & Inverter Selection",
-      description: "Only MNRE ALMM listed solar PV modules from Waaree and Adani (TOPCon / MonoPERC) combined with Statcon or Sunora dual MPPT grid-tied inverters are deployed.",
-      icon: Award,
+      title: "On-Grid, Off-Grid & Hybrid Expertise Under One Roof",
+      desc: "Comprehensive technical mastery of grid-interactive net metering, battery energy storage, and hybrid backup.",
+      icon: Layers,
+    },
+    {
+      title: "End-to-End EPC Lifecycle Management",
+      desc: "Site survey, structural engineering, component procurement, certified installation, net metering & after-sales maintenance.",
+      icon: Zap,
+    },
+    {
+      title: "Dedicated Project Support from Survey to Commissioning",
+      desc: "Single accountable partner handling all DISCOM paperwork, site inspections, and long-term service contracts.",
+      icon: UserCheck,
+    },
+  ];
+
+  const coreTeam = [
+    {
+      name: "Er. Deepak Kumar Mohapatra",
+      role: "Founder & Principal EPC Director",
+      bio: "12+ years in electrical grid engineering and solar project execution across Odisha's industrial and residential sectors.",
+    },
+    {
+      name: "Er. Soumya Ranjan Nayak",
+      role: "Head of Solar Projects & DISCOM Liaison",
+      bio: "Specialist in net metering regulatory compliance, structural load safety, and PM Surya Ghar portal management.",
+    },
+    {
+      name: "Er. Subrat Kumar Jena",
+      role: "Lead Systems Engineer & O&M Operations",
+      bio: "Expert in hybrid battery storage design, string inverter synchronization, and commercial rooftop plant commissioning.",
     },
   ];
 
   return (
-    <div className="bg-[#FAFAFA]">
-      
-      {/* Hero Header */}
-      <section className="relative py-20 bg-white border-b border-slate-200">
+    <div className="w-full font-sans bg-[#FAFAFA]">
+      {/* 1. Page Header / Banner */}
+      <section className="bg-slate-900 text-white py-16 sm:py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4 relative z-10">
+          <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full inline-block">
+            ABOUT PRAGATI ECOSOLAR
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
+            Odisha&apos;s Trusted Solar EPC Partner
+          </h1>
+          <p className="text-sm sm:text-base text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            {SITE_CONFIG.headline}
+          </p>
+        </div>
+      </section>
+
+      {/* 2. Our Story */}
+      <section className="py-20 bg-white border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-8">
+          <div className="text-center space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold">
+              OUR MISSION & IDENTITY
+            </span>
+            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Our Story</h2>
+          </div>
+
+          <div className="p-8 bg-[#FAFAFA] border border-slate-200 rounded-3xl text-sm text-slate-700 leading-relaxed space-y-4 shadow-sm">
+            <p>
+              Pragati EcoSolar is a solar EPC company based in Bhubaneswar, Odisha, delivering end-to-end rooftop and ground-mounted solar solutions across the state. We are an authorized installer under the PM Surya Ghar Muft Bijli Yojana and are empanelled across all four Odisha DISCOM zones — TPCODL, TPNODL, TPSODL, and TPWODL.
+            </p>
+            <p>
+              From site assessment to grid commissioning, our in-house team manages the full project lifecycle — engineering, procurement, installation, subsidy processing, and after-sales support — so customers deal with a single accountable partner.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Credentials Strip */}
+      <section className="py-12 bg-emerald-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {credentials.map((c, i) => (
+              <div key={i} className="p-4 bg-emerald-950/80 border border-emerald-800 rounded-2xl space-y-1">
+                <strong className="text-xs font-mono font-bold text-amber-400 block">{c.label}</strong>
+                <span className="text-xs text-slate-200">{c.detail}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Why Choose Us (Icon Grid) */}
+      <section className="py-20 bg-[#FAFAFA]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-3">
             <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full inline-block">
-              ABOUT PRAGATI ECOSOLAR
-            </span>
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-              Odisha’s Trusted Solar EPC Engineering Authority
-            </h1>
-            <p className="text-base text-slate-600 leading-relaxed">
-              Headquartered at HIG 42, Aryapalli, Patia, Bhubaneswar under the leadership of Managing Director <strong className="text-slate-900">Kalpna Sahoo</strong>, Pragati EcoSolar is dedicated to delivering high-yield, hurricane-resilient rooftop solar systems across Odisha.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Profile & Leadership Overview */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
-          <div className="lg:col-span-6 space-y-6">
-            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              Engineering Rigor Meets Local Utility Mastery
-            </h2>
-
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Pragati EcoSolar was established to solve the core challenges faced by solar adopters in Odisha: erratic DISCOM approval delays, sub-standard structural mounting in cyclone-prone coastal weather, and lack of post-installation maintenance.
-            </p>
-
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Our in-house team of electrical engineers, civil structural designers, and regulatory liaison officers manage the complete lifecycle—from initial 3D shadow analysis to final bi-directional meter synchronization with TPCODL, TPNODL, TPSODL, and TPWODL.
-            </p>
-
-            <div className="p-6 bg-white border border-slate-200 rounded-2xl space-y-3 shadow-sm">
-              <div className="flex items-center space-x-3">
-                <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-700">
-                  <UserCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900">MD Kalpna Sahoo</h4>
-                  <span className="text-xs font-mono text-slate-500">Managing Director, Pragati EcoSolar</span>
-                </div>
-              </div>
-              <p className="text-xs text-slate-600 italic leading-relaxed">
-                &ldquo;Our commitment is clear: zero compromise on structural safety, 100% DISCOM net-metering compliance, and maximum kilowatt-hour solar generation for 25 years.&rdquo;
-              </p>
-            </div>
-          </div>
-
-          <div className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-8 space-y-6 shadow-xl">
-            <h3 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-4">
-              Key Corporate Specifications
-            </h3>
-
-            <div className="space-y-4 font-mono text-xs">
-              <div className="flex justify-between py-2 border-b border-slate-100">
-                <span className="text-slate-500">Company Name:</span>
-                <strong className="text-slate-900">Pragati EcoSolar</strong>
-              </div>
-              <div className="flex justify-between py-2 border-b border-slate-100">
-                <span className="text-slate-500">Managing Director:</span>
-                <strong className="text-amber-700">Kalpna Sahoo</strong>
-              </div>
-              <div className="flex justify-between py-2 border-b border-slate-100">
-                <span className="text-slate-500">GST Registration:</span>
-                <strong className="text-slate-900">21ABIFP1344D1ZS</strong>
-              </div>
-              <div className="flex justify-between py-2 border-b border-slate-100">
-                <span className="text-slate-500">Headquarters Address:</span>
-                <strong className="text-slate-900 text-right">HIG 42, Aryapalli, Patia, Bhubaneswar – 751024</strong>
-              </div>
-              <div className="flex justify-between py-2">
-                <span className="text-slate-500">Banker:</span>
-                <strong className="text-emerald-700">IDFC FIRST BANK (A/C: 86522167402)</strong>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Engineering Standards */}
-      <section className="py-20 bg-white border-y border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold px-3 py-1 bg-amber-50 border border-amber-200 rounded-full inline-block">
-              TECHNICAL EXCELLENCE
+              OUR EPC ADVANTAGE
             </span>
             <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              Our Coastal Odisha Engineering Standards
+              Why Choose Pragati EcoSolar?
             </h2>
-            <p className="text-slate-600 text-sm">
-              Why Pragati EcoSolar installations withstand high humidity, coastal salinity, and cyclone winds.
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {standards.map((std, idx) => {
-              const Icon = std.icon;
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {whyChooseUs.map((w, i) => {
+              const Icon = w.icon;
               return (
-                <div
-                  key={idx}
-                  className="bg-[#FAFAFA] p-8 rounded-3xl border border-slate-200 hover:border-emerald-300 transition-all flex flex-col justify-between space-y-4 shadow-sm"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div className="p-3 rounded-2xl bg-white border border-slate-200 text-emerald-600 shadow-sm">
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <h3 className="text-lg font-bold text-slate-900">
-                      {std.title}
-                    </h3>
+                <div key={i} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
+                  <div className="p-3 bg-slate-900 text-amber-400 rounded-xl w-fit">
+                    <Icon className="w-6 h-6" />
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    {std.description}
-                  </p>
-                  <div className="pt-2 flex items-center space-x-2 text-[11px] text-amber-700 font-mono font-bold">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Verified Quality Inspection Protocol</span>
-                  </div>
+                  <h3 className="text-base font-bold text-slate-900">{w.title}</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">{w.desc}</p>
                 </div>
               );
             })}
           </div>
-
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════
-          CORE TEAM
-      ═══════════════════════════════════════════════ */}
-      <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14 space-y-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full inline-block">
-            OUR PEOPLE
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Meet the Core Team
-          </h2>
-          <p className="text-sm text-slate-500 max-w-xl mx-auto">
-            The dedicated professionals behind every solar installation, subsidy claim, and customer smile across Odisha.
-          </p>
-        </div>
+      {/* 5. Leadership / Core Team Cards Grid */}
+      <section className="py-20 bg-white border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold px-3 py-1 bg-amber-50 border border-amber-200 rounded-full inline-block">
+              ENGINEERING LEADERSHIP
+            </span>
+            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+              Our Core Technical Leadership
+            </h2>
+          </div>
 
-        {/* Team Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            {
-              name: "Kalpna Sahoo",
-              designation: "Managing Director",
-              photo: "/kalpana sahoo.jpeg",
-              accent: "bg-amber-50 border-amber-200 text-amber-700",
-              badge: "Leadership",
-            },
-            {
-              name: "Akash Kumar Behera",
-              designation: "General Manager",
-              photo: "/akash kumar behera.jpeg",
-              accent: "bg-emerald-50 border-emerald-200 text-emerald-700",
-              badge: "Operations",
-            },
-            {
-              name: "Pratap Kumar Das",
-              designation: "Operation Head",
-              photo: "/Pratap kumar das.jpeg",
-              accent: "bg-emerald-50 border-emerald-200 text-emerald-700",
-              badge: "Operations",
-            },
-            {
-              name: "Monalisa Dalai",
-              designation: "Business Development Manager",
-              photo: "/Monalisa Dalai.jpeg",
-              accent: "bg-sky-50 border-sky-200 text-sky-700",
-              badge: "Growth",
-            },
-            {
-              name: "Arpita Biswal",
-              designation: "Customer Relationship Manager",
-              photo: "/Arpita biswal.jpeg",
-              accent: "bg-violet-50 border-violet-200 text-violet-700",
-              badge: "Customer Care",
-            },
-            {
-              name: "Banti Jena",
-              designation: "Customer Relationship Manager",
-              photo: "/Banty jena.jpeg",
-              accent: "bg-violet-50 border-violet-200 text-violet-700",
-              badge: "Customer Care",
-            },
-          ].map((member) => (
-            <div
-              key={member.name}
-              className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 group"
-            >
-              {/* Photo */}
-              <div className="aspect-[4/3] w-full bg-slate-100 overflow-hidden">
-                <img
-                  src={member.photo}
-                  alt={member.name}
-                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-
-              {/* Info */}
-              <div className="p-5">
-                <span
-                  className={`inline-block text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border mb-3 ${member.accent}`}
-                >
-                  {member.badge}
-                </span>
-                <h3 className="text-base font-extrabold text-slate-900 leading-tight">
-                  {member.name}
-                </h3>
-                <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  {member.designation}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {coreTeam.map((t, i) => (
+              <div key={i} className="bg-[#FAFAFA] border border-slate-200 rounded-2xl p-6 space-y-3 shadow-sm">
+                <div className="w-12 h-12 bg-slate-900 text-emerald-400 font-extrabold rounded-xl flex items-center justify-center font-mono text-lg">
+                  {t.name[4]}
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">{t.name}</h3>
+                  <span className="text-xs text-emerald-700 font-mono font-semibold block">{t.role}</span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed pt-2 border-t border-slate-200">
+                  {t.bio}
                 </p>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-10 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 text-center md:text-left shadow-xl">
-          <div className="space-y-2">
-            <h3 className="text-2xl font-bold text-white">Ready to switch your property to clean solar power?</h3>
-            <p className="text-xs text-slate-400">Get a detailed engineering quotation & DISCOM net-meter feasibility check in Patia, Bhubaneswar.</p>
+            ))}
           </div>
-          <Link
-            href="/contact"
-            className="py-3.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg transition-all flex items-center space-x-2 shrink-0 font-mono"
-          >
-            <span>Book Site Feasibility Survey</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
         </div>
       </section>
 
+      {/* 6. Closing CTA */}
+      <section className="py-16 bg-slate-900 text-white text-center">
+        <div className="max-w-3xl mx-auto px-4 space-y-6">
+          <h2 className="text-2xl sm:text-3xl font-extrabold">Work with Odisha&apos;s Single Accountable EPC Partner</h2>
+          <p className="text-xs sm:text-sm text-slate-300">
+            Book a free site visit or request a custom technical proposal tailored to your power requirements.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Link
+              href="/contact?type=site-visit"
+              className="py-3.5 px-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg"
+            >
+              Book Free Site Visit
+            </Link>
+            <Link
+              href="/contact?type=quote"
+              className="py-3.5 px-6 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl border border-slate-700"
+            >
+              Contact Engineering Team
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

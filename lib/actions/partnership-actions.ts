@@ -1,99 +1,38 @@
 "use server";
 
-import prisma from "@/lib/prisma";
-import { PartnershipType, ApplicationStatus } from "@prisma/client";
+import {
+  getAllPartnerships,
+  updatePartnershipStatus,
+  deletePartnership,
+  PartnershipStatus,
+} from "@/lib/data-store";
+import { revalidatePath } from "next/cache";
 
-export interface FranchiseInput {
-  type: "FRANCHISE";
-  fullName: string;
-  phone: string;
-  email: string;
-  district: string;
-  notes?: string;
-  showroomSpaceSqFt?: string;
-  investmentCapacity?: string;
-  businessExperience?: string;
-}
-
-export interface DealershipInput {
-  type: "DEALERSHIP";
-  fullName: string;
-  phone: string;
-  email: string;
-  district: string;
-  notes?: string;
-  businessName?: string;
-  gstin?: string;
-  interestedProducts?: string[];
-}
-
-export type CreatePartnershipInput = FranchiseInput | DealershipInput;
-
-export async function createPartnershipApplication(input: CreatePartnershipInput) {
+export async function getPartnershipsAction() {
   try {
-    const application = await prisma.partnershipApplication.create({
-      data: {
-        type: input.type as PartnershipType,
-        fullName: input.fullName,
-        phone: input.phone,
-        email: input.email,
-        district: input.district,
-        notes: input.notes,
-        ...(input.type === "FRANCHISE"
-          ? {
-              showroomSpaceSqFt: input.showroomSpaceSqFt,
-              investmentCapacity: input.investmentCapacity,
-              businessExperience: input.businessExperience,
-            }
-          : {
-              businessName: input.businessName,
-              gstin: input.gstin,
-              interestedProducts: input.interestedProducts ?? [],
-            }),
-      },
-    });
-
-    return { success: true, data: application };
+    const list = getAllPartnerships();
+    return { success: true, data: list };
   } catch (error: any) {
-    console.error("[Partnership Action Error]:", error);
-    return { success: false, error: error.message || "Failed to submit application" };
+    return { success: false, error: error.message };
   }
 }
 
-export async function getPartnershipApplications(type?: PartnershipType) {
+export async function updatePartnershipStatusAction(id: string, status: PartnershipStatus) {
   try {
-    const applications = await prisma.partnershipApplication.findMany({
-      where: type ? { type } : undefined,
-      orderBy: { createdAt: "desc" },
-    });
-    return { success: true, data: applications };
+    const ok = updatePartnershipStatus(id, status);
+    revalidatePath("/admin/partnerships");
+    return { success: ok };
   } catch (error: any) {
-    console.error("[Get Partnerships Error]:", error);
-    return { success: false, error: error.message || "Failed to fetch applications" };
+    return { success: false, error: error.message };
   }
 }
 
-export async function updatePartnershipStatusAction(id: string, status: ApplicationStatus) {
+export async function deletePartnershipAction(id: string) {
   try {
-    const updated = await prisma.partnershipApplication.update({
-      where: { id },
-      data: { status },
-    });
-    return { success: true, data: updated };
+    const ok = deletePartnership(id);
+    revalidatePath("/admin/partnerships");
+    return { success: ok };
   } catch (error: any) {
-    console.error("[Update Partnership Status Error]:", error);
-    return { success: false, error: error.message || "Failed to update status" };
-  }
-}
-
-export async function deletePartnershipApplicationAction(id: string) {
-  try {
-    await prisma.partnershipApplication.delete({
-      where: { id },
-    });
-    return { success: true };
-  } catch (error: any) {
-    console.error("[Delete Partnership Error]:", error);
-    return { success: false, error: error.message || "Failed to delete application" };
+    return { success: false, error: error.message };
   }
 }

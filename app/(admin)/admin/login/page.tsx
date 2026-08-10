@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 import { loginAction } from "@/lib/actions/auth-action";
 
 export default function AdminLoginPage() {
@@ -12,20 +12,14 @@ export default function AdminLoginPage() {
       <div className="admin-login-bg" />
 
       <div className="admin-login-card">
-        {/* Logo & Header */}
+        {/* Official White Brand Logo & Header */}
         <div className="admin-login-header">
-          <div className="admin-login-logo">
-            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="20" cy="20" r="20" fill="url(#lg)" />
-              <path d="M20 8L26 18H14L20 8Z" fill="white" fillOpacity="0.9" />
-              <path d="M14 18H26L22 32H18L14 18Z" fill="white" fillOpacity="0.6" />
-              <defs>
-                <linearGradient id="lg" x1="0" y1="0" x2="40" y2="40">
-                  <stop stopColor="#F59E0B" />
-                  <stop offset="1" stopColor="#D97706" />
-                </linearGradient>
-              </defs>
-            </svg>
+          <div className="flex justify-center mb-3">
+            <img
+              src="/logo-white.png"
+              alt="Pragati EcoSolar"
+              className="h-12 w-auto object-contain"
+            />
           </div>
           <h1 className="admin-login-title">Admin Panel</h1>
           <p className="admin-login-subtitle">Pragati EcoSolar — Secure Access</p>
@@ -124,16 +118,11 @@ export default function AdminLoginPage() {
           text-align: center;
           margin-bottom: 2rem;
         }
-        .admin-login-logo {
-          width: 56px;
-          height: 56px;
-          margin: 0 auto 1rem;
-        }
         .admin-login-title {
           font-size: 1.6rem;
           font-weight: 700;
           color: #F9FAFB;
-          margin: 0 0 0.25rem;
+          margin: 0.5rem 0 0.25rem;
           letter-spacing: -0.02em;
         }
         .admin-login-subtitle {

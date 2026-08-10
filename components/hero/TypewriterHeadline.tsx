@@ -4,12 +4,14 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const DYNAMIC_WORDS = [
-  "Almost Zero.",
-  "Zero with Solar.",
-  "Save up to 90%.",
+  "On-Grid, Off-Grid & Hybrid Solutions.",
+  "Powering Homes & Businesses.",
+  "PM Surya Ghar Subsidy Authorized.",
+  "Save Up to 90% Electricity Bills.",
 ];
 
 interface TypewriterHeadlineProps {
+  prefixText?: string;
   words?: string[];
   typingSpeed?: number;
   backspaceSpeed?: number;
@@ -19,12 +21,13 @@ interface TypewriterHeadlineProps {
 }
 
 export const TypewriterHeadline: React.FC<TypewriterHeadlineProps> = ({
+  prefixText = "Odisha's Trusted Solar EPC Partner — ",
   words = DYNAMIC_WORDS,
   typingSpeed = 80,
-  backspaceSpeed = 50,
-  pauseDuration = 2000,
-  highlightClassName = "text-emerald-500 font-extrabold",
-  textClassName = "text-slate-900 dark:text-white",
+  backspaceSpeed = 40,
+  pauseDuration = 2200,
+  highlightClassName = "text-emerald-600 font-extrabold",
+  textClassName = "text-slate-900",
 }) => {
   const [wordIndex, setWordIndex] = useState(0);
   const [currentText, setCurrentText] = useState("");
@@ -53,7 +56,7 @@ export const TypewriterHeadline: React.FC<TypewriterHeadlineProps> = ({
         timer = setTimeout(() => {
           setIsDeleting(false);
           setWordIndex((prev) => (prev + 1) % words.length);
-        }, 400);
+        }, 300);
       }
     }
 
@@ -61,25 +64,27 @@ export const TypewriterHeadline: React.FC<TypewriterHeadlineProps> = ({
   }, [currentText, isDeleting, wordIndex, words, typingSpeed, backspaceSpeed, pauseDuration]);
 
   return (
-    <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.12] ${textClassName}`}>
-      Cut Your Electricity Bill<br className="hidden sm:inline" /> to{" "}
-      <span className={`inline-inline-block ${highlightClassName}`}>
-        {currentText}
-        <motion.span
-          animate={{ opacity: [1, 0] }}
-          transition={{
-            duration: 0.55,
-            repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
-          }}
-          className="inline-block font-light ml-1 select-none"
-          aria-hidden="true"
-        >
-          |
-        </motion.span>
-      </span>
-    </h1>
+    <div className="min-h-[140px] sm:min-h-[160px] lg:min-h-[180px] flex flex-col justify-start">
+      <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.18] ${textClassName}`}>
+        {prefixText}
+        <span className={`inline ${highlightClassName}`}>
+          {currentText}
+          <motion.span
+            animate={{ opacity: [1, 0] }}
+            transition={{
+              duration: 0.55,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut",
+            }}
+            className="inline-block font-light text-emerald-600 ml-1 select-none"
+            aria-hidden="true"
+          >
+            |
+          </motion.span>
+        </span>
+      </h1>
+    </div>
   );
 };
 

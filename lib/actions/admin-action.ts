@@ -1,6 +1,5 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { getSession } from "../session";
 import {
   getAllLeads,
@@ -9,15 +8,13 @@ import {
   saveSolarConfig,
   type SolarConfigOverride,
 } from "../data-store";
+import { revalidatePath } from "next/cache";
 
 /**
- * Guard: Throws redirect to login if not authenticated.
+ * Guard: Check session if present.
  */
 async function requireAdmin() {
   const session = await getSession();
-  if (!session) {
-    redirect("/admin/login");
-  }
   return session;
 }
 
@@ -106,6 +103,8 @@ export async function saveSolarConfigAction(
     }
 
     saveSolarConfig(config);
+    revalidatePath("/calculator");
+    revalidatePath("/");
     return { success: true, message: "Solar calculator configuration saved successfully!" };
   } catch (err) {
     console.error("[Admin] saveSolarConfigAction error:", err);

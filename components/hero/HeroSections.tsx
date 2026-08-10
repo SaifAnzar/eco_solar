@@ -502,33 +502,35 @@ export const HeroSection3DSunOrbit: React.FC = () => {
               </span>
             </div>
 
-            {/* Typewriter Headline */}
-            <TypewriterHeadline
-              highlightClassName="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-300 font-extrabold drop-shadow-[0_0_30px_rgba(52,211,153,0.45)]"
-              textClassName="text-white"
-            />
+            {/* Headline */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.18] text-white">
+              Odisha&apos;s Trusted Solar EPC Partner —{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-300 font-extrabold drop-shadow-[0_0_30px_rgba(52,211,153,0.45)]">
+                Powering Homes &amp; Businesses with On-Grid, Off-Grid &amp; Hybrid Solutions
+              </span>
+            </h1>
 
             {/* Subtitle */}
-            <p className="text-lg text-slate-300 leading-relaxed">
-              Rooftop solar for homes, offices &amp; farms across Odisha. We take care of panels, installation, government subsidy, and meter approval — start to finish.
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+              Government-authorized installer under PM Surya Ghar Muft Bijli Yojana, empanelled across all four Odisha DISCOMs. From design to commissioning — we handle it all.
             </p>
 
             {/* Primary Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3.5">
               <Link
-                href="/calculator"
+                href="/contact?type=site-visit"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold text-sm rounded-xl transition-all shadow-[0_0_35px_rgba(16,185,129,0.4)] hover:scale-[1.02] active:scale-[0.98]"
               >
-                Calculate Solar Savings
+                Book Free Site Visit
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <a
-                href="tel:+919124318222"
+              <Link
+                href="/contact?type=quote"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-slate-900/90 hover:bg-slate-800 text-slate-200 font-semibold text-sm rounded-xl border border-slate-700 hover:border-slate-500 shadow-sm transition-all"
               >
                 <Phone className="w-4 h-4 text-emerald-400" />
-                Call Our Team
-              </a>
+                Get a Custom Quote
+              </Link>
             </div>
 
             {/* Partnership CTAs */}

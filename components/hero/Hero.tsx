@@ -13,19 +13,25 @@ import {
 import { calculateSolarQuote } from "@/lib/solar-engine";
 import { TypewriterHeadline } from "./TypewriterHeadline";
 
-export const Hero: React.FC = () => {
+interface HeroProps {
+  heroSubline?: string;
+}
+
+export const Hero: React.FC<HeroProps> = ({
+  heroSubline = "Government-authorized installer under PM Surya Ghar Muft Bijli Yojana, empanelled across all four Odisha DISCOMs. From design to commissioning — we handle it all.",
+}) => {
   const [monthlyBill, setMonthlyBill] = useState<number>(3500);
 
   const estimatedKw = Math.max(1, Math.min(10, Math.round(monthlyBill / 1000)));
   const quote = calculateSolarQuote(estimatedKw, 4.5, true);
 
   return (
-    <section className="relative py-20 lg:py-28 border-b border-slate-100 overflow-hidden">
+    <section className="relative py-20 lg:py-28 border-b border-slate-100 overflow-hidden bg-white">
       {/* Subtle background accent */}
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/60 via-white to-amber-50/30 pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* LEFT */}
           <div className="space-y-8">
             {/* Badge */}
@@ -40,26 +46,26 @@ export const Hero: React.FC = () => {
             <TypewriterHeadline />
 
             {/* Subtitle */}
-            <p className="text-lg text-slate-500 leading-relaxed max-w-lg">
-              Rooftop solar for homes, offices & farms across Odisha. We take care of panels, installation, government subsidy, and meter approval — start to finish.
+            <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-lg font-medium">
+              {heroSubline}
             </p>
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
-                href="/calculator"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-slate-900 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl transition-all shadow-lg"
+                href="/contact?type=site-visit"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:shadow-emerald-600/20"
               >
-                Calculate Solar Savings
+                Book Free Site Visit
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <a
-                href="tel:+919124318222"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-sm rounded-xl border border-slate-200 shadow-sm transition-all"
+              <Link
+                href="/contact?type=quote"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl border border-slate-200 shadow-sm transition-all"
               >
-                <Phone className="w-4 h-4 text-emerald-600" />
-                Call Our Team
-              </a>
+                <Phone className="w-4 h-4 text-emerald-400" />
+                Get a Custom Quote
+              </Link>
             </div>
 
             {/* Partnership CTAs */}
@@ -91,7 +97,7 @@ export const Hero: React.FC = () => {
               </span>
               <span className="flex items-center gap-1.5">
                 <Zap className="w-4 h-4 text-amber-500" />
-                Meter Approval Included
+                4 DISCOM Zones Empanelled
               </span>
               <span className="flex items-center gap-1.5">
                 <MapPin className="w-4 h-4 text-emerald-500" />
@@ -128,7 +134,7 @@ export const Hero: React.FC = () => {
             </div>
 
             {/* Results */}
-            <div className="bg-slate-900 rounded-xl p-5 space-y-3">
+            <div className="bg-slate-900 rounded-xl p-5 space-y-3 font-mono">
               <div className="flex justify-between items-center text-sm border-b border-slate-700 pb-3">
                 <span className="text-slate-400">Recommended Size</span>
                 <strong className="text-amber-400">{quote.systemKw} kW System</strong>
@@ -153,7 +159,7 @@ export const Hero: React.FC = () => {
 
             <Link
               href="/calculator"
-              className="block w-full text-center py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all"
+              className="block w-full text-center py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-md"
             >
               Get My Full Solar Plan →
             </Link>

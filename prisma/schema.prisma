@@ -20,6 +20,27 @@ enum ApplicationStatus {
   REJECTED
 }
 
+enum ConsumerCategory {
+  RESIDENTIAL
+  COMMERCIAL_INDUSTRIAL
+  AGRICULTURAL
+}
+
+enum SystemType {
+  ON_GRID
+  OFF_GRID
+  HYBRID
+  SOLAR_PUMP
+  STREET_LIGHTING
+}
+
+enum OdishaDiscom {
+  TPCODL
+  TPNODL
+  TPSODL
+  TPWODL
+}
+
 model PartnershipApplication {
   id                 String            @id @default(cuid())
   type               PartnershipType
@@ -33,15 +54,15 @@ model PartnershipApplication {
   notes              String?
   
   // Franchise Fields
-  showroomSpaceSqFt String?
+  showroomSpaceSqFt  String?
   investmentCapacity String?
   businessExperience String?
   
   // Dealership Fields
   businessName       String?
   gstin              String?
-  interestedProducts String[]          // Array of product categories
-  
+  interestedProducts String[]
+
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
 }
@@ -57,4 +78,91 @@ model SolarQuoteRequest {
   subsidyAmount   Float
   status          ApplicationStatus @default(PENDING)
   createdAt       DateTime          @default(now())
+}
+
+model SiteVisitInquiry {
+  id           String           @id @default(cuid())
+  fullName     String
+  mobileNumber String
+  email        String?
+  pincode      String
+  district     String
+  discom       OdishaDiscom?
+  category     ConsumerCategory @default(RESIDENTIAL)
+  systemType   SystemType       @default(ON_GRID)
+  monthlyBill  Float?
+  roofAreaSqFt Float?
+  message      String?
+  status       String           @default("PENDING")
+
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([mobileNumber])
+  @@index([district])
+}
+
+model SolarPackage {
+  id                  String           @id @default(cuid())
+  name                String
+  category            ConsumerCategory
+  systemType          SystemType
+  capacityKw          Float
+  areaRequiredSqFt    Float
+  batteryCapacityKwh  Float?
+  backupHours         Float?
+  costBeforeSubsidy   Float
+  govtSubsidy         Float
+  netPrice            Float
+  isSuryaGharEligible Boolean          @default(false)
+  status              String           @default("ACTIVE")
+
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+}
+
+model SiteSettings {
+  id                 String   @id @default("default")
+  heroHeadline       String   @default("Odisha's Trusted Solar EPC Partner — Powering Homes & Businesses with On-Grid, Off-Grid & Hybrid Solutions")
+  heroSubline        String   @default("Government-authorized installer under PM Surya Ghar Muft Bijli Yojana, empanelled across all four Odisha DISCOMs. From design to commissioning — we handle it all.")
+  contactAddress     String   @default("HIG/42, Aryapalli, Patia, Bhubaneswar, Odisha 751024")
+  contactPhone       String   @default("+91 91243 18222")
+  contactEmail       String   @default("solarbee.bbsr@gmail.com")
+  workingHours       String   @default("Mon – Sat: 9:30 AM – 6:30 PM")
+  systemsInstalled   String   @default("500+")
+  capacityDelivered  String   @default("5+ MW")
+  discomZonesCovered String   @default("4 Zones")
+  epcScope           String   @default("100% EPC")
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model ProjectPortfolio {
+  id           String   @id @default(cuid())
+  title        String
+  clientType   String
+  district     String
+  systemSizeKw Float
+  systemType   String   @default("On-Grid")
+  imageUrl     String   @default("/images/project-default.jpg")
+  testimonial  String?
+  clientName   String?
+  status       String   @default("PUBLISHED")
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([district])
+}
+
+model SchemeAndService {
+  id         String   @id @default(cuid())
+  sectionKey String   @unique
+  title      String
+  content    String
+  metaJson   String?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

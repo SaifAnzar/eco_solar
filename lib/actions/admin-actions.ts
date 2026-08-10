@@ -1,0 +1,314 @@
+"use server";
+
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODULE 1: SITE CONTENT & HERO CMS ACTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+let cachedSettingsData: any = null;
+
+export async function getSiteSettings() {
+  if (cachedSettingsData) {
+    return { success: true, data: cachedSettingsData };
+  }
+
+  try {
+    const db = prisma as any;
+    let settings = await db.siteSettings.findUnique({
+      where: { id: "default" },
+    });
+
+    if (!settings) {
+      settings = await db.siteSettings.create({
+        data: {
+          id: "default",
+          heroHeadline: "Odisha's Trusted Solar EPC Partner — Powering Homes & Businesses with On-Grid, Off-Grid & Hybrid Solutions",
+          heroSubline: "Government-authorized installer under PM Surya Ghar Muft Bijli Yojana, empanelled across all four Odisha DISCOMs. From design to commissioning — we handle it all.",
+          contactAddress: "HIG/42, Aryapalli, Patia, Bhubaneswar, Odisha 751024",
+          contactPhone: "+91 91243 18222",
+          contactEmail: "solarbee.bbsr@gmail.com",
+          workingHours: "Mon – Sat: 9:30 AM – 6:30 PM",
+          systemsInstalled: "500+",
+          capacityDelivered: "5+ MW",
+          discomZonesCovered: "4 Zones",
+          epcScope: "100% EPC",
+        },
+      });
+    }
+
+    cachedSettingsData = settings;
+    return { success: true, data: settings };
+  } catch (error: any) {
+    console.error("Error getting site settings:", error);
+    return {
+      success: false,
+      data: {
+        id: "default",
+        heroHeadline: "Odisha's Trusted Solar EPC Partner — Powering Homes & Businesses with On-Grid, Off-Grid & Hybrid Solutions",
+        heroSubline: "Government-authorized installer under PM Surya Ghar Muft Bijli Yojana, empanelled across all four Odisha DISCOMs. From design to commissioning — we handle it all.",
+        contactAddress: "HIG/42, Aryapalli, Patia, Bhubaneswar, Odisha 751024",
+        contactPhone: "+91 91243 18222",
+        contactEmail: "solarbee.bbsr@gmail.com",
+        workingHours: "Mon – Sat: 9:30 AM – 6:30 PM",
+        systemsInstalled: "500+",
+        capacityDelivered: "5+ MW",
+        discomZonesCovered: "4 Zones",
+        epcScope: "100% EPC",
+      },
+    };
+  }
+}
+
+export async function updateSiteSettings(data: {
+  heroHeadline: string;
+  heroSubline: string;
+  contactAddress: string;
+  contactPhone: string;
+  contactEmail: string;
+  workingHours: string;
+  systemsInstalled: string;
+  capacityDelivered: string;
+  discomZonesCovered: string;
+  epcScope: string;
+}) {
+  try {
+    const db = prisma as any;
+    const updated = await db.siteSettings.upsert({
+      where: { id: "default" },
+      update: data,
+      create: { id: "default", ...data },
+    });
+
+    cachedSettingsData = updated;
+    revalidatePath("/");
+    revalidatePath("/about");
+    revalidatePath("/contact");
+    return { success: true, message: "Site content & settings saved successfully!", data: updated };
+  } catch (error: any) {
+    console.error("Error updating site settings:", error);
+    return { success: false, error: "Failed to update site settings." };
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODULE 2: LEADS & SITE VISIT MANAGEMENT ACTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getLeads(filters?: { district?: string; discom?: string; status?: string }) {
+  try {
+    const db = prisma as any;
+    const where: any = {};
+
+    if (filters?.district && filters.district !== "ALL") {
+      where.district = { contains: filters.district, mode: "insensitive" };
+    }
+    if (filters?.discom && filters.discom !== "ALL") {
+      where.discom = filters.discom;
+    }
+    if (filters?.status && filters.status !== "ALL") {
+      where.status = filters.status;
+    }
+
+    const inquiries = await db.siteVisitInquiry.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
+
+    return { success: true, data: inquiries };
+  } catch (error: any) {
+    console.error("Error fetching leads:", error);
+    return { success: false, data: [] };
+  }
+}
+
+export async function updateLeadStatus(id: string, status: string) {
+  try {
+    const db = prisma as any;
+    const updated = await db.siteVisitInquiry.update({
+      where: { id },
+      data: { status },
+    });
+
+    revalidatePath("/admin/leads");
+    return { success: true, message: `Status updated to ${status}`, data: updated };
+  } catch (error: any) {
+    console.error("Error updating lead status:", error);
+    return { success: false, error: "Failed to update lead status." };
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODULE 3: SOLAR PACKAGES CMS ACTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getSolarPackages() {
+  try {
+    const db = prisma as any;
+    const packages = await db.solarPackage.findMany({
+      orderBy: { capacityKw: "asc" },
+    });
+    return { success: true, data: packages };
+  } catch (error: any) {
+    console.error("Error fetching packages:", error);
+    return { success: false, data: [] };
+  }
+}
+
+export async function upsertSolarPackage(data: {
+  id?: string;
+  name: string;
+  category: "RESIDENTIAL" | "COMMERCIAL_INDUSTRIAL" | "AGRICULTURAL";
+  systemType: "ON_GRID" | "OFF_GRID" | "HYBRID" | "SOLAR_PUMP" | "STREET_LIGHTING";
+  capacityKw: number;
+  areaRequiredSqFt: number;
+  batteryCapacityKwh?: number;
+  backupHours?: number;
+  costBeforeSubsidy: number;
+  govtSubsidy: number;
+  netPrice: number;
+  isSuryaGharEligible: boolean;
+  status: string;
+}) {
+  try {
+    const db = prisma as any;
+    let result;
+    if (data.id) {
+      result = await db.solarPackage.update({
+        where: { id: data.id },
+        data,
+      });
+    } else {
+      result = await db.solarPackage.create({
+        data,
+      });
+    }
+
+    revalidatePath("/residential");
+    revalidatePath("/commercial");
+    revalidatePath("/services");
+    revalidatePath("/admin/packages");
+    return { success: true, message: "Package saved successfully!", data: result };
+  } catch (error: any) {
+    console.error("Error upserting package:", error);
+    return { success: false, error: "Failed to save package." };
+  }
+}
+
+export async function deleteSolarPackage(id: string) {
+  try {
+    const db = prisma as any;
+    await db.solarPackage.delete({ where: { id } });
+    revalidatePath("/admin/packages");
+    revalidatePath("/residential");
+    revalidatePath("/commercial");
+    return { success: true, message: "Package deleted successfully!" };
+  } catch (error: any) {
+    console.error("Error deleting package:", error);
+    return { success: false, error: "Failed to delete package." };
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODULE 4: PROJECTS PORTFOLIO MANAGER ACTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getProjects() {
+  try {
+    const db = prisma as any;
+    const projects = await db.projectPortfolio.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return { success: true, data: projects };
+  } catch (error: any) {
+    console.error("Error fetching projects:", error);
+    return { success: false, data: [] };
+  }
+}
+
+export async function upsertProject(data: {
+  id?: string;
+  title: string;
+  clientType: string;
+  district: string;
+  systemSizeKw: number;
+  systemType: string;
+  imageUrl: string;
+  testimonial?: string;
+  clientName?: string;
+  status: string;
+}) {
+  try {
+    const db = prisma as any;
+    let result;
+    if (data.id) {
+      result = await db.projectPortfolio.update({
+        where: { id: data.id },
+        data,
+      });
+    } else {
+      result = await db.projectPortfolio.create({
+        data,
+      });
+    }
+
+    revalidatePath("/projects");
+    revalidatePath("/");
+    revalidatePath("/admin/projects");
+    return { success: true, message: "Project saved successfully!", data: result };
+  } catch (error: any) {
+    console.error("Error upserting project:", error);
+    return { success: false, error: "Failed to save project." };
+  }
+}
+
+export async function deleteProject(id: string) {
+  try {
+    const db = prisma as any;
+    await db.projectPortfolio.delete({ where: { id } });
+    revalidatePath("/projects");
+    revalidatePath("/");
+    revalidatePath("/admin/projects");
+    return { success: true, message: "Project deleted successfully!" };
+  } catch (error: any) {
+    console.error("Error deleting project:", error);
+    return { success: false, error: "Failed to delete project." };
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODULE 5: SERVICES & SCHEMES CMS ACTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function getSchemeAndService(sectionKey: string) {
+  try {
+    const db = prisma as any;
+    const item = await db.schemeAndService.findUnique({
+      where: { sectionKey },
+    });
+    return { success: true, data: item };
+  } catch (error: any) {
+    console.error("Error fetching scheme & service:", error);
+    return { success: false, data: null };
+  }
+}
+
+export async function upsertSchemeAndService(sectionKey: string, title: string, content: string, metaJson?: string) {
+  try {
+    const db = prisma as any;
+    const result = await db.schemeAndService.upsert({
+      where: { sectionKey },
+      update: { title, content, metaJson },
+      create: { sectionKey, title, content, metaJson },
+    });
+
+    revalidatePath("/services");
+    revalidatePath("/government-schemes");
+    revalidatePath("/admin/services-schemes");
+    return { success: true, message: "Content updated successfully!", data: result };
+  } catch (error: any) {
+    console.error("Error upserting scheme & service:", error);
+    return { success: false, error: "Failed to save content." };
+  }
+}

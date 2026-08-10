@@ -1,16 +1,1 @@
-{
-  "inq_vn4f9umr9": {
-    "fullName": "Ananya Rout",
-    "phone": "9876543210",
-    "email": "ananya@example.com",
-    "location": "Khandagiri, Bhubaneswar",
-    "discomRegion": "TPCODL (Central Odisha)",
-    "systemType": "residential",
-    "monthlyBill": "3500",
-    "rooftopArea": "500",
-    "message": "Need 5kW Residential Solar System with net-metering.",
-    "id": "inq_vn4f9umr9",
-    "status": "RESOLVED",
-    "createdAt": "2026-08-04T09:53:38.733Z"
-  }
-}
+{}

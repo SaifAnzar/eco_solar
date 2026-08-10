@@ -20,6 +20,11 @@
   --foreground: #0F172A;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
 body {
   background-color: #FAFAFA;
   color: #0F172A;

@@ -57,25 +57,28 @@ export function CalculatorConfigEditor({ initialConfig }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-6">
       {state.message && (
-        <div className={state.success ? "admin-success-banner" : "admin-error-banner"}>
-          {state.success ? (
-            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-          ) : (
-            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
-          )}
+        <div
+          className={`p-4 rounded-2xl border text-xs font-bold flex items-center gap-2 shadow-sm ${
+            state.success
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-rose-50 border-rose-200 text-rose-800"
+          }`}
+        >
           {state.message}
         </div>
       )}
 
       {/* ─── Section 1: Panel & Pricing ─── */}
-      <section className="cfg-section">
-        <h2 className="cfg-section-title">
-          <span className="cfg-section-num">01</span>
-          Panel & Pricing Parameters
+      <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <h2 className="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2.5">
+          <span className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-mono font-bold">
+            01
+          </span>
+          <span>Panel &amp; Pricing Parameters</span>
         </h2>
-        <div className="cfg-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <CfgField
             name="panelWp"
             label="Panel Capacity"
@@ -129,12 +132,14 @@ export function CalculatorConfigEditor({ initialConfig }: Props) {
       </section>
 
       {/* ─── Section 2: Generation Parameters ─── */}
-      <section className="cfg-section">
-        <h2 className="cfg-section-title">
-          <span className="cfg-section-num">02</span>
-          Generation Parameters
+      <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <h2 className="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2.5">
+          <span className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-mono font-bold">
+            02
+          </span>
+          <span>Generation Parameters</span>
         </h2>
-        <div className="cfg-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <CfgField
             name="defaultPsh"
             label="Default Peak Sun Hours"
@@ -157,15 +162,17 @@ export function CalculatorConfigEditor({ initialConfig }: Props) {
       </section>
 
       {/* ─── Section 3A: Central Govt Subsidy (PM Surya Ghar) ─── */}
-      <section className="cfg-section">
-        <h2 className="cfg-section-title">
-          <span className="cfg-section-num">03A</span>
-          Central Govt Subsidy Tiers (PM Surya Ghar)
+      <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <h2 className="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2.5">
+          <span className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-mono font-bold">
+            03A
+          </span>
+          <span>Central Govt Subsidy Tiers (PM Surya Ghar)</span>
         </h2>
-        <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.4)", marginBottom: "1rem" }}>
+        <p className="text-xs text-slate-500 font-medium">
           Central Government subsidy tiers for residential rooftop solar systems (≤ 10 kW).
         </p>
-        <div className="cfg-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <CfgField name="subsidyTier1Kw" label="Tier 1 — Max kW" hint="e.g. 1 kW" defaultValue={initialConfig.subsidyTier1Kw} step="1" min="1" />
           <CfgField name="subsidyTier1Amount" label="Tier 1 — Central Subsidy (₹)" hint="e.g. 30000" defaultValue={initialConfig.subsidyTier1Amount} step="500" min="0" />
           <CfgField name="subsidyTier2Kw" label="Tier 2 — Max kW" hint="e.g. 2 kW" defaultValue={initialConfig.subsidyTier2Kw} step="1" min="1" />
@@ -175,15 +182,17 @@ export function CalculatorConfigEditor({ initialConfig }: Props) {
       </section>
 
       {/* ─── Section 3B: State Govt Subsidy Top-Up ─── */}
-      <section className="cfg-section">
-        <h2 className="cfg-section-title">
-          <span className="cfg-section-num" style={{ background: "rgba(16,185,129,0.15)", color: "#10B981" }}>03B</span>
-          State Govt Subsidy Tiers (Odisha Top-Up)
+      <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <h2 className="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2.5">
+          <span className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-mono font-bold">
+            03B
+          </span>
+          <span>State Govt Subsidy Tiers (Odisha Top-Up)</span>
         </h2>
-        <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.4)", marginBottom: "1rem" }}>
+        <p className="text-xs text-slate-500 font-medium">
           State Government top-up subsidy tiers for residential rooftop solar systems (≤ 10 kW).
         </p>
-        <div className="cfg-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <CfgField name="stateSubsidyTier1Kw" label="Tier 1 — Max kW" hint="e.g. 1 kW" defaultValue={initialConfig.stateSubsidyTier1Kw ?? 1} step="1" min="1" />
           <CfgField name="stateSubsidyTier1Amount" label="Tier 1 — State Subsidy (₹)" hint="e.g. 20000" defaultValue={initialConfig.stateSubsidyTier1Amount ?? 20000} step="500" min="0" />
           <CfgField name="stateSubsidyTier2Kw" label="Tier 2 — Max kW" hint="e.g. 2 kW" defaultValue={initialConfig.stateSubsidyTier2Kw ?? 2} step="1" min="1" />
@@ -193,55 +202,58 @@ export function CalculatorConfigEditor({ initialConfig }: Props) {
       </section>
 
       {/* ─── Section 4: Equipment Bands ─── */}
-      <section className="cfg-section">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-          <h2 className="cfg-section-title" style={{ margin: 0 }}>
-            <span className="cfg-section-num">04</span>
-            Equipment Bands
+      <section className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2.5">
+            <span className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-mono font-bold">
+              04
+            </span>
+            <span>Equipment Bands</span>
           </h2>
           <button
             type="button"
             onClick={handleAddBand}
-            className="admin-btn"
-            style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.7)", fontSize: "0.8rem", padding: "0.4rem 0.875rem" }}
+            className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all shadow-sm"
           >
             + Add Band
           </button>
         </div>
-        <p style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.4)", marginBottom: "1.25rem" }}>
+        <p className="text-xs text-slate-500 font-medium">
           Define DCDB/ACDB specs, cable types, earthing pit count, and lightning arrestor spec for each kW range.
         </p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div className="space-y-4">
           {bands.map((band, idx) => (
-            <div key={idx} className="band-card">
-              <div className="band-header">
-                <span className="band-label">Band {idx + 1}</span>
-                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                  <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)" }}>
-                    {band.minKw}–{band.maxKw} kW
+            <div key={idx} className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono font-extrabold uppercase text-amber-700">
+                  Band {idx + 1}
+                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-mono font-bold text-slate-500">
+                    {band.minKw} – {band.maxKw} kW
                   </span>
                   {bands.length > 1 && (
                     <button
                       type="button"
                       onClick={() => handleRemoveBand(idx)}
-                      style={{ background: "none", border: "none", color: "rgba(239,68,68,0.5)", cursor: "pointer", padding: "0.15rem", fontSize: "0.8rem" }}
+                      className="p-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors border border-rose-200 text-xs font-bold"
                     >
                       ✕
                     </button>
                   )}
                 </div>
               </div>
-              <div className="band-grid">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <BandField label="Min kW" value={band.minKw} onChange={(v) => handleBandChange(idx, "minKw", v)} type="number" />
                 <BandField label="Max kW" value={band.maxKw} onChange={(v) => handleBandChange(idx, "maxKw", v)} type="number" />
                 <BandField label="Earthing Pits" value={band.earthingPitsCount} onChange={(v) => handleBandChange(idx, "earthingPitsCount", v)} type="number" />
-                <div style={{ gridColumn: "1 / -1" }}>
+                <div className="sm:col-span-3">
                   <BandField label="DCDB + ACDB Spec" value={band.acdbDcdbSpec} onChange={(v) => handleBandChange(idx, "acdbDcdbSpec", v)} type="text" />
                 </div>
                 <BandField label="DC Cable Spec" value={band.dcCableSpec} onChange={(v) => handleBandChange(idx, "dcCableSpec", v)} type="text" />
                 <BandField label="AC Cable Spec" value={band.acCableSpec} onChange={(v) => handleBandChange(idx, "acCableSpec", v)} type="text" />
-                <div style={{ gridColumn: "1 / -1" }}>
+                <div className="sm:col-span-3">
                   <BandField label="Lightning Arrestor Spec" value={band.laSpec} onChange={(v) => handleBandChange(idx, "laSpec", v)} type="text" />
                 </div>
               </div>
@@ -251,141 +263,15 @@ export function CalculatorConfigEditor({ initialConfig }: Props) {
       </section>
 
       {/* Save Button */}
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "2rem" }}>
+      <div className="flex justify-end pt-4">
         <button
           type="submit"
           disabled={isPending}
-          className="admin-btn admin-btn-primary"
-          style={{ padding: "0.75rem 2rem", fontSize: "1rem" }}
+          className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2"
         >
-          {isPending ? (
-            <><span className="admin-spinner-sm" style={{ borderTopColor: "#0A0F1E" }} /> Saving…</>
-          ) : (
-            "💾 Save Configuration"
-          )}
+          <span>{isPending ? "Saving..." : "💾 Save Configuration"}</span>
         </button>
       </div>
-
-      <style>{`
-        .cfg-section {
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 16px;
-          padding: 1.5rem;
-          margin-bottom: 1.5rem;
-        }
-        .cfg-section-title {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          font-size: 1rem;
-          font-weight: 600;
-          color: #F9FAFB;
-          margin: 0 0 1.25rem;
-        }
-        .cfg-section-num {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 26px;
-          height: 26px;
-          border-radius: 6px;
-          background: rgba(245,158,11,0.15);
-          color: #F59E0B;
-          font-size: 0.7rem;
-          font-weight: 700;
-          font-family: var(--font-mono, monospace);
-          flex-shrink: 0;
-        }
-        .cfg-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-          gap: 1rem;
-        }
-        .cfg-field { display: flex; flex-direction: column; gap: 0.35rem; }
-        .cfg-label {
-          font-size: 0.78rem;
-          font-weight: 600;
-          color: rgba(255,255,255,0.55);
-          letter-spacing: 0.03em;
-        }
-        .cfg-hint {
-          font-size: 0.7rem;
-          color: rgba(255,255,255,0.25);
-          margin-top: 0.2rem;
-        }
-        .cfg-input {
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 8px;
-          padding: 0.6rem 0.875rem;
-          color: #F9FAFB;
-          font-size: 0.9rem;
-          font-family: var(--font-mono, monospace);
-          outline: none;
-          transition: border-color 0.2s;
-          width: 100%;
-          box-sizing: border-box;
-        }
-        .cfg-input:focus { border-color: #F59E0B; box-shadow: 0 0 0 2px rgba(245,158,11,0.1); }
-        .band-card {
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 12px;
-          padding: 1rem;
-        }
-        .band-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.875rem;
-        }
-        .band-label {
-          font-size: 0.75rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          color: #F59E0B;
-        }
-        .band-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 0.75rem;
-        }
-
-        /* ─── Light Mode Theme Overrides ─── */
-        html:not(.dark) .cfg-section {
-          background: #FFFFFF;
-          border: 1px solid #E2E8F0;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        html:not(.dark) .cfg-section-title {
-          color: #0F172A;
-        }
-        html:not(.dark) .cfg-label {
-          color: #475569;
-        }
-        html:not(.dark) .cfg-hint {
-          color: #94A3B8;
-        }
-        html:not(.dark) .cfg-input {
-          background: #F8FAFC;
-          border: 1px solid #CBD5E1;
-          color: #0F172A;
-        }
-        html:not(.dark) .cfg-input:focus {
-          background: #FFFFFF;
-          border-color: #F59E0B;
-          box-shadow: 0 0 0 2px rgba(245,158,11,0.15);
-        }
-        html:not(.dark) .band-card {
-          background: #F8FAFC;
-          border: 1px solid #E2E8F0;
-        }
-        html:not(.dark) .band-label {
-          color: #D97706;
-        }
-      `}</style>
     </form>
   );
 }
@@ -402,8 +288,10 @@ function CfgField({
   max?: string;
 }) {
   return (
-    <div className="cfg-field">
-      <label htmlFor={`cfg-${name}`} className="cfg-label">{label}</label>
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={`cfg-${name}`} className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+        {label}
+      </label>
       <input
         id={`cfg-${name}`}
         name={name}
@@ -413,9 +301,9 @@ function CfgField({
         max={max}
         defaultValue={defaultValue}
         required
-        className="cfg-input"
+        className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono text-xs font-bold focus:outline-none focus:border-emerald-600 focus:bg-white transition-all"
       />
-      <span className="cfg-hint">{hint}</span>
+      <span className="text-[11px] text-slate-500 font-medium">{hint}</span>
     </div>
   );
 }
@@ -429,14 +317,13 @@ function BandField({
   type: "text" | "number";
 }) {
   return (
-    <div className="cfg-field">
-      <label className="cfg-label">{label}</label>
+    <div className="flex flex-col gap-1.5">
+      <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wide">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="cfg-input"
-        style={{ fontFamily: type === "number" ? "var(--font-mono, monospace)" : "inherit" }}
+        className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 font-mono text-xs font-bold focus:outline-none focus:border-emerald-600 transition-all"
       />
     </div>
   );

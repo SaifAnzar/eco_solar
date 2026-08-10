@@ -1,109 +1,128 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { MapPin, Phone, Mail } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Zap, ArrowRight, ShieldCheck } from "lucide-react";
+import { SITE_CONFIG } from "@/config/site";
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-400 py-12 md:py-16 border-t border-slate-800 font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-        
-        {/* Column 1: Brand Info */}
-        <div>
-          <img
-            src="/logo-white.png"
-            alt="Pragati EcoSolar"
-            className="h-9 w-auto object-contain mb-4"
-          />
-          <p className="text-xs leading-relaxed text-slate-400">
-            Pragati EcoSolar is Bhubaneswar's trusted solar installation company. We help homes and businesses switch to solar energy with zero hassle.
-          </p>
-        </div>
+    <footer className="bg-slate-950 text-slate-300 font-sans border-t border-slate-800">
+      {/* Upper Footer */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
+          
+          {/* Brand & Overview */}
+          <div className="lg:col-span-4 space-y-4">
+            <Link href="/" className="flex items-center shrink-0 group">
+              <img
+                src="/logo-white.png"
+                alt="Pragati EcoSolar"
+                className="h-10 sm:h-12 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+              />
+            </Link>
 
-        {/* Column 2: Quick Links */}
-        <div>
-          <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider mb-4">
-            Quick Links
-          </h4>
-          <nav className="flex flex-col">
-            <Link href="/services" className="text-xs hover:text-white transition-colors block mb-2.5">
-              Solar Packages
-            </Link>
-            <Link href="/products" className="text-xs hover:text-white transition-colors block mb-2.5">
-              Our Products
-            </Link>
-            <Link href="/projects" className="text-xs hover:text-white transition-colors block mb-2.5">
-              Completed Projects
-            </Link>
-            <Link href="/calculator" className="text-xs hover:text-white transition-colors block mb-2.5">
-              Savings Calculator
-            </Link>
-            <Link href="/contact" className="text-xs hover:text-white transition-colors block mb-2.5">
-              Contact Us
-            </Link>
-          </nav>
-        </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              {SITE_CONFIG.subline}
+            </p>
 
-        {/* Column 3: Utility Network */}
-        <div>
-          <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider mb-4">
-            Utility Network
-          </h4>
-          <ul className="space-y-2.5 text-xs text-slate-400 font-mono">
-            <li className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-              TPCODL — Central Odisha
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-              TPNODL — North Odisha
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-              TPSODL — South Odisha
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-              TPWODL — West Odisha
-            </li>
-          </ul>
-        </div>
+            <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-2 text-xs">
+              <div className="text-[10px] font-mono uppercase font-bold text-amber-400">
+                EMPANELLED ODISHA DISCOM ZONES:
+              </div>
+              <div className="grid grid-cols-2 gap-1 font-mono text-[11px] text-slate-300">
+                <span>• TPCODL (Central)</span>
+                <span>• TPNODL (North)</span>
+                <span>• TPSODL (South)</span>
+                <span>• TPWODL (West)</span>
+              </div>
+            </div>
+          </div>
 
-        {/* Column 4: Contact Us */}
-        <div>
-          <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider mb-4">
-            Contact Us
-          </h4>
-          <ul className="space-y-3 text-xs text-slate-400">
-            <li className="flex items-start gap-2.5">
-              <MapPin className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-              <span className="leading-relaxed">
-                HIG 42, Aryapalli, Patia, Bhubaneswar, Odisha – 751024
-              </span>
-            </li>
-            <li className="flex items-center gap-2.5">
-              <Phone className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-              <a href="tel:+919124318222" className="hover:text-white transition-colors font-mono">
-                +91 9124318222 / +91 9124679222
-              </a>
-            </li>
-            <li className="flex items-center gap-2.5">
-              <Mail className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-              <a href="mailto:solarbee.bbsr@gmail.com" className="hover:text-white transition-colors font-mono">
-                solarbee.bbsr@gmail.com
-              </a>
-            </li>
-          </ul>
-        </div>
+          {/* Quick Links */}
+          <div className="lg:col-span-2 space-y-3">
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
+              Quick Links
+            </h4>
+            <ul className="space-y-2 text-xs font-medium">
+              <li><Link href="/" className="hover:text-emerald-400 transition-colors">Home</Link></li>
+              <li><Link href="/about" className="hover:text-emerald-400 transition-colors">About Us</Link></li>
+              <li><Link href="/how-it-works" className="hover:text-emerald-400 transition-colors">How It Works</Link></li>
+              <li><Link href="/residential" className="hover:text-emerald-400 transition-colors">Residential Solar</Link></li>
+              <li><Link href="/commercial" className="hover:text-emerald-400 transition-colors">Commercial & Industrial</Link></li>
+              <li><Link href="/projects" className="hover:text-emerald-400 transition-colors">Projects Portfolio</Link></li>
+              <li><Link href="/government-schemes" className="hover:text-emerald-400 transition-colors">Government Schemes</Link></li>
+              <li><Link href="/contact" className="hover:text-emerald-400 transition-colors">Contact Us</Link></li>
+            </ul>
+          </div>
 
+          {/* Services */}
+          <div className="lg:col-span-3 space-y-3">
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
+              Our EPC Solutions
+            </h4>
+            <ul className="space-y-2 text-xs text-slate-400">
+              <li>• Solar EPC — On-Grid Systems</li>
+              <li>• Solar EPC — Off-Grid Systems</li>
+              <li>• Solar EPC — Hybrid Systems</li>
+              <li>• Solar Water Pumping Systems</li>
+              <li>• Solar Street Lighting Solutions</li>
+              <li>• Net Metering & Subsidy Assistance</li>
+              <li>• Operation & Maintenance (O&M)</li>
+            </ul>
+          </div>
+
+          {/* Contact Details */}
+          <div className="lg:col-span-3 space-y-3">
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
+              Registered Office
+            </h4>
+
+            <div className="space-y-2.5 text-xs text-slate-300">
+              <div className="flex items-start gap-2">
+                <MapPin className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                <span>{SITE_CONFIG.contact.address}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-emerald-500 shrink-0" />
+                <a href={`tel:${SITE_CONFIG.contact.phoneRaw}`} className="hover:text-emerald-400 font-mono">
+                  {SITE_CONFIG.contact.phone}
+                </a>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-emerald-500 shrink-0" />
+                <a href={`mailto:${SITE_CONFIG.contact.email}`} className="hover:text-emerald-400 font-mono">
+                  {SITE_CONFIG.contact.email}
+                </a>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>{SITE_CONFIG.contact.workingHours}</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       {/* Bottom Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 border-t border-slate-800/80 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-        <span>© {new Date().getFullYear()} Pragati EcoSolar. All rights reserved.</span>
-        <div className="flex items-center gap-4">
-          <Link href="/about" className="hover:text-slate-300 transition-colors">Privacy Policy</Link>
-          <span>•</span>
-          <Link href="/about" className="hover:text-slate-300 transition-colors">Terms of Service</Link>
+      <div className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500 font-mono">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            © {new Date().getFullYear()} Pragati EcoSolar. All rights reserved. Government Authorized PM Surya Ghar EPC Installer.
+          </div>
+          <div className="flex items-center gap-4 text-slate-400">
+            <span>TPCODL</span>
+            <span>•</span>
+            <span>TPNODL</span>
+            <span>•</span>
+            <span>TPSODL</span>
+            <span>•</span>
+            <span>TPWODL</span>
+          </div>
         </div>
       </div>
     </footer>

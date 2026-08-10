@@ -1,33 +1,45 @@
 import React from "react";
 import { Zap, Award, Sun, Clock } from "lucide-react";
 
-export default function MetricsStrip() {
+interface MetricsStripProps {
+  systemsInstalled?: string;
+  capacityDelivered?: string;
+  discomZonesCovered?: string;
+  epcScope?: string;
+}
+
+export default function MetricsStrip({
+  systemsInstalled = "500+",
+  capacityDelivered = "5+ MW",
+  discomZonesCovered = "4 Zones",
+  epcScope = "100% EPC",
+}: MetricsStripProps) {
   const metrics = [
     {
-      value: "400+",
-      label: "Solar Systems Installed",
+      value: systemsInstalled,
+      label: "Systems Installed",
       subtext: "Across Bhubaneswar, Cuttack, and all of Odisha",
       icon: Award,
       accent: "text-emerald-600 bg-emerald-50 border-emerald-200",
     },
     {
-      value: "₹78,000",
-      label: "Max Government Subsidy",
-      subtext: "Directly transferred to your bank account",
+      value: capacityDelivered,
+      label: "Capacity Delivered",
+      subtext: "High-yield rooftop & ground-mounted solar EPC",
       icon: Zap,
       accent: "text-amber-600 bg-amber-50 border-amber-200",
     },
     {
-      value: "1,460 Units",
-      label: "Free Electricity per kW Every Year",
-      subtext: "Based on Odisha's average sunshine hours",
+      value: discomZonesCovered,
+      label: "DISCOM Zones Covered",
+      subtext: "TPCODL, TPNODL, TPSODL, TPWODL Empanelled",
       icon: Sun,
       accent: "text-emerald-600 bg-emerald-50 border-emerald-200",
     },
     {
-      value: "15-Day",
-      label: "Meter Approval — Guaranteed",
-      subtext: "We manage all DISCOM paperwork for you",
+      value: epcScope,
+      label: "On-Grid / Off-Grid / Hybrid",
+      subtext: "Vendor-Agnostic end-to-end solar expertise",
       icon: Clock,
       accent: "text-amber-600 bg-amber-50 border-amber-200",
     },

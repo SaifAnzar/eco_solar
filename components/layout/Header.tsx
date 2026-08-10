@@ -4,10 +4,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Phone,
   Menu,
   X,
-  ChevronRight,
   ChevronDown,
   Zap,
   Sun,
@@ -16,8 +14,11 @@ import {
   Droplets,
   ShieldCheck,
   Layers,
-  ArrowRight,
-  Sparkles,
+  Calendar,
+  FileText,
+  Lightbulb,
+  Wrench,
+  Phone,
 } from "lucide-react";
 import SolarCalculatorModal from "../home/SolarCalculatorModal";
 
@@ -27,9 +28,9 @@ export default function Header() {
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Mobile accordion state
-  const [mobilePackagesOpen, setMobilePackagesOpen] = useState(false);
-  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const [mobileContactOpen, setMobileContactOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 12);
@@ -37,475 +38,410 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const solarPackages = [
-    {
-      name: "Solar for Your Home",
-      desc: "1 kW – 10 kW Systems (PM Surya Ghar Subsidy)",
-      href: "/services/residential",
-      icon: Home,
-      iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200",
-    },
-    {
-      name: "Offices & Factories",
-      desc: "10 kW – 500 kW+ Systems (80% AD Tax Benefit)",
-      href: "/services/commercial",
-      icon: Building2,
-      iconBg: "bg-amber-50 text-amber-600 border-amber-200",
-    },
-    {
-      name: "Solar Water Pumps",
-      desc: "3 HP – 10 HP PM-KUSUM Pumps (Up to 90% Subsidy)",
-      href: "/services/solar-pumps",
-      icon: Droplets,
-      iconBg: "bg-blue-50 text-blue-600 border-blue-200",
-    },
-  ];
+  // Close all menus on pathname change
+  useEffect(() => {
+    setOpenDropdown(null);
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
-  const solarProducts = [
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    setOpenDropdown(null);
+    setIsMobileMenuOpen(false);
+
+    if (typeof window !== "undefined") {
+      const [targetPath, hash] = href.split("#");
+      if (hash && (pathname === targetPath || (targetPath === "" && pathname === "/"))) {
+        const el = document.getElementById(hash);
+        if (el) {
+          e.preventDefault();
+          const yOffset = -84;
+          const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
+      }
+    }
+  };
+
+  const servicesDropdownItems = [
     {
-      name: "Solar Modules & Panels",
-      desc: "Waaree & Adani Tier-1 ALMM Panels (540W – 600W+)",
-      href: "/products?category=modules",
+      name: "Solar EPC — On-Grid Systems",
+      desc: "Net-metered grid connected solar for maximum bill savings & subsidies",
+      href: "/services#on-grid",
       icon: Sun,
       iconBg: "bg-amber-50 text-amber-600 border-amber-200",
     },
     {
-      name: "Solar Inverters",
-      desc: "Statcon & Servotech On-Grid & Off-Grid Hybrid Inverters",
-      href: "/products?category=inverters",
+      name: "Solar EPC — Off-Grid Systems",
+      desc: "100% battery-backed independent power for zero DISCOM reliance",
+      href: "/services#off-grid",
       icon: Zap,
       iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200",
     },
     {
-      name: "Mounting Structures (MMS)",
-      desc: "150 km/h Cyclone-Resistant HDG Galvanized Frames",
-      href: "/products?category=structures",
-      icon: ShieldCheck,
+      name: "Solar EPC — Hybrid Systems",
+      desc: "Grid + battery backup for uninterrupted power & maximum savings",
+      href: "/services#hybrid",
+      icon: Layers,
       iconBg: "bg-blue-50 text-blue-600 border-blue-200",
     },
     {
-      name: "Accessories & Net Meters",
-      desc: "DLMS Net Meters, Lightning Arrestors & Solar DC Wires",
-      href: "/products?category=accessories",
-      icon: Layers,
+      name: "Solar Water Pumping Systems",
+      desc: "High-efficiency agricultural & community solar water pumps",
+      href: "/services#pumps",
+      icon: Droplets,
+      iconBg: "bg-cyan-50 text-cyan-600 border-cyan-200",
+    },
+    {
+      name: "Solar Street Lighting Solutions",
+      desc: "Standalone & centralized solar lighting for commercial & municipal sites",
+      href: "/services#lighting",
+      icon: Lightbulb,
+      iconBg: "bg-yellow-50 text-yellow-600 border-yellow-200",
+    },
+    {
+      name: "Net Metering & Subsidy Assistance",
+      desc: "End-to-end DISCOM net meter approvals & PM Surya Ghar processing",
+      href: "/services#net-metering",
+      icon: ShieldCheck,
       iconBg: "bg-purple-50 text-purple-600 border-purple-200",
+    },
+    {
+      name: "O&M (Operation & Maintenance)",
+      desc: "Comprehensive preventive maintenance, cleaning & annual contracts",
+      href: "/services#om",
+      icon: Wrench,
+      iconBg: "bg-rose-50 text-rose-600 border-rose-200",
+    },
+  ];
+
+  const contactDropdownItems = [
+    {
+      name: "Contact Us & Support",
+      desc: "General inquiries, registered office & helpline numbers",
+      href: "/contact",
+      icon: Phone,
+      iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200",
+    },
+    {
+      name: "Book Free Site Inspection",
+      desc: "Schedule an expert solar engineer visit anywhere in Odisha",
+      href: "/contact?type=site-visit",
+      icon: Calendar,
+      iconBg: "bg-blue-50 text-blue-600 border-blue-200",
+    },
+    {
+      name: "Dealership Program",
+      desc: "Become an authorized solar equipment distributor & partner",
+      href: "/dealership",
+      icon: Building2,
+      iconBg: "bg-purple-50 text-purple-600 border-purple-200",
+    },
+    {
+      name: "Franchise Opportunity",
+      desc: "Start a lucrative district franchise with Pragati EcoSolar",
+      href: "/franchise",
+      icon: Home,
+      iconBg: "bg-amber-50 text-amber-600 border-amber-200",
+    },
+  ];
+
+  const mainNavItems: Array<{
+    label: string;
+    href: string;
+    isDropdown?: boolean;
+    dropdownType?: "services" | "contact";
+  }> = [
+    { label: "Home", href: "/" },
+    { label: "About Us", href: "/about" },
+    {
+      label: "Our Services",
+      href: "/services",
+      isDropdown: true,
+      dropdownType: "services",
+    },
+    { label: "How It Works", href: "/how-it-works" },
+    { label: "Residential", href: "/residential" },
+    { label: "Commercial", href: "/commercial" },
+    { label: "Projects", href: "/projects" },
+    { label: "Govt Schemes", href: "/government-schemes" },
+    {
+      label: "Contact Us",
+      href: "/contact",
+      isDropdown: true,
+      dropdownType: "contact",
     },
   ];
 
   return (
     <>
       <header className="sticky top-0 z-50 w-full font-sans">
-        {/* ── TOP ANNOUNCEMENT STRIP ── */}
+        {/* Top Announcement Bar */}
         <div className="bg-slate-900 text-white text-center py-1.5 px-4 text-[11px] font-semibold tracking-wide hidden sm:block">
           <span className="text-amber-400 mr-1.5">⚡</span>
-          PM Surya Ghar & Odisha Govt — Get up to{" "}
-          <span className="text-emerald-400 font-bold">₹1,38,000 Combined Subsidy</span> on your
-          home solar system.{" "}
+          PM Surya Ghar Muft Bijli Yojana — Get up to{" "}
+          <span className="text-emerald-400 font-bold">₹78,000 Central Subsidy</span> + Odisha State Benefits.{" "}
           <button
             onClick={() => setIsCalculatorOpen(true)}
             className="underline underline-offset-2 text-white hover:text-amber-300 transition-colors ml-1"
           >
-            Calculate Now →
+            Calculate Savings →
           </button>
         </div>
 
-        {/* ── MAIN NAVBAR ── */}
+        {/* Main Navbar */}
         <div
-          className={`w-full transition-all duration-300 ${
+          className={`w-full transition-all duration-200 ${
             scrolled
-              ? "bg-white/95 backdrop-blur-xl shadow-md border-b border-slate-200/80"
+              ? "bg-white/95 backdrop-blur-md shadow-md border-b border-slate-200/80"
               : "bg-white border-b border-slate-100"
           }`}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16 gap-6">
-              {/* ── BRAND LOGO ── */}
-              <Link href="/" className="flex items-center shrink-0 group">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16 gap-3">
+              {/* Brand Logo */}
+              <Link href="/" onClick={() => setOpenDropdown(null)} className="flex items-center shrink-0 group">
                 <img
                   src="/logo.png"
                   alt="Pragati EcoSolar"
-                  className="h-10 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+                  className="h-8 sm:h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
                 />
               </Link>
 
-              {/* ── DESKTOP NAV LINKS ── */}
-              <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center">
-                {/* 1. Solar Packages (Dropdown) */}
-                <div className="relative group py-5">
-                  <Link
-                    href="/services"
-                    className={`inline-flex items-center gap-1 px-3.5 py-2 text-[13px] rounded-lg transition-all duration-150 ${
-                      pathname.startsWith("/services")
-                        ? "text-emerald-700 font-bold bg-emerald-50/50"
-                        : "text-slate-600 font-medium hover:text-slate-900 hover:bg-slate-50"
-                    }`}
-                  >
-                    <span>Solar Packages</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 group-hover:rotate-180 group-hover:text-emerald-600" />
-                  </Link>
+              {/* Desktop Nav Links */}
+              <nav className="hidden xl:flex items-center gap-1 flex-1 justify-center">
+                {mainNavItems.map((item) => {
+                  const isServices = item.dropdownType === "services";
+                  const dropdownItems = isServices ? servicesDropdownItems : contactDropdownItems;
+                  const isOpen = openDropdown === item.dropdownType;
 
-                  {/* Dropdown Card */}
-                  <div className="absolute top-full left-0 w-96 bg-white border border-slate-200/90 rounded-2xl shadow-2xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-200 pointer-events-none group-hover:pointer-events-auto z-50">
-                    <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700">
-                        SOLAR PACKAGES & SERVICES
-                      </span>
-                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                    </div>
+                  const isActive =
+                    pathname === item.href ||
+                    (isServices && pathname.startsWith("/services")) ||
+                    (!isServices &&
+                      item.isDropdown &&
+                      (pathname.startsWith("/contact") ||
+                        pathname.startsWith("/dealership") ||
+                        pathname.startsWith("/franchise")));
 
-                    <div className="py-1.5 space-y-1">
-                      {solarPackages.map((item) => {
-                        const IconComponent = item.icon;
-                        return (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors group/item"
-                          >
-                            <div
-                              className={`p-2 rounded-xl border shrink-0 mt-0.5 ${item.iconBg}`}
-                            >
-                              <IconComponent className="w-4 h-4" />
-                            </div>
-                            <div className="space-y-0.5">
-                              <div className="text-xs font-bold text-slate-900 group-hover/item:text-emerald-600 transition-colors flex items-center gap-1">
-                                <span>{item.name}</span>
-                                <ArrowRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all" />
-                              </div>
-                              <p className="text-[11px] text-slate-500 leading-snug">
-                                {item.desc}
-                              </p>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-100 px-3 py-2 bg-slate-50/70 rounded-xl flex items-center justify-between">
-                      <span className="text-[11px] text-slate-600 font-medium">
-                        Looking for all services?
-                      </span>
-                      <Link
-                        href="/services"
-                        className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
+                  if (item.isDropdown) {
+                    return (
+                      <div
+                        key={item.label}
+                        className="relative py-4"
+                        onMouseEnter={() => setOpenDropdown(item.dropdownType || null)}
+                        onMouseLeave={() => setOpenDropdown(null)}
                       >
-                        <span>View All</span>
-                        <ChevronRight className="w-3 h-3" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
+                        <Link
+                          href={item.href}
+                          onClick={() => setOpenDropdown(null)}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                            isActive
+                              ? "text-emerald-700 bg-emerald-50/80"
+                              : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
+                          }`}
+                        >
+                          <span>{item.label}</span>
+                          <ChevronDown
+                            className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
+                              isOpen ? "rotate-180 text-emerald-600" : ""
+                            }`}
+                          />
+                        </Link>
 
-                {/* 2. Our Products (Dropdown) */}
-                <div className="relative group py-5">
-                  <Link
-                    href="/products"
-                    className={`inline-flex items-center gap-1 px-3.5 py-2 text-[13px] rounded-lg transition-all duration-150 ${
-                      pathname.startsWith("/products")
-                        ? "text-emerald-700 font-bold bg-emerald-50/50"
-                        : "text-slate-600 font-medium hover:text-slate-900 hover:bg-slate-50"
-                    }`}
-                  >
-                    <span>Our Products</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 transition-transform duration-200 group-hover:rotate-180 group-hover:text-emerald-600" />
-                  </Link>
+                        {/* Mega / Standard Dropdown */}
+                        <div
+                          className={`absolute top-full left-1/2 -translate-x-1/2 ${
+                            isServices ? "w-[520px]" : "w-[420px]"
+                          } bg-white border border-slate-200/90 rounded-2xl shadow-2xl p-3 transition-all duration-200 z-50 ${
+                            isOpen
+                              ? "opacity-100 visible translate-y-0 pointer-events-auto"
+                              : "opacity-0 invisible translate-y-2 pointer-events-none"
+                          }`}
+                        >
+                          <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between mb-1">
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700">
+                              {isServices ? "SOLAR EPC SERVICES" : "CONTACT & PARTNERSHIPS"}
+                            </span>
+                            <span className="text-[10px] font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-bold">
+                              {isServices ? "VENDOR-AGNOSTIC EPC" : "GET IN TOUCH"}
+                            </span>
+                          </div>
 
-                  {/* Dropdown Card */}
-                  <div className="absolute top-full left-0 w-96 bg-white border border-slate-200/90 rounded-2xl shadow-2xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-200 pointer-events-none group-hover:pointer-events-auto z-50">
-                    <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700">
-                        HARDWARE & HARDWARE CATALOG
-                      </span>
-                      <Zap className="w-3.5 h-3.5 text-emerald-600" />
-                    </div>
+                          <div className="grid grid-cols-1 gap-1">
+                            {dropdownItems.map((s) => {
+                              const Icon = s.icon;
+                              return (
+                                <Link
+                                  key={s.name}
+                                  href={s.href}
+                                  onClick={(e) => handleNavClick(e, s.href)}
+                                  className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors group/item"
+                                >
+                                  <div className={`p-2 rounded-lg border shrink-0 ${s.iconBg}`}>
+                                    <Icon className="w-4 h-4" />
+                                  </div>
+                                  <div>
+                                    <div className="text-xs font-bold text-slate-900 group-hover/item:text-emerald-600 transition-colors">
+                                      {s.name}
+                                    </div>
+                                    <div className="text-[11px] text-slate-500 leading-tight">
+                                      {s.desc}
+                                    </div>
+                                  </div>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
 
-                    <div className="py-1.5 space-y-1">
-                      {solarProducts.map((item) => {
-                        const IconComponent = item.icon;
-                        return (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors group/item"
-                          >
-                            <div
-                              className={`p-2 rounded-xl border shrink-0 mt-0.5 ${item.iconBg}`}
-                            >
-                              <IconComponent className="w-4 h-4" />
-                            </div>
-                            <div className="space-y-0.5">
-                              <div className="text-xs font-bold text-slate-900 group-hover/item:text-emerald-600 transition-colors flex items-center gap-1">
-                                <span>{item.name}</span>
-                                <ArrowRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all" />
-                              </div>
-                              <p className="text-[11px] text-slate-500 leading-snug">
-                                {item.desc}
-                              </p>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-100 px-3 py-2 bg-slate-50/70 rounded-xl flex items-center justify-between">
-                      <span className="text-[11px] text-slate-600 font-medium">
-                        Browse all product models?
-                      </span>
-                      <Link
-                        href="/products"
-                        className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
-                      >
-                        <span>Catalog</span>
-                        <ChevronRight className="w-3 h-3" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 3. Projects */}
-                <Link
-                  href="/projects"
-                  className={`px-3.5 py-2 text-[13px] rounded-lg transition-all duration-150 ${
-                    pathname === "/projects"
-                      ? "text-emerald-700 font-bold bg-emerald-50/50"
-                      : "text-slate-600 font-medium hover:text-slate-900 hover:bg-slate-50"
-                  }`}
-                >
-                  Projects
-                </Link>
-
-                {/* 4. Calculator */}
-                <Link
-                  href="/calculator"
-                  className={`px-3.5 py-2 text-[13px] rounded-lg transition-all duration-150 ${
-                    pathname === "/calculator"
-                      ? "text-emerald-700 font-bold bg-emerald-50/50"
-                      : "text-slate-600 font-medium hover:text-slate-900 hover:bg-slate-50"
-                  }`}
-                >
-                  Calculator
-                </Link>
-
-                {/* 5. About Us */}
-                <Link
-                  href="/about"
-                  className={`px-3.5 py-2 text-[13px] rounded-lg transition-all duration-150 ${
-                    pathname === "/about"
-                      ? "text-emerald-700 font-bold bg-emerald-50/50"
-                      : "text-slate-600 font-medium hover:text-slate-900 hover:bg-slate-50"
-                  }`}
-                >
-                  About Us
-                </Link>
-
-                {/* 6. Contact */}
-                <Link
-                  href="/contact"
-                  className={`px-3.5 py-2 text-[13px] rounded-lg transition-all duration-150 ${
-                    pathname === "/contact"
-                      ? "text-emerald-700 font-bold bg-emerald-50/50"
-                      : "text-slate-600 font-medium hover:text-slate-900 hover:bg-slate-50"
-                  }`}
-                >
-                  Contact
-                </Link>
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={(e) => handleNavClick(e, item.href)}
+                      className={`px-2.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                        isActive
+                          ? "text-emerald-700 bg-emerald-50/80"
+                          : "text-slate-700 hover:text-slate-900 hover:bg-slate-50"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
               </nav>
 
-              {/* ── RIGHT ACTIONS ── */}
-              <div className="flex items-center gap-2 shrink-0">
-                {/* Phone number — md+ */}
-                <a
-                  href="tel:+919124318222"
-                  className="hidden md:flex items-center gap-2 text-[12px] font-semibold text-slate-700 hover:text-emerald-600 transition-colors px-3 py-2 rounded-lg hover:bg-slate-50"
+              {/* Desktop CTAs */}
+              <div className="hidden xl:flex items-center gap-2 shrink-0">
+                <Link
+                  href="/contact?type=site-visit"
+                  onClick={(e) => handleNavClick(e, "/contact?type=site-visit")}
+                  className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5"
                 >
-                  <div className="w-6 h-6 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
-                    <Phone className="w-3 h-3 text-emerald-600" />
-                  </div>
-                  <span className="font-mono">9124318222</span>
-                </a>
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>Book Free Visit</span>
+                </Link>
 
-                {/* Primary CTA */}
                 <button
-                  onClick={() => setIsCalculatorOpen(true)}
-                  className="hidden sm:flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.97] text-white text-[12px] font-bold px-4 py-2 rounded-lg transition-all shadow-sm shadow-emerald-600/20"
+                  onClick={() => {
+                    setOpenDropdown(null);
+                    setIsCalculatorOpen(true);
+                  }}
+                  className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5"
                 >
-                  <Zap className="w-3.5 h-3.5 fill-white" />
-                  Calculate Savings
-                </button>
-
-                {/* Mobile hamburger */}
-                <button
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg lg:hidden transition-colors"
-                  aria-label="Toggle menu"
-                >
-                  {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                  <FileText className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Get Quote</span>
                 </button>
               </div>
+
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="xl:hidden p-2 rounded-xl text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                aria-label="Toggle Navigation Menu"
+              >
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
             </div>
           </div>
         </div>
 
-        {/* ── MOBILE DRAWER ── */}
+        {/* Mobile Menu Drawer */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl">
-            {/* Brand strip in mobile menu */}
-            <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center">
-                <Sun className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <div className="text-xs font-extrabold text-slate-900">PRAGATI ECOSOLAR</div>
-                <div className="text-[10px] text-slate-400 font-medium">
-                  Official Solar Installer · Odisha
-                </div>
-              </div>
+          <div className="xl:hidden bg-white border-b border-slate-200 px-4 py-6 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl">
+            <div className="space-y-1">
+              {mainNavItems.map((item) => {
+                if (item.isDropdown) {
+                  const isServices = item.dropdownType === "services";
+                  const dropdownItems = isServices ? servicesDropdownItems : contactDropdownItems;
+                  const isMobileSubOpen = isServices ? mobileServicesOpen : mobileContactOpen;
+                  const toggleSub = () => {
+                    if (isServices) {
+                      setMobileServicesOpen(!mobileServicesOpen);
+                    } else {
+                      setMobileContactOpen(!mobileContactOpen);
+                    }
+                  };
+
+                  return (
+                    <div key={item.label} className="space-y-1">
+                      <button
+                        onClick={toggleSub}
+                        className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-bold text-slate-800 rounded-xl hover:bg-slate-50"
+                      >
+                        <span>{item.label}</span>
+                        <ChevronDown
+                          className={`w-4 h-4 text-slate-500 transition-transform ${
+                            isMobileSubOpen ? "rotate-180 text-emerald-600" : ""
+                          }`}
+                        />
+                      </button>
+
+                      {isMobileSubOpen && (
+                        <div className="pl-4 pr-2 py-1 space-y-1 border-l-2 border-emerald-500 ml-3">
+                          {dropdownItems.map((s) => (
+                            <Link
+                              key={s.name}
+                              href={s.href}
+                              onClick={(e) => handleNavClick(e, s.href)}
+                              className="block py-2 text-xs font-medium text-slate-700 hover:text-emerald-600"
+                            >
+                              {s.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className={`block px-3 py-2.5 text-sm font-bold rounded-xl ${
+                      pathname === item.href
+                        ? "text-emerald-700 bg-emerald-50"
+                        : "text-slate-800 hover:bg-slate-50"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </div>
 
-            <nav className="px-3 py-3 space-y-1">
-              {/* Solar Packages Mobile Accordion */}
-              <div>
-                <div className="flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-800 rounded-xl hover:bg-slate-50">
-                  <Link
-                    href="/services"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex-1"
-                  >
-                    Solar Packages
-                  </Link>
-                  <button
-                    onClick={() => setMobilePackagesOpen(!mobilePackagesOpen)}
-                    className="p-1 text-slate-400 hover:text-slate-700"
-                  >
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform ${
-                        mobilePackagesOpen ? "rotate-180 text-emerald-600" : ""
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                {mobilePackagesOpen && (
-                  <div className="ml-4 border-l-2 border-slate-100 pl-3 py-1 space-y-1">
-                    {solarPackages.map((item) => (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="block py-2 px-3 text-xs font-medium text-slate-600 hover:text-emerald-700 rounded-lg hover:bg-emerald-50/60"
-                      >
-                        <div className="font-bold text-slate-900">{item.name}</div>
-                        <div className="text-[10px] text-slate-400 leading-tight">{item.desc}</div>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Our Products Mobile Accordion */}
-              <div>
-                <div className="flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-800 rounded-xl hover:bg-slate-50">
-                  <Link
-                    href="/products"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex-1"
-                  >
-                    Our Products
-                  </Link>
-                  <button
-                    onClick={() => setMobileProductsOpen(!mobileProductsOpen)}
-                    className="p-1 text-slate-400 hover:text-slate-700"
-                  >
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform ${
-                        mobileProductsOpen ? "rotate-180 text-emerald-600" : ""
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                {mobileProductsOpen && (
-                  <div className="ml-4 border-l-2 border-slate-100 pl-3 py-1 space-y-1">
-                    {solarProducts.map((item) => (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="block py-2 px-3 text-xs font-medium text-slate-600 hover:text-emerald-700 rounded-lg hover:bg-emerald-50/60"
-                      >
-                        <div className="font-bold text-slate-900">{item.name}</div>
-                        <div className="text-[10px] text-slate-400 leading-tight">{item.desc}</div>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Regular Mobile Links */}
+            <div className="pt-4 border-t border-slate-100 space-y-2">
               <Link
-                href="/projects"
+                href="/contact?type=site-visit"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-800 rounded-xl hover:bg-slate-50"
+                className="w-full py-3 bg-emerald-600 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md"
               >
-                <span>Projects</span>
-                <ChevronRight className="w-4 h-4 text-slate-300" />
+                <Calendar className="w-4 h-4" />
+                <span>Book Free Visit</span>
               </Link>
 
-              <Link
-                href="/calculator"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-800 rounded-xl hover:bg-slate-50"
-              >
-                <span>Calculator</span>
-                <ChevronRight className="w-4 h-4 text-slate-300" />
-              </Link>
-
-              <Link
-                href="/about"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-800 rounded-xl hover:bg-slate-50"
-              >
-                <span>About Us</span>
-                <ChevronRight className="w-4 h-4 text-slate-300" />
-              </Link>
-
-              <Link
-                href="/contact"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-between px-4 py-3 text-sm font-semibold text-slate-800 rounded-xl hover:bg-slate-50"
-              >
-                <span>Contact</span>
-                <ChevronRight className="w-4 h-4 text-slate-300" />
-              </Link>
-            </nav>
-
-            <div className="px-4 pb-5 pt-2 space-y-2 border-t border-slate-100">
               <button
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   setIsCalculatorOpen(true);
                 }}
-                className="w-full flex items-center justify-center gap-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-all"
+                className="w-full py-3 bg-slate-900 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2"
               >
-                <Zap className="w-4 h-4 fill-white" />
-                Calculate My Solar Savings
+                <FileText className="w-4 h-4 text-amber-400" />
+                <span>Get Quote</span>
               </button>
-              <a
-                href="tel:+919124318222"
-                className="w-full flex items-center justify-center gap-2 py-3 border border-slate-200 bg-slate-50 text-slate-800 text-sm font-semibold rounded-xl transition-all"
-              >
-                <Phone className="w-4 h-4 text-emerald-600" />
-                Call +91 9124318222
-              </a>
             </div>
           </div>
         )}
       </header>
 
-      <SolarCalculatorModal
-        isOpen={isCalculatorOpen}
-        onClose={() => setIsCalculatorOpen(false)}
-      />
+      {/* Calculator Modal */}
+      <SolarCalculatorModal isOpen={isCalculatorOpen} onClose={() => setIsCalculatorOpen(false)} />
     </>
   );
 }
