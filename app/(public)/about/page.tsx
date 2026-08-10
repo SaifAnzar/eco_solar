@@ -1,200 +1,338 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { ShieldCheck, Award, Zap, CheckCircle2, UserCheck, Layers, ArrowRight } from "lucide-react";
+import {
+  ShieldCheck,
+  Award,
+  Zap,
+  CheckCircle2,
+  UserCheck,
+  Layers,
+  ArrowRight,
+  Sparkles,
+  MapPin,
+  Building2,
+  Sun,
+  Calendar,
+  PhoneCall,
+  Check,
+  Clock,
+  History,
+  Users,
+} from "lucide-react";
 import { SITE_CONFIG } from "@/config/site";
 
 export default function AboutPage() {
-  const credentials = [
-    { label: "PM Surya Ghar Authorized", detail: "Empanelled Installer under National Solar Mission" },
-    { label: "4 DISCOM Zones Empanelled", detail: "TPCODL, TPNODL, TPSODL, and TPWODL" },
-    { label: "Pure EPC Positioning", detail: "Vendor-Agnostic engineering focused on high-yield specs" },
-    { label: "Single Point Accountable", detail: "In-house design, execution, net metering & O&M team" },
+  const [activeTab, setActiveTab] = useState<"overview" | "values" | "timeline" | "leadership">("overview");
+
+  const stats = [
+    { label: "Rooftops Installed", value: SITE_CONFIG.stats.systemsInstalled, color: "text-amber-500" },
+    { label: "Total Capacity", value: SITE_CONFIG.stats.capacityDelivered, color: "text-emerald-600" },
+    { label: "Empanelled DISCOMs", value: "4 Zones", color: "text-blue-600" },
+    { label: "Central Subsidy", value: "Up to ₹78,000", color: "text-purple-600" },
   ];
 
-  const whyChooseUs = [
+  const discomZones = [
+    { code: "TPCODL", region: "Central Zone", city: "Bhubaneswar, Cuttack, Puri, Dhenkanal" },
+    { code: "TPNODL", region: "North Zone", city: "Balasore, Bhadrak, Mayurbhanj, Keonjhar" },
+    { code: "TPSODL", region: "South Zone", city: "Berhampur, Ganjam, Koraput, Kandhamal" },
+    { code: "TPWODL", region: "West Zone", city: "Sambalpur, Jharsuguda, Rourkela, Bargarh" },
+  ];
+
+  const coreValues = [
     {
-      title: "Government-Authorized PM Surya Ghar Installer",
-      desc: "Empanelled installer under the national rooftop scheme facilitating seamless subsidy credit up to ₹78,000.",
-      icon: Award,
-    },
-    {
-      title: "Empanelled Across All 4 Odisha DISCOM Zones",
-      desc: "Licensed for net-metering approvals and feasibility clearance across TPCODL, TPNODL, TPSODL, and TPWODL.",
-      icon: ShieldCheck,
-    },
-    {
-      title: "On-Grid, Off-Grid & Hybrid Expertise Under One Roof",
-      desc: "Comprehensive technical mastery of grid-interactive net metering, battery energy storage, and hybrid backup.",
+      title: "Vendor-Agnostic EPC",
+      desc: "Optimal Tier-1 ALMM modules & top-tier inverters tailored to site specs rather than single-brand inventory.",
       icon: Layers,
     },
     {
-      title: "End-to-End EPC Lifecycle Management",
-      desc: "Site survey, structural engineering, component procurement, certified installation, net metering & after-sales maintenance.",
-      icon: Zap,
+      title: "Zero Bureaucracy",
+      desc: "100% DISCOM paperwork, net-metering approvals, and national portal subsidy claims managed in-house.",
+      icon: ShieldCheck,
     },
     {
-      title: "Dedicated Project Support from Survey to Commissioning",
-      desc: "Single accountable partner handling all DISCOM paperwork, site inspections, and long-term service contracts.",
+      title: "Cyclone-Resistant Engineering",
+      desc: "Hot-dip galvanized steel mounting structures engineered to withstand coastal Odisha wind speeds up to 200 km/h.",
+      icon: Sun,
+    },
+    {
+      title: "Single Accountable Partner",
+      desc: "From initial rooftop survey to grid commissioning and 25-year O&M support — one accountable team.",
       icon: UserCheck,
     },
   ];
 
-  const coreTeam = [
+  const milestones = [
+    { year: "2021", title: "Founded in Bhubaneswar", desc: "Started as a dedicated solar engineering firm in Patia." },
+    { year: "2022", title: "4-Zone DISCOM Licensing", desc: "Authorized net-metering installer across TPCODL, TPNODL, TPSODL & TPWODL." },
+    { year: "2023", title: "100+ C&I Rooftops", desc: "Delivered commercial & industrial solar plants state-wide." },
+    { year: "2024-26", title: "PM Surya Ghar Partner", desc: "Empanelled national partner surpassing 500+ systems & 15 MW+ capacity." },
+  ];
+
+  const leadership = [
     {
       name: "Er. Deepak Kumar Mohapatra",
       role: "Founder & Principal EPC Director",
-      bio: "12+ years in electrical grid engineering and solar project execution across Odisha's industrial and residential sectors.",
+      experience: "12+ Yrs Exp",
+      desc: "Electrical grid engineering and solar execution lead across Odisha.",
     },
     {
       name: "Er. Soumya Ranjan Nayak",
       role: "Head of Solar Projects & DISCOM Liaison",
-      bio: "Specialist in net metering regulatory compliance, structural load safety, and PM Surya Ghar portal management.",
+      experience: "10+ Yrs Exp",
+      desc: "Net metering regulatory compliance & PM Surya Ghar portal lead.",
     },
     {
       name: "Er. Subrat Kumar Jena",
-      role: "Lead Systems Engineer & O&M Operations",
-      bio: "Expert in hybrid battery storage design, string inverter synchronization, and commercial rooftop plant commissioning.",
+      role: "Lead Systems Engineer & O&M",
+      experience: "8+ Yrs Exp",
+      desc: "Hybrid battery storage design & commercial rooftop commissioning lead.",
     },
   ];
 
   return (
-    <div className="w-full font-sans bg-[#FAFAFA]">
-      {/* 1. Page Header / Banner */}
-      <section className="bg-slate-900 text-white py-16 sm:py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4 relative z-10">
-          <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full inline-block">
-            ABOUT PRAGATI ECOSOLAR
-          </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-            Odisha&apos;s Trusted Solar EPC Partner
-          </h1>
-          <p className="text-sm sm:text-base text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            {SITE_CONFIG.headline}
-          </p>
+    <div className="w-full font-sans bg-[#FAFAFA] text-slate-900 pb-12">
+      
+      {/* 1. MINIMALIST HERO & COMPACT METRICS */}
+      <section className="bg-slate-900 text-white py-10 sm:py-14 border-b border-slate-800 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2 max-w-2xl">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-emerald-400 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full inline-block">
+                ABOUT PRAGATI ECOSOLAR
+              </span>
+              <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                Odisha&apos;s Authorized Solar EPC Partner
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Empanelled installer under PM Surya Ghar Muft Bijli Yojana & licensed across TPCODL, TPNODL, TPSODL & TPWODL.
+              </p>
+            </div>
+
+            {/* Compact Stats Row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0 bg-slate-800/80 p-3 rounded-2xl border border-slate-700/80 backdrop-blur-sm">
+              {stats.map((s, i) => (
+                <div key={i} className="text-center px-2">
+                  <span className={`text-base sm:text-lg font-extrabold font-mono block ${s.color}`}>
+                    {s.value}
+                  </span>
+                  <span className="text-[10px] text-slate-300 block font-medium">{s.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* 2. Our Story */}
-      <section className="py-20 bg-white border-b border-slate-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-8">
-          <div className="text-center space-y-2">
-            <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold">
-              OUR MISSION & IDENTITY
-            </span>
-            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Our Story</h2>
-          </div>
-
-          <div className="p-8 bg-[#FAFAFA] border border-slate-200 rounded-3xl text-sm text-slate-700 leading-relaxed space-y-4 shadow-sm">
-            <p>
-              Pragati EcoSolar is a solar EPC company based in Bhubaneswar, Odisha, delivering end-to-end rooftop and ground-mounted solar solutions across the state. We are an authorized installer under the PM Surya Ghar Muft Bijli Yojana and are empanelled across all four Odisha DISCOM zones — TPCODL, TPNODL, TPSODL, and TPWODL.
-            </p>
-            <p>
-              From site assessment to grid commissioning, our in-house team manages the full project lifecycle — engineering, procurement, installation, subsidy processing, and after-sales support — so customers deal with a single accountable partner.
-            </p>
-          </div>
+      {/* 2. MINIMALIST BENTO DASHBOARD */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
+        
+        {/* Navigation Tabs (Overview, Values, Timeline, Team) */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200">
+          {[
+            { id: "overview", label: "Company Overview", icon: Building2 },
+            { id: "values", label: "4 Core Values", icon: ShieldCheck },
+            { id: "timeline", label: "Our Milestones", icon: History },
+            { id: "leadership", label: "Engineering Leadership", icon: Users },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                  isActive
+                    ? "bg-slate-900 text-white shadow"
+                    : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200"
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
-      </section>
 
-      {/* 3. Credentials Strip */}
-      <section className="py-12 bg-emerald-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {credentials.map((c, i) => (
-              <div key={i} className="p-4 bg-emerald-950/80 border border-emerald-800 rounded-2xl space-y-1">
-                <strong className="text-xs font-mono font-bold text-amber-400 block">{c.label}</strong>
-                <span className="text-xs text-slate-200">{c.detail}</span>
+        {/* TAB 1: OVERVIEW & DISCOM INFO */}
+        {activeTab === "overview" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* Story Card */}
+            <div className="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+                  OUR MISSION & IDENTITY
+                </span>
+                <span className="text-xs text-slate-500 font-mono">Bhubaneswar, Odisha</span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+              
+              <h3 className="text-lg font-bold text-slate-900">
+                End-to-End Rooftop & Commercial Solar EPC Solutions
+              </h3>
 
-      {/* 4. Why Choose Us (Icon Grid) */}
-      <section className="py-20 bg-[#FAFAFA]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full inline-block">
-              OUR EPC ADVANTAGE
-            </span>
-            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              Why Choose Pragati EcoSolar?
-            </h2>
-          </div>
+              <div className="space-y-3 text-xs text-slate-700 leading-relaxed">
+                <p>
+                  Pragati EcoSolar is a full-service Solar EPC company based in Patia, Bhubaneswar. We manage the full project lifecycle — site assessment, structural design, procurement, installation, bi-directional DLMS net-metering approvals, and PM Surya Ghar central subsidy processing up to ₹78,000.
+                </p>
+                <p>
+                  Rather than dealing with multiple third-party contractors, our customers benefit from a single accountable team handling engineering, DISCOM clearance, and long-term after-sales O&M support across Odisha.
+                </p>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {whyChooseUs.map((w, i) => {
-              const Icon = w.icon;
-              return (
-                <div key={i} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
-                  <div className="p-3 bg-slate-900 text-amber-400 rounded-xl w-fit">
-                    <Icon className="w-6 h-6" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs font-medium text-slate-800">
+                <div className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Authorized PM Surya Ghar Rooftop Installer</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Empanelled Across All 4 Odisha DISCOMs</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Tier-1 ALMM Module & Inverter Selection</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>In-House Electrical & Civil Engineering Team</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Office & DISCOM Card */}
+            <div className="lg:col-span-4 bg-slate-900 text-white rounded-2xl p-6 space-y-4 shadow-sm border border-slate-800 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-wider">
+                    HEADQUARTERS & LICENSING
+                  </span>
+                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30">
+                    VERIFIED
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Patia, Bhubaneswar, Odisha</span>
+                  </h4>
+                  <p className="text-[11px] text-slate-400 leading-tight">
+                    HIG/42, Aryapalli, Patia, Bhubaneswar, Odisha 751024
+                  </p>
+                </div>
+
+                <div className="pt-2 border-t border-slate-800 space-y-2">
+                  <span className="text-[10px] font-mono text-slate-400 uppercase font-bold block">
+                    EMPANELLED DISCOM ZONES:
+                  </span>
+                  <div className="grid grid-cols-2 gap-1.5 font-mono text-[11px]">
+                    {discomZones.map((z) => (
+                      <div key={z.code} className="p-2 bg-slate-800 rounded border border-slate-700">
+                        <span className="text-amber-400 font-bold block">{z.code}</span>
+                        <span className="text-[10px] text-slate-300 block">{z.region}</span>
+                      </div>
+                    ))}
                   </div>
-                  <h3 className="text-base font-bold text-slate-900">{w.title}</h3>
-                  <p className="text-xs text-slate-600 leading-relaxed">{w.desc}</p>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                <span>Working: Mon–Sat (9 AM–7 PM)</span>
+                <Link href="/contact" className="text-emerald-400 font-bold hover:underline">
+                  Contact →
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* TAB 2: 4 CORE VALUES */}
+        {activeTab === "values" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {coreValues.map((v, i) => {
+              const Icon = v.icon;
+              return (
+                <div key={i} className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-sm">
+                  <div className="p-2.5 bg-slate-900 text-amber-400 rounded-xl w-fit">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <h4 className="text-sm font-bold text-slate-900">{v.title}</h4>
+                  <p className="text-xs text-slate-600 leading-relaxed">{v.desc}</p>
                 </div>
               );
             })}
           </div>
-        </div>
-      </section>
+        )}
 
-      {/* 5. Leadership / Core Team Cards Grid */}
-      <section className="py-20 bg-white border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold px-3 py-1 bg-amber-50 border border-amber-200 rounded-full inline-block">
-              ENGINEERING LEADERSHIP
-            </span>
-            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              Our Core Technical Leadership
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {coreTeam.map((t, i) => (
-              <div key={i} className="bg-[#FAFAFA] border border-slate-200 rounded-2xl p-6 space-y-3 shadow-sm">
-                <div className="w-12 h-12 bg-slate-900 text-emerald-400 font-extrabold rounded-xl flex items-center justify-center font-mono text-lg">
-                  {t.name[4]}
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-900">{t.name}</h3>
-                  <span className="text-xs text-emerald-700 font-mono font-semibold block">{t.role}</span>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed pt-2 border-t border-slate-200">
-                  {t.bio}
-                </p>
+        {/* TAB 3: MILESTONES & TIMELINE */}
+        {activeTab === "timeline" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {milestones.map((m, i) => (
+              <div key={i} className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-sm relative">
+                <span className="text-xl font-extrabold text-amber-500 font-mono block">{m.year}</span>
+                <h4 className="text-sm font-bold text-slate-900">{m.title}</h4>
+                <p className="text-xs text-slate-600 leading-relaxed">{m.desc}</p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        )}
 
-      {/* 6. Closing CTA */}
-      <section className="py-16 bg-slate-900 text-white text-center">
-        <div className="max-w-3xl mx-auto px-4 space-y-6">
-          <h2 className="text-2xl sm:text-3xl font-extrabold">Work with Odisha&apos;s Single Accountable EPC Partner</h2>
-          <p className="text-xs sm:text-sm text-slate-300">
-            Book a free site visit or request a custom technical proposal tailored to your power requirements.
-          </p>
-          <div className="flex justify-center gap-4">
+        {/* TAB 4: ENGINEERING LEADERSHIP */}
+        {activeTab === "leadership" && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {leadership.map((t, i) => (
+              <div key={i} className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-slate-900 text-amber-400 font-bold rounded-xl flex items-center justify-center font-mono text-sm shrink-0">
+                    {t.name[4]}
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-900">{t.name}</h4>
+                    <span className="text-[11px] text-emerald-700 font-mono font-bold block">{t.role}</span>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed pt-2 border-t border-slate-100">{t.desc}</p>
+                <div className="text-[10px] text-slate-500 font-mono flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                  <span>{t.experience}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* 3. MINIMALIST CTA STRIP */}
+        <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-800">
+          <div className="space-y-1 text-center sm:text-left">
+            <h4 className="text-base font-bold">Ready for a Free Solar Site Assessment?</h4>
+            <p className="text-xs text-slate-300">
+              Get an in-house engineer survey, load calculation, and subsidy proposal anywhere in Odisha.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
             <Link
               href="/contact?type=site-visit"
-              className="py-3.5 px-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg"
+              className="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center gap-1.5"
             >
-              Book Free Site Visit
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Book Site Visit</span>
             </Link>
             <Link
               href="/contact?type=quote"
-              className="py-3.5 px-6 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl border border-slate-700"
+              className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5"
             >
-              Contact Engineering Team
+              <PhoneCall className="w-3.5 h-3.5 text-amber-400" />
+              <span>Get Quote</span>
             </Link>
           </div>
         </div>
-      </section>
+
+      </div>
     </div>
   );
 }

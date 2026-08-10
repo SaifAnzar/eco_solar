@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Sun,
@@ -20,535 +20,427 @@ import {
   Clock,
   Sparkles,
   PhoneCall,
+  ChevronRight,
+  ShieldAlert,
 } from "lucide-react";
 
 export default function ServicesPage() {
+  const [activeCardId, setActiveCardId] = useState<string | null>(null);
+
+  const handleSelectService = (targetId: string) => {
+    setActiveCardId(targetId);
+    if (typeof window !== "undefined") {
+      const el = document.getElementById(targetId);
+      if (el) {
+        const yOffset = -84;
+        const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+    }
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash) {
       const hash = window.location.hash.replace("#", "");
-      setTimeout(() => {
-        const el = document.getElementById(hash);
-        if (el) {
-          const yOffset = -84;
-          const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: "smooth" });
-        }
-      }, 150);
+      if (hash) {
+        setActiveCardId(hash);
+        setTimeout(() => {
+          const el = document.getElementById(hash);
+          if (el) {
+            const yOffset = -84;
+            const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          }
+        }, 150);
+      }
     }
   }, []);
 
   const quickNav = [
-    { label: "On-Grid EPC", href: "#on-grid", icon: Sun, color: "text-amber-500 bg-amber-50 border-amber-200" },
-    { label: "Off-Grid EPC", href: "#off-grid", icon: Zap, color: "text-emerald-600 bg-emerald-50 border-emerald-200" },
-    { label: "Hybrid EPC", href: "#hybrid", icon: Layers, color: "text-blue-600 bg-blue-50 border-blue-200" },
-    { label: "Water Pumps", href: "#pumps", icon: Droplets, color: "text-cyan-600 bg-cyan-50 border-cyan-200" },
-    { label: "Street Lights", href: "#lighting", icon: Lightbulb, color: "text-yellow-600 bg-yellow-50 border-yellow-200" },
-    { label: "Net Metering", href: "#net-metering", icon: ShieldCheck, color: "text-purple-600 bg-purple-50 border-purple-200" },
-    { label: "O&M Maintenance", href: "#om", icon: Wrench, color: "text-rose-600 bg-rose-50 border-rose-200" },
+    { id: "on-grid", label: "On-Grid EPC", icon: Sun, color: "text-amber-500 bg-amber-50 border-amber-200" },
+    { id: "off-grid", label: "Off-Grid EPC", icon: Zap, color: "text-emerald-600 bg-emerald-50 border-emerald-200" },
+    { id: "hybrid", label: "Hybrid EPC", icon: Layers, color: "text-blue-600 bg-blue-50 border-blue-200" },
+    { id: "pumps", label: "Water Pumps", icon: Droplets, color: "text-cyan-600 bg-cyan-50 border-cyan-200" },
+    { id: "lighting", label: "Street Lights", icon: Lightbulb, color: "text-yellow-600 bg-yellow-50 border-yellow-200" },
+    { id: "net-metering", label: "Net Metering", icon: ShieldCheck, color: "text-purple-600 bg-purple-50 border-purple-200" },
+    { id: "om", label: "O&M Maintenance", icon: Wrench, color: "text-rose-600 bg-rose-50 border-rose-200" },
+  ];
+
+  const servicesData = [
+    {
+      id: "on-grid",
+      badge: "BEST FOR HOMES & LOW BILLS",
+      badgeBg: "bg-amber-50 text-amber-700 border-amber-200",
+      title: "On-Grid Solar (Grid Connected)",
+      subtitle: "Cut Your Monthly Electricity Bill up to 90%",
+      desc: "Powers your home using free solar energy during the day. Any extra solar power your panels generate goes straight to the government electricity grid, giving you money-saving bill credits.",
+      icon: Sun,
+      iconBg: "bg-slate-900 text-amber-400 border-slate-800",
+      bullets: [
+        "Get up to ₹78,000 direct bank subsidy under PM Surya Ghar scheme",
+        "Reduces your monthly electricity bills by up to 90%",
+        "No battery needed — lowest price & fastest money back in 3 years",
+        "25-year panel guarantee with strong storm-proof roof fitting",
+      ],
+      primaryBtn: { text: "Get Price Quote", href: "/contact?type=quote" },
+      secondaryBtn: { text: "Book Free Survey", href: "/contact?type=site-visit" },
+    },
+    {
+      id: "off-grid",
+      badge: "24/7 POWER WITH BATTERIES",
+      badgeBg: "bg-emerald-50 text-emerald-700 border-emerald-200",
+      title: "Off-Grid Solar (Battery Storage)",
+      subtitle: "100% Free From Power Cuts & Electricity Bills",
+      desc: "Generates solar power and stores it in batteries. Gives you non-stop 24/7 electricity even during long power cuts, storms, or in villages with no power lines.",
+      icon: Zap,
+      iconBg: "bg-slate-900 text-emerald-400 border-slate-800",
+      bullets: [
+        "100% power freedom — zero reliance on government electricity",
+        "Includes fast-charging long-life Lithium batteries",
+        "Runs lights, fans, TV, & fridge day and night without interruption",
+        "Ideal for farmhouses, shops, villages, & remote locations",
+      ],
+      primaryBtn: { text: "Get Price Quote", href: "/contact?type=quote" },
+      secondaryBtn: { text: "Book Site Survey", href: "/contact?type=site-visit" },
+    },
+    {
+      id: "hybrid",
+      badge: "BILL SAVINGS + POWER BACKUP",
+      badgeBg: "bg-blue-50 text-blue-700 border-blue-200",
+      title: "Hybrid Solar (Grid + Battery)",
+      subtitle: "Save Big on Bills + Stay Powered During Power Cuts",
+      desc: "The ultimate combination! Reduces your monthly electricity bill like On-Grid solar AND keeps your lights and fans running smoothly when the grid power fails.",
+      icon: Layers,
+      iconBg: "bg-slate-900 text-blue-400 border-slate-800",
+      bullets: [
+        "Automatic switch to battery backup in less than a second during power cuts",
+        "Fills battery first, then sells extra solar power to grid for bill savings",
+        "Simple mobile phone app to track your daily solar power generation & savings",
+        "Approved by all Odisha electricity boards (TPCODL, TPNODL, TPSODL, TPWODL)",
+      ],
+      primaryBtn: { text: "Get Price Quote", href: "/contact?type=quote" },
+      secondaryBtn: { text: "Book Free Survey", href: "/contact?type=site-visit" },
+    },
+    {
+      id: "pumps",
+      badge: "FOR FARMS & AGRICULTURE",
+      badgeBg: "bg-cyan-50 text-cyan-700 border-cyan-200",
+      title: "Solar Water Pumps (For Farms)",
+      subtitle: "Free Water Pumping for Crops, Farms & Borewells",
+      desc: "Runs your water pump directly using free sunlight. Perfect for watering crops, filling fish ponds, and supplying water to farms without spending money on diesel or electricity.",
+      icon: Droplets,
+      iconBg: "bg-slate-900 text-cyan-400 border-slate-800",
+      bullets: [
+        "Zero electricity bill & zero expensive diesel engine fuel costs",
+        "Pumps water automatically from morning to evening using sunlight",
+        "Works with borewell pumps, open well pumps & surface water tanks",
+        "Built-in automatic safety to protect motor from damage or dry running",
+      ],
+      primaryBtn: { text: "Inquire Solar Pump", href: "/contact?type=quote" },
+      secondaryBtn: { text: "Consult Engineer", href: "/contact?type=site-visit" },
+    },
+    {
+      id: "lighting",
+      badge: "AUTOMATIC OUTDOOR LIGHTS",
+      badgeBg: "bg-yellow-50 text-yellow-700 border-yellow-200",
+      title: "Solar Street Lights",
+      subtitle: "Automatic Outdoor Lighting for Roads & Colonies",
+      desc: "All-in-one solar lights with built-in solar panels and batteries. Charges automatically during the day and turns ON automatically at night.",
+      icon: Lightbulb,
+      iconBg: "bg-slate-900 text-yellow-400 border-slate-800",
+      bullets: [
+        "Turns ON at sunset & turns OFF at sunrise automatically",
+        "No electric wiring or cabling required — easy setup anywhere outdoors",
+        "Strong rain-proof & rust-proof steel poles",
+        "Zero electricity bill for village roads, housing colonies, & grounds",
+      ],
+      primaryBtn: { text: "Get Lighting Quote", href: "/contact?type=quote" },
+      secondaryBtn: { text: "Request Catalog", href: "/contact?type=site-visit" },
+    },
+    {
+      id: "net-metering",
+      badge: "100% PAPERWORK HANDLED",
+      badgeBg: "bg-purple-50 text-purple-700 border-purple-200",
+      title: "Net Metering & Govt Subsidy Help",
+      subtitle: "We Handle 100% Paperwork & Bank Subsidy Clearance",
+      desc: "Don't worry about government forms or office visits! Our team handles 100% of the paperwork, electric board permissions, net meter fitting, and subsidy money transfer.",
+      icon: ShieldCheck,
+      iconBg: "bg-slate-900 text-purple-400 border-slate-800",
+      bullets: [
+        "We register your subsidy application on the PM Surya Ghar national portal",
+        "We get official permission from your local electricity department office",
+        "We fit the official bi-directional meter that tracks your bill savings",
+        "Govt subsidy money deposited directly into your savings bank account",
+      ],
+      primaryBtn: { text: "Start Subsidy Process", href: "/contact?type=site-visit" },
+      secondaryBtn: { text: "Check Eligibility", href: "/contact?type=quote" },
+    },
+    {
+      id: "om",
+      badge: "CLEANING & HEALTH CHECKUPS",
+      badgeBg: "bg-rose-50 text-rose-700 border-rose-200",
+      title: "Solar Care & Maintenance",
+      subtitle: "Keep Your Solar System Running at 100% Power",
+      desc: "Regular cleaning, health checkups, and fast repair services so your solar panels keep generating maximum electricity every single day for 25 years.",
+      icon: Wrench,
+      iconBg: "bg-slate-900 text-rose-400 border-slate-800",
+      bullets: [
+        "Professional washing to clean dust & bird dirt off solar panels",
+        "Regular safety checks to find & fix any problem before power drops",
+        "Full inverter, wiring, & earthing health testing by expert local team",
+        "Quick repair support anywhere in Odisha whenever you call",
+      ],
+      primaryBtn: { text: "Book Maintenance", href: "/contact?type=quote" },
+      secondaryBtn: { text: "Schedule Inspection", href: "/contact?type=site-visit" },
+    },
   ];
 
   return (
     <div className="w-full font-sans bg-[#FAFAFA] text-slate-900">
-      {/* 1. Page Header & Quick Section Jump Navigation */}
-      <section className="bg-slate-900 text-white py-16 sm:py-20 relative overflow-hidden border-b border-slate-800">
+      
+      {/* 1. PAGE HERO HEADER */}
+      <section className="bg-slate-900 text-white py-16 sm:py-24 relative overflow-hidden border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
-          <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold px-3.5 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full inline-block shadow-sm">
-            END-TO-END SOLAR EPC SERVICES IN ODISHA
-          </span>
+          
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/10 via-amber-500/10 to-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold uppercase tracking-widest shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>SOLAR SERVICES FOR EVERY NEED</span>
+          </div>
+
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-            Our Solar EPC Services & Solutions
+            Easy & Simple Solar Services
           </h1>
+
           <p className="text-sm sm:text-base text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            From residential rooftops to large-scale commercial plants, agricultural water pumps, and municipal street lights — Pragati EcoSolar provides total turnkey EPC engineering, net-metering approvals, and PM Surya Ghar subsidy disbursement.
+            Whether you want to cut your home electricity bill, get 24/7 power for your farm, or set up outdoor lights — we make solar simple, affordable, and hassle-free.
           </p>
 
-          {/* Quick Jump Pills */}
+          {/* Quick Jump Filter Pills */}
           <div className="pt-4 flex flex-wrap items-center justify-center gap-2 max-w-5xl mx-auto">
             {quickNav.map((q) => {
               const Icon = q.icon;
+              const isSelected = activeCardId === q.id;
               return (
-                <a
-                  key={q.href}
-                  href={q.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const el = document.getElementById(q.href.replace("#", ""));
-                    if (el) {
-                      const yOffset = -84;
-                      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                      window.scrollTo({ top: y, behavior: "smooth" });
-                    }
-                  }}
-                  className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border shadow-sm transition-all hover:scale-105 ${q.color}`}
+                <button
+                  key={q.id}
+                  onClick={() => handleSelectService(q.id)}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border shadow-sm transition-all duration-300 ${
+                    isSelected
+                      ? "bg-emerald-600 text-white border-emerald-400 ring-2 ring-emerald-400/80 scale-105 shadow-lg font-extrabold"
+                      : `${q.color} hover:scale-105`
+                  }`}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
                   <span>{q.label}</span>
-                </a>
+                </button>
               );
             })}
           </div>
+
         </div>
       </section>
 
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-20">
+      {/* 2. PREMIUM ANIMATED SERVICE CARDS GRID */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {servicesData.map((s) => {
+            const Icon = s.icon;
+            const isSelected = activeCardId === s.id;
 
-        {/* 2. ON-GRID SOLAR EPC */}
-        <section id="on-grid" className="scroll-mt-28 bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-amber-700 text-xs font-mono font-bold">
-                <Sun className="w-4 h-4 text-amber-600" />
-                <span>1 kW TO 500 kW+ NET-METERED SYSTEMS</span>
+            return (
+              <div
+                key={s.id}
+                id={s.id}
+                className={`scroll-mt-28 group bg-white border rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 ${
+                  isSelected
+                    ? "ring-4 ring-emerald-500/80 border-emerald-500 shadow-2xl -translate-y-2.5 z-20"
+                    : "border-slate-200/90 shadow-sm hover:shadow-2xl hover:border-emerald-500/40 hover:-translate-y-2"
+                }`}
+              >
+                {/* Top Animated Accent Bar */}
+                <div
+                  className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-500 via-amber-500 to-emerald-500 transition-opacity duration-300 ${
+                    isSelected ? "opacity-100 animate-pulse" : "opacity-0 group-hover:opacity-100"
+                  }`}
+                />
+
+                <div className="space-y-6">
+                  
+                  {/* Card Header: Icon, Selection Badge & Title */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between gap-3">
+                      {/* Animated Icon Container */}
+                      <div
+                        className={`p-3.5 rounded-2xl border shadow-md transition-transform duration-300 ${
+                          isSelected
+                            ? "scale-110 rotate-3 ring-2 ring-emerald-400"
+                            : "group-hover:scale-110 group-hover:rotate-3"
+                        } ${s.iconBg}`}
+                      >
+                        <Icon className="w-6 h-6" />
+                      </div>
+
+                      {/* Badge & Active Selection Tag */}
+                      <div className="flex items-center gap-2">
+                        {isSelected && (
+                          <span className="animate-bounce bg-emerald-600 text-white text-[11px] font-mono font-extrabold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Selected Service</span>
+                          </span>
+                        )}
+                        <span className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold border shadow-xs ${s.badgeBg}`}>
+                          {s.badge}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 group-hover:text-emerald-700 transition-colors">
+                        {s.title}
+                      </h2>
+                      <p className="text-xs font-mono font-bold text-amber-700 mt-1">
+                        {s.subtitle}
+                      </p>
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                      {s.desc}
+                    </p>
+                  </div>
+
+                  {/* Bullet Specs List */}
+                  <div className="space-y-2.5 pt-4 border-t border-slate-100">
+                    {s.bullets.map((b, i) => (
+                      <div key={i} className="flex items-start gap-2 text-xs text-slate-700 font-medium">
+                        <BadgeCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <span>{b}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                </div>
+
+                {/* Respective Action Buttons Inside Card Footer */}
+                <div className="pt-6 mt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
+                  <Link
+                    href={s.primaryBtn.href}
+                    className="w-full sm:w-auto flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 group/btn"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>{s.primaryBtn.text}</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+                  </Link>
+
+                  <Link
+                    href={s.secondaryBtn.href}
+                    className="w-full sm:w-auto py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+                  >
+                    <Calendar className="w-4 h-4 text-amber-400" />
+                    <span>{s.secondaryBtn.text}</span>
+                  </Link>
+                </div>
+
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                Solar EPC — On-Grid Systems
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                On-Grid solar power systems are connected directly to your utility DISCOM grid (TPCODL, TPNODL, TPSODL, TPWODL). Power generated during the day powers your load directly, and surplus electricity is exported to the grid through a bi-directional DLMS net meter to earn bill credits.
+            );
+          })}
+        </div>
+
+        {/* 3. RESIDENTIAL & COMMERCIAL PORTFOLIO CARDS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+          
+          {/* Residential Card */}
+          <div
+            id="residential"
+            className={`scroll-mt-28 group bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 text-white rounded-3xl p-8 shadow-xl border transition-all duration-300 flex flex-col justify-between relative overflow-hidden ${
+              activeCardId === "residential"
+                ? "ring-4 ring-amber-500 border-amber-500 -translate-y-2.5"
+                : "border-slate-800 hover:border-emerald-500/50 hover:-translate-y-2"
+            }`}
+          >
+            <div className="space-y-4 relative z-10">
+              <div className="flex items-center justify-between">
+                <div className="p-3 bg-amber-500 text-slate-950 rounded-2xl font-bold group-hover:scale-110 transition-transform">
+                  <Home className="w-6 h-6" />
+                </div>
+                <span className="px-3 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-full text-xs font-mono font-bold">
+                  FOR HOMES & HOUSES
+                </span>
+              </div>
+
+              <h3 className="text-2xl font-extrabold text-white">Solar for Homes</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Put solar on your roof, get up to ₹78,000 government subsidy, and reduce your monthly electricity bills to near zero.
               </p>
             </div>
-            <div className="shrink-0 flex flex-col sm:flex-row gap-3">
+
+            <div className="pt-6 mt-6 border-t border-slate-800 flex flex-col sm:flex-row gap-3 relative z-10">
+              <Link
+                href="/residential"
+                className="flex-1 py-3 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2 group/btn"
+              >
+                <span>Explore Home Solar</span>
+                <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              </Link>
               <Link
                 href="/contact?type=quote"
-                className="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2"
+                className="py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl border border-slate-700 flex items-center justify-center gap-2"
               >
-                <FileText className="w-4 h-4" />
-                <span>Get On-Grid Quote</span>
-              </Link>
-              <Link
-                href="/contact?type=site-visit"
-                className="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2"
-              >
-                <Calendar className="w-4 h-4 text-amber-400" />
-                <span>Book Site Survey</span>
+                <span>Get Subsidy Quote</span>
               </Link>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                PM Surya Ghar Subsidies
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Eligible for central subsidies up to ₹78,000 for residential rooftops up to 3kW+, plus additional Odisha state incentives.
-              </p>
-            </div>
-
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Zero Battery Expense
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Uses DISCOM grid as virtual storage. Lowest capital outlay per kW with fastest payback period (usually 3–4 years).
-              </p>
-            </div>
-
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                25-Year Performance
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Tier-1 ALMM approved Mono PERC / TOPCon panels with 25-year linear performance warranty and high wind-resistant structure.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 3. OFF-GRID SOLAR EPC */}
-        <section id="off-grid" className="scroll-mt-28 bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full text-emerald-700 text-xs font-mono font-bold">
-                <Zap className="w-4 h-4 text-emerald-600" />
-                <span>2 kW TO 50 kW BATTERY-BACKED INDEPENDENT POWER</span>
+          {/* Commercial Card */}
+          <div
+            id="commercial"
+            className={`scroll-mt-28 group bg-gradient-to-br from-slate-900 via-slate-950 to-emerald-950 text-white rounded-3xl p-8 shadow-xl border transition-all duration-300 flex flex-col justify-between relative overflow-hidden ${
+              activeCardId === "commercial"
+                ? "ring-4 ring-emerald-500 border-emerald-500 -translate-y-2.5"
+                : "border-slate-800 hover:border-emerald-500/50 hover:-translate-y-2"
+            }`}
+          >
+            <div className="space-y-4 relative z-10">
+              <div className="flex items-center justify-between">
+                <div className="p-3 bg-emerald-500 text-white rounded-2xl font-bold group-hover:scale-110 transition-transform">
+                  <Building2 className="w-6 h-6" />
+                </div>
+                <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full text-xs font-mono font-bold">
+                  FOR BUSINESSES & FACTORIES
+                </span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                Solar EPC — Off-Grid Systems
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                Off-Grid solar systems operate completely independent of the power grid. Integrated with high-capacity Lithium (LiFePO4) or Tubular Gel battery banks, off-grid systems store daytime solar energy to power your facility 24/7 without DISCOM grid reliance.
+
+              <h3 className="text-2xl font-extrabold text-white">Solar for Businesses & Factories</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Lower your monthly business running costs for offices, factories, schools & hospitals with big tax saving benefits.
               </p>
             </div>
-            <div className="shrink-0 flex flex-col sm:flex-row gap-3">
+
+            <div className="pt-6 mt-6 border-t border-slate-800 flex flex-col sm:flex-row gap-3 relative z-10">
+              <Link
+                href="/commercial"
+                className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2 group/btn"
+              >
+                <span>Explore Business Solar</span>
+                <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              </Link>
               <Link
                 href="/contact?type=quote"
-                className="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2"
+                className="py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl border border-slate-700 flex items-center justify-center gap-2"
               >
-                <FileText className="w-4 h-4" />
-                <span>Get Off-Grid Quote</span>
+                <span>Get Business Proposal</span>
               </Link>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                100% Power Independence
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Zero electricity bills and zero vulnerability to grid power cuts, voltage drops, or DISCOM transformer breakdowns.
-              </p>
-            </div>
+        </div>
 
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                LiFePO4 Smart Battery Tech
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Long life lithium iron phosphate battery banks with 4,000+ charge cycles, fast charging, and zero maintenance.
-              </p>
-            </div>
+      </section>
 
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Ideal for Remote Locations
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Perfect for rural farmhouses, resorts, telecom towers, eco-lodges, and sites where DISCOM grid power line extensions are unviable.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 4. HYBRID SOLAR EPC */}
-        <section id="hybrid" className="scroll-mt-28 bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-blue-700 text-xs font-mono font-bold">
-                <Layers className="w-4 h-4 text-blue-600" />
-                <span>3 kW TO 100 kW SMART HYBRID ARCHITECTURE</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                Solar EPC — Hybrid Systems
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                Hybrid systems deliver the best of both worlds: utility net-metering bill savings PLUS lithium battery power backup during power outages. Smart hybrid inverters intelligently prioritize power sources to maximize savings while guaranteeing emergency power backup.
-              </p>
-            </div>
-            <div className="shrink-0 flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/contact?type=quote"
-                className="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2"
-              >
-                <FileText className="w-4 h-4" />
-                <span>Get Hybrid Proposal</span>
-              </Link>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Blackout-Proof Continuity
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Switches seamlessly to battery power in less than 10 milliseconds during load shedding or grid power failure.
-              </p>
-            </div>
-
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Net Meter Export + Storage
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Fills battery storage first for peak load security, then exports all excess solar generation back to DISCOM grid for credits.
-              </p>
-            </div>
-
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Smart Load Management
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Configurable power priorities via Wi-Fi app — set battery discharge thresholds, grid feed rates, and emergency reserves.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 5. SOLAR WATER PUMPING SYSTEMS */}
-        <section id="pumps" className="scroll-mt-28 bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-cyan-50 border border-cyan-200 rounded-full text-cyan-700 text-xs font-mono font-bold">
-                <Droplets className="w-4 h-4 text-cyan-600" />
-                <span>3 HP TO 10 HP AGRICULTURAL & COMMUNITY PUMPS</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                Solar Water Pumping Systems
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                High-yield solar water pump solutions designed specifically for agricultural irrigation, livestock farms, fish ponds, and rural community water distribution across Odisha under PM-KUSUM scheme guidelines.
-              </p>
-            </div>
-            <div className="shrink-0 flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/contact?type=quote"
-                className="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2"
-              >
-                <FileText className="w-4 h-4" />
-                <span>Inquire Pump System</span>
-              </Link>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Zero Electricity & Fuel Costs
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Operates completely on free solar energy during daylight hours — eliminating expensive diesel generator costs and electricity bills.
-              </p>
-            </div>
-
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                MPPT Pump Drive Technology
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Advanced Maximum Power Point Tracking VFD controllers ensure smooth pump startup even on overcast days and early mornings.
-              </p>
-            </div>
-
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Submersible & Surface Pumps
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Supports deep borewell submersibles, open well pumps, and surface centrifugal pumps with dry-run and overvoltage protection.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 6. SOLAR STREET LIGHTING SOLUTIONS */}
-        <section id="lighting" className="scroll-mt-28 bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-50 border border-yellow-200 rounded-full text-yellow-700 text-xs font-mono font-bold">
-                <Lightbulb className="w-4 h-4 text-yellow-600" />
-                <span>STANDALONE ALL-IN-ONE & CENTRALIZED LIGHTING</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                Solar Street Lighting Solutions
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                Standalone All-In-One (AIO) and modular solar street lights for institutions, panchayats, housing societies, industrial parks, resorts, and municipal roads across Odisha.
-              </p>
-            </div>
-            <div className="shrink-0 flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/contact?type=quote"
-                className="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2"
-              >
-                <FileText className="w-4 h-4" />
-                <span>Get Street Lighting Proposal</span>
-              </Link>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Automatic Dusk-to-Dawn Operation
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Smart optical sensors turn lights on automatically at dusk and off at dawn, with motion sensors to conserve battery during late night hours.
-              </p>
-            </div>
-
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Integrated LiFePO4 Battery Pack
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Built-in lithium batteries mounted directly inside weatherproof luminaire housings for anti-theft security and long service life.
-              </p>
-            </div>
-
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Hot-Dip Galvanized Poles
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Cyclone-resistant octagonal or tubular steel poles coated with anti-corrosion paint designed for coastal Odisha weather conditions.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 7. NET METERING & SUBSIDY ASSISTANCE */}
-        <section id="net-metering" className="scroll-mt-28 bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-50 border border-purple-200 rounded-full text-purple-700 text-xs font-mono font-bold">
-                <ShieldCheck className="w-4 h-4 text-purple-600" />
-                <span>TPCODL • TPNODL • TPSODL • TPWODL EMPANELLED</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                Net Metering & Subsidy Assistance
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                Navigating utility approvals can be complicated. Pragati EcoSolar manages 100% of the DISCOM paperwork, technical inspections, DLMS net-meter commissioning, and national portal subsidy claims on your behalf.
-              </p>
-            </div>
-            <div className="shrink-0 flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/contact?type=site-visit"
-                className="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2"
-              >
-                <Calendar className="w-4 h-4" />
-                <span>Start Subsidy Process</span>
-              </Link>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <span className="text-xs font-mono text-emerald-700 font-bold">STEP 1</span>
-              <h4 className="text-xs font-bold text-slate-900">Portal Registration</h4>
-              <p className="text-[11px] text-slate-600 leading-normal">
-                Submission of consumer details on PM Surya Ghar portal & DISCOM online portal within 24 hours.
-              </p>
-            </div>
-
-            <div className="p-4 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <span className="text-xs font-mono text-emerald-700 font-bold">STEP 2</span>
-              <h4 className="text-xs font-bold text-slate-900">Feasibility Sanction</h4>
-              <p className="text-[11px] text-slate-600 leading-normal">
-                Technical feasibility approval from local DISCOM section officer and transformer load verification.
-              </p>
-            </div>
-
-            <div className="p-4 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <span className="text-xs font-mono text-emerald-700 font-bold">STEP 3</span>
-              <h4 className="text-xs font-bold text-slate-900">DLMS Meter Sync</h4>
-              <p className="text-[11px] text-slate-600 leading-normal">
-                Installation and testing of government-approved bi-directional net meter and plant commissioning.
-              </p>
-            </div>
-
-            <div className="p-4 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <span className="text-xs font-mono text-emerald-700 font-bold">STEP 4</span>
-              <h4 className="text-xs font-bold text-slate-900">Direct Bank Credit</h4>
-              <p className="text-[11px] text-slate-600 leading-normal">
-                Upload of commissioning report for direct central subsidy deposit into your bank account.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 8. OPERATION & MAINTENANCE (O&M) */}
-        <section id="om" className="scroll-mt-28 bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-rose-50 border border-rose-200 rounded-full text-rose-700 text-xs font-mono font-bold">
-                <Wrench className="w-4 h-4 text-rose-600" />
-                <span>ANNUAL AMC & PREVENTIVE MAINTENANCE</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                O&M (Operation & Maintenance) Services
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-3xl">
-                Protect your solar investment and guarantee peak kilowatt-hour (kWh) generation year after year. We offer routine high-pressure panel washing, string inverter diagnostic checks, thermal imaging hotspot scans, and emergency breakdown support across Odisha.
-              </p>
-            </div>
-            <div className="shrink-0 flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/contact?type=quote"
-                className="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-all flex items-center justify-center gap-2"
-              >
-                <Wrench className="w-4 h-4" />
-                <span>Book O&M Service</span>
-              </Link>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Periodic Panel Cleaning
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Scheduled pure-water pressure washing to remove dust, soot, and bird droppings, restoring full light absorption and yield.
-              </p>
-            </div>
-
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Thermal Hotspot Audits
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Infrared thermography scans to detect micro-cracks, loose contacts, and cell hotspots before they cause generation loss or damage.
-              </p>
-            </div>
-
-            <div className="p-5 bg-[#FAFAFA] border border-slate-200 rounded-2xl space-y-2">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <BadgeCheck className="w-4 h-4 text-emerald-600" />
-                Inverter Firmware & Health
-              </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Complete AC/DC distribution box inspections, earthing resistance checks, surge arrester testing, and inverter software updates.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* 9. RESIDENTIAL & COMMERCIAL QUICK ANCHORS */}
-        <section id="residential" className="scroll-mt-28 bg-emerald-950 text-white rounded-3xl p-8 sm:p-12 space-y-6">
-          <div className="max-w-3xl space-y-3">
-            <span className="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider">
-              RESIDENTIAL & COMMERCIAL PORTFOLIO
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold">Looking for Tailored Rooftop Solutions?</h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Explore our specialized dedicated pages for detailed system sizes, pricing calculators, commercial tax benefit details, and photo galleries of completed installations across Odisha.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-4 pt-2">
-            <Link
-              href="/residential"
-              className="py-3 px-5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs rounded-xl shadow transition-all flex items-center gap-2"
-            >
-              <Home className="w-4 h-4" />
-              <span>Explore Residential Solar</span>
-            </Link>
-            <Link
-              href="/commercial"
-              className="py-3 px-5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-2"
-            >
-              <Building2 className="w-4 h-4 text-emerald-400" />
-              <span>Explore Commercial Solar</span>
-            </Link>
-          </div>
-        </section>
-      </div>
-
-      {/* Closing CTA */}
+      {/* 4. CLOSING CTA */}
       <section className="py-16 bg-slate-900 text-white text-center border-t border-slate-800">
         <div className="max-w-3xl mx-auto px-4 space-y-6">
-          <h2 className="text-2xl sm:text-3xl font-extrabold">Have Questions About Which Solar System Suits You Best?</h2>
+          <h2 className="text-2xl sm:text-3xl font-extrabold">Ready to Discuss Your Solar Requirements?</h2>
           <p className="text-xs sm:text-sm text-slate-300">
             Our solar technical advisors are ready to inspect your site, evaluate roof load, and calculate your exact return on investment.
           </p>
