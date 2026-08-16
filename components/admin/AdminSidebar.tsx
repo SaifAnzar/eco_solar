@@ -15,6 +15,7 @@ import {
   Award,
   ExternalLink,
   ShieldCheck,
+  Coins,
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -46,7 +47,7 @@ export function AdminSidebar({ adminEmail }: AdminSidebarProps) {
       label: "Calculator Config",
       href: "/admin/calculator",
       icon: Calculator,
-      badge: "Benchmark Rates",
+      badge: "Slabs & Tariffs",
     },
     {
       label: "Franchise & Dealer",

@@ -166,3 +166,14 @@ model SchemeAndService {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
+
+model TariffConfig {
+  id             String   @id @default(cuid())
+  category       String   @unique @default("ODISHA_DOMESTIC_LT")
+  slabs          Json
+  dutyRate       Float    @default(0.06)
+  fixedRatePerKw Float    @default(20.0)
+  basePricePerKw Float    @default(75000.0)
+  subsidyCap     Float    @default(78000.0)
+  updatedAt      DateTime @updatedAt
+}

@@ -1,5 +1,6 @@
 import React from "react";
 import { Hero } from "@/components/hero/Hero";
+import AboutSection from "@/components/home/AboutSection";
 import MetricsStrip from "@/components/home/MetricsStrip";
 import ServicesSection from "@/components/home/ServicesSection";
 import DiscomLiaison from "@/components/home/DiscomLiaison";
@@ -18,7 +19,10 @@ export default async function HomePage() {
       {/* 1. HERO SECTION (With dynamic CMS subline & isolated ROI calculator card) */}
       <Hero heroSubline={settings?.heroSubline} />
 
-      {/* 2. TRUST STRIP & BADGES (Dynamic CMS Metrics) */}
+      {/* 2. ABOUT SECTION (Company credentials & core EPC values) */}
+      <AboutSection />
+
+      {/* 3. TRUST STRIP & BADGES (Dynamic CMS Metrics) */}
       <MetricsStrip
         systemsInstalled={settings?.systemsInstalled}
         capacityDelivered={settings?.capacityDelivered}
@@ -26,16 +30,16 @@ export default async function HomePage() {
         epcScope={settings?.epcScope}
       />
 
-      {/* 3. SERVICES OVERVIEW */}
+      {/* 4. SERVICES OVERVIEW */}
       <ServicesSection />
 
-      {/* 4. DISCOM LIAISON & ZONES */}
+      {/* 5. DISCOM LIAISON & ZONES */}
       <DiscomLiaison />
 
-      {/* 5. HARDWARE STANDARDS & EPC COMPLIANCE */}
+      {/* 6. HARDWARE STANDARDS & EPC COMPLIANCE */}
       <HardwarePartners />
 
-      {/* 6. FAQ ACCORDION */}
+      {/* 7. FAQ ACCORDION */}
       <FaqAccordion />
     </div>
   );

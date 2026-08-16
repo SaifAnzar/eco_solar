@@ -13,5 +13,35 @@
     "id": "inq_85r97tnjo",
     "status": "NEW",
     "createdAt": "2026-08-10T10:07:02.586Z"
+  },
+  "inq_62t7cq2tw": {
+    "fullName": "Saif Anzar",
+    "phone": "07735783533",
+    "email": "",
+    "location": "Bhubaneswar (753001)",
+    "discomRegion": "TPCODL",
+    "systemType": "residential",
+    "monthlyBill": "",
+    "rooftopArea": "",
+    "message": "Captured via In-App Live Chat Lead Form",
+    "inquiryType": "SITE_VISIT",
+    "id": "inq_62t7cq2tw",
+    "status": "NEW",
+    "createdAt": "2026-08-16T05:19:00.206Z"
+  },
+  "inq_ytsebzg5q": {
+    "fullName": "Saif Anzar",
+    "phone": "07735783533",
+    "email": "",
+    "location": "Bhubaneswar (753001)",
+    "discomRegion": "TPCODL",
+    "systemType": "residential",
+    "monthlyBill": "",
+    "rooftopArea": "",
+    "message": "Captured via In-App Live Chat Lead Form",
+    "inquiryType": "LIVE_CHAT",
+    "id": "inq_ytsebzg5q",
+    "status": "NEW",
+    "createdAt": "2026-08-16T05:41:27.532Z"
   }
 }
