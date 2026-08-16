@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { Sprout, ArrowRight, CheckCircle2, Calculator } from "lucide-react";
+import { Sprout, ArrowRight, Calculator } from "lucide-react";
+import SolarPumpCard from "@/components/services/SolarPumpCard";
 
 export const metadata = {
   title: "PM-KUSUM Agricultural Solar Water Pumps Odisha | Pragati EcoSolar",
@@ -9,10 +10,10 @@ export const metadata = {
 
 export default function SolarPumpsPage() {
   return (
-    <div className="bg-[#FAFAFA] min-h-screen py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <div className="bg-[#FAFAFA] min-h-screen py-16 font-sans">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
-        {/* Banner */}
+        {/* Top Banner */}
         <div className="bg-white p-8 sm:p-12 rounded-3xl border border-slate-200 shadow-xl space-y-6">
           <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono font-bold">
             <Sprout className="w-3.5 h-3.5" />
@@ -43,6 +44,9 @@ export default function SolarPumpsPage() {
             </a>
           </div>
         </div>
+
+        {/* Solar Pump In Progress Card & Pre-Registration (Task 8) */}
+        <SolarPumpCard />
 
         {/* Action Bar */}
         <div className="bg-slate-900 p-8 rounded-3xl text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">

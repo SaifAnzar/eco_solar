@@ -1,6 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import { CheckCircle2, ArrowRight, Home, Calculator, Award } from "lucide-react";
+import { CheckCircle2, ArrowRight, Home, Calculator, ShieldCheck } from "lucide-react";
+import { RESIDENTIAL_IMAGE, COMMERCIAL_IMAGE } from "@/lib/constants";
+import SolarImageFallback from "@/components/common/SolarImageFallback";
+import PricingDisclaimer from "@/components/common/PricingDisclaimer";
+import SystemTypeComparison from "@/components/services/SystemTypeComparison";
 
 export const metadata = {
   title: "PM Surya Ghar Residential Rooftop Solar | Pragati EcoSolar Odisha",
@@ -32,7 +36,7 @@ export default function ResidentialServicesPage() {
           </h1>
 
           <p className="text-slate-600 text-base max-w-3xl leading-relaxed">
-            Eliminate your monthly electricity bill with high-efficiency rooftop solar under PM Surya Ghar. Pragati EcoSolar handles 100% of your National Portal subsidy registration, Tier-1 Waaree/Adani TOPCon hardware supply, structural installation, and TPCODL/TPNODL/TPSODL/TPWODL net-metering.
+            Eliminate your monthly electricity bill with high-efficiency rooftop solar under PM Surya Ghar. Pragati EcoSolar handles 100% of your National Portal subsidy registration, Tier-1 Waaree/Adani TOPCon hardware supply, structural installation, and net-metering.
           </p>
 
           <div className="pt-2 flex flex-wrap gap-4">
@@ -49,6 +53,40 @@ export default function ResidentialServicesPage() {
             >
               <span>Call Technical Team (+91 9124318222)</span>
             </a>
+          </div>
+        </div>
+
+        {/* Pricing Disclaimer Banner (Task 14) */}
+        <PricingDisclaimer />
+
+        {/* Modern Service Showcase Image Grid (Task 13) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl space-y-4">
+            <div className="aspect-video w-full overflow-hidden rounded-2xl relative bg-slate-900">
+              <SolarImageFallback
+                src={RESIDENTIAL_IMAGE}
+                alt="Rooftop solar installation on residential home in Bhubaneswar"
+                category="residential"
+              />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">Residential Rooftop Solar Array</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              High-yield 540W to 600W+ MonoPERC and TOPCon modules mounted on cyclone-rated galvanized steel structures designed specifically for Odisha wind conditions.
+            </p>
+          </div>
+
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl space-y-4">
+            <div className="aspect-video w-full overflow-hidden rounded-2xl relative bg-slate-900">
+              <SolarImageFallback
+                src={COMMERCIAL_IMAGE}
+                alt="Commercial rooftop solar array in Odisha"
+                category="commercial"
+              />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">Elevated Structural Solar Canopies</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Elevated 8ft to 10ft roof structures preserving 100% usable rooftop terrace space for family gatherings while generating clean solar power.
+            </p>
           </div>
         </div>
 
@@ -96,6 +134,9 @@ export default function ResidentialServicesPage() {
           </div>
         </div>
 
+        {/* On-Grid vs Hybrid System Visual Comparison (Task 16) */}
+        <SystemTypeComparison />
+
         {/* DCR vs Non-DCR Solar Modules Comparison Cards */}
         <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl space-y-6">
           <div className="space-y-1">
@@ -111,7 +152,6 @@ export default function ResidentialServicesPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
             {/* DCR Card */}
             <div className="bg-slate-50 border border-emerald-300 rounded-2xl p-6 space-y-4 relative overflow-hidden">
               <div className="absolute top-3 right-3 bg-emerald-600 text-white text-[10px] font-mono font-bold px-2.5 py-0.5 rounded">
@@ -167,7 +207,6 @@ export default function ResidentialServicesPage() {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
 

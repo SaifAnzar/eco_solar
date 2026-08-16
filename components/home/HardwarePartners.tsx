@@ -1,5 +1,6 @@
 import React from "react";
 import { Cpu, ShieldCheck, Zap, Layers, Check, Wrench } from "lucide-react";
+import BrandLogos from "@/components/home/BrandLogos";
 
 export default function HardwarePartners() {
   const hardwareItems = [
@@ -106,22 +107,8 @@ export default function HardwarePartners() {
           })}
         </div>
 
-        {/* Brand Badges */}
-        <div className="mt-12 p-6 bg-slate-50 rounded-2xl border border-slate-200 text-center">
-          <span className="text-[11px] font-mono uppercase text-slate-500 tracking-wider block mb-4 font-bold">
-            OUR TRUSTED BRAND PARTNERS
-          </span>
-          <div className="flex flex-wrap items-center justify-center gap-3 font-mono text-xs font-bold text-slate-800">
-            {["WAAREE SOLAR", "ADANI SOLAR", "SUNORA", "STATCON POWER", "SERVOTECH", "POLYCAB", "KEI CABLE", "IS 3043 EARTHING"].map((partner, idx) => (
-              <span
-                key={idx}
-                className="px-4 py-2 bg-white rounded-xl border border-slate-200 hover:border-slate-300 text-slate-900 shadow-sm"
-              >
-                {partner}
-              </span>
-            ))}
-          </div>
-        </div>
+        {/* Brand Partners Logo Grid (Task 12) */}
+        <BrandLogos />
 
       </div>
     </section>

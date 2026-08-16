@@ -1,6 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import { Building2, ArrowRight, TrendingUp, Calculator, SunMedium, CheckCircle2 } from "lucide-react";
+import { Building2, ArrowRight, TrendingUp, Calculator, SunMedium } from "lucide-react";
+import { COMMERCIAL_IMAGE, RESIDENTIAL_IMAGE } from "@/lib/constants";
+import SolarImageFallback from "@/components/common/SolarImageFallback";
+import PricingDisclaimer from "@/components/common/PricingDisclaimer";
+import SystemTypeComparison from "@/components/services/SystemTypeComparison";
 
 export const metadata = {
   title: "Commercial & Industrial Solar EPC Odisha | 80% AD Benefit | Pragati EcoSolar",
@@ -63,6 +67,40 @@ export default function CommercialServicesPage() {
           </div>
         </div>
 
+        {/* Pricing Disclaimer Banner (Task 14) */}
+        <PricingDisclaimer />
+
+        {/* Modern Commercial Solar Service Showcase Image Grid (Task 13) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl space-y-4">
+            <div className="aspect-video w-full overflow-hidden rounded-2xl relative bg-slate-900">
+              <SolarImageFallback
+                src={COMMERCIAL_IMAGE}
+                alt="Commercial rooftop solar plant on industrial building in Odisha"
+                category="commercial"
+              />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">Industrial Metal Shed & Factory Solar Arrays</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Custom non-penetrative standing seam clamp mounting systems designed for industrial corrugated sheet roofs, eliminating water leakage risk.
+            </p>
+          </div>
+
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl space-y-4">
+            <div className="aspect-video w-full overflow-hidden rounded-2xl relative bg-slate-900">
+              <SolarImageFallback
+                src={RESIDENTIAL_IMAGE}
+                alt="Solar carport and institutional solar plant in Odisha"
+                category="commercial"
+              />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900">Solar Carports & Commercial Canopies</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Transform open parking lots into shade-providing solar carports that generate clean energy while protecting executive & customer vehicles.
+            </p>
+          </div>
+        </div>
+
         {/* C&I Benefits Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {benefits.map((b, idx) => (
@@ -75,6 +113,9 @@ export default function CommercialServicesPage() {
             </div>
           ))}
         </div>
+
+        {/* System Type Comparison Diagram (Task 16) */}
+        <SystemTypeComparison />
 
         {/* Highlight Banner for Institutional & Rural Solar Street Lighting */}
         <div className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl space-y-6">

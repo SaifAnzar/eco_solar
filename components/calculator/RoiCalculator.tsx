@@ -398,55 +398,97 @@ export default function RoiCalculator() {
               )}
             </div>
 
-            {/* Dynamic Sliders */}
+            {/* 4. Current Monthly Power Bill Section / System Capacity Section */}
             {calcMode === "bill" ? (
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="text-xs font-mono uppercase tracking-wider text-slate-600 font-semibold">
-                    Current Monthly Power Bill
+              <div className="space-y-4">
+                {/* Dedicated Separate Field for Manual Bill Typing */}
+                <div>
+                  <label className="block text-xs font-mono uppercase tracking-wider text-slate-600 mb-2 font-semibold flex justify-between">
+                    <span>4. CURRENT MONTHLY POWER BILL</span>
+                    <span className="text-amber-700 font-bold font-mono">₹{monthlyBill.toLocaleString()} / MO</span>
                   </label>
-                  <span className="text-sm font-bold text-amber-700 font-mono">
-                    ₹{monthlyBill.toLocaleString()} / mo
-                  </span>
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={monthlyBill === 0 ? "" : monthlyBill}
+                      onChange={(e) => {
+                        const clean = e.target.value.replace(/\D/g, "");
+                        const val = clean === "" ? 0 : Number(clean);
+                        setMonthlyBill(val);
+                      }}
+                      placeholder="e.g. 3500"
+                      className="w-full pl-4 pr-16 py-3 bg-[#FAFAFA] border border-slate-200 rounded-xl text-sm font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-600 transition-colors shadow-sm"
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+                      <span className="text-xs font-mono text-slate-400 font-bold">₹ / Mo</span>
+                    </div>
+                  </div>
                 </div>
-                <input
-                  type="range"
-                  min={1000}
-                  max={50000}
-                  step={500}
-                  value={monthlyBill}
-                  onChange={(e) => setMonthlyBill(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-                />
-                <div className="flex justify-between text-[11px] font-mono text-slate-500 mt-1">
-                  <span>₹1,000</span>
-                  <span>₹25,000</span>
-                  <span>₹50,000+</span>
+
+                {/* Range Slider for fast adjustment */}
+                <div>
+                  <input
+                    type="range"
+                    min={1000}
+                    max={50000}
+                    step={500}
+                    value={monthlyBill || 1000}
+                    onChange={(e) => setMonthlyBill(Number(e.target.value))}
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                  />
+                  <div className="flex justify-between text-[11px] font-mono text-slate-500 mt-1">
+                    <span>₹1,000</span>
+                    <span>₹25,000</span>
+                    <span>₹50,000+</span>
+                  </div>
                 </div>
               </div>
             ) : (
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="text-xs font-mono uppercase tracking-wider text-slate-600 font-semibold">
-                    Target Plant Capacity (kW)
+              <div className="space-y-4">
+                {/* Dedicated Separate Field for Manual kW Typing */}
+                <div>
+                  <label className="block text-xs font-mono uppercase tracking-wider text-slate-600 mb-2 font-semibold flex justify-between">
+                    <span>4. TARGET SOLAR CAPACITY</span>
+                    <span className="text-emerald-700 font-bold font-mono">{directKw} kW System</span>
                   </label>
-                  <span className="text-sm font-bold text-emerald-700 font-mono">
-                    {directKw} kW System
-                  </span>
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={directKw === 0 ? "" : directKw}
+                      onChange={(e) => {
+                        const clean = e.target.value.replace(/\D/g, "");
+                        const val = clean === "" ? 0 : Number(clean);
+                        setDirectKw(val);
+                      }}
+                      placeholder="e.g. 5"
+                      className="w-full pl-4 pr-16 py-3 bg-[#FAFAFA] border border-slate-200 rounded-xl text-sm font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-600 transition-colors shadow-sm"
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+                      <span className="text-xs font-mono text-slate-400 font-bold">kW</span>
+                    </div>
+                  </div>
                 </div>
-                <input
-                  type="range"
-                  min={1}
-                  max={100}
-                  step={1}
-                  value={directKw}
-                  onChange={(e) => setDirectKw(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
-                />
-                <div className="flex justify-between text-[11px] font-mono text-slate-500 mt-1">
-                  <span>1 kW</span>
-                  <span>50 kW</span>
-                  <span>100 kW</span>
+
+                {/* Range Slider for fast adjustment */}
+                <div>
+                  <input
+                    type="range"
+                    min={1}
+                    max={100}
+                    step={1}
+                    value={directKw || 1}
+                    onChange={(e) => setDirectKw(Number(e.target.value))}
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                  />
+                  <div className="flex justify-between text-[11px] font-mono text-slate-500 mt-1">
+                    <span>1 kW</span>
+                    <span>50 kW</span>
+                    <span>100 kW</span>
+                  </div>
                 </div>
               </div>
             )}
