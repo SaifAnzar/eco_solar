@@ -24,7 +24,7 @@ interface PartnershipsManagerProps {
 
 export function PartnershipsManager({ initialPartnerships }: PartnershipsManagerProps) {
   const [partnerships, setPartnerships] = useState<PartnershipApplication[]>(initialPartnerships);
-  const [activeTab, setActiveTab] = useState<PartnershipType>("FRANCHISE");
+  const [activeTab, setActiveTab] = useState<string>("FRANCHISE");
   
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -105,7 +105,8 @@ export function PartnershipsManager({ initialPartnerships }: PartnershipsManager
   // Filter and Search Applications
   const filteredApplications = partnerships.filter((app) => {
     // 1. Filter by tab type
-    if (app.type !== activeTab) return false;
+    if (activeTab === "FRANCHISE" && app.type !== "FRANCHISE") return false;
+    if (activeTab === "DEALERSHIP" && app.type !== "PARTNER" && (app.type as any) !== "DEALERSHIP") return false;
 
     // 2. Filter by status
     if (statusFilter !== "ALL" && app.status !== statusFilter) return false;
@@ -195,7 +196,7 @@ export function PartnershipsManager({ initialPartnerships }: PartnershipsManager
             <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-full ${
               activeTab === "DEALERSHIP" ? "bg-emerald-850 text-emerald-250" : "bg-slate-900 text-slate-500"
             }`}>
-              {partnerships.filter(p => p.type === "DEALERSHIP").length}
+              {partnerships.filter(p => p.type === "PARTNER" || (p.type as any) === "DEALERSHIP").length}
             </span>
           </button>
         </div>

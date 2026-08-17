@@ -12,13 +12,25 @@ enum PartnershipType {
   DEALERSHIP
 }
 
+enum ApplicationType {
+  FRANCHISE
+  PARTNER
+}
+
+enum PartnerTier {
+  TIER_1_EXCLUSIVE_DISTRIBUTOR
+  TIER_2_AUTHORIZED_DEALER
+  TIER_3_REFERRAL_AGENT
+}
+
 enum ApplicationStatus {
   PENDING
-  CONTACTED
   REVIEWED
+  CONTACTED
   APPROVED
   REJECTED
 }
+
 
 enum ConsumerCategory {
   RESIDENTIAL
@@ -177,3 +189,26 @@ model TariffConfig {
   subsidyCap     Float    @default(78000.0)
   updatedAt      DateTime @updatedAt
 }
+
+model PartnerApplication {
+  id              String            @id @default(cuid())
+  type            ApplicationType   // FRANCHISE or PARTNER
+  tier            PartnerTier?      // Populated only when type is PARTNER
+  applicantName   String
+  businessName    String?
+  phone           String
+  email           String
+  location        String            // City / District
+  investmentRange String            // e.g., ₹2L–₹5L, ₹5L–₹10L, ₹10L+
+  experience      String?           // Relevant background
+  status          ApplicationStatus @default(PENDING)
+  notes           String?           // Admin internal notes
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([type])
+  @@index([tier])
+  @@index([status])
+}
+
+

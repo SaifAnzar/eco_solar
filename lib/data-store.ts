@@ -27,33 +27,49 @@ function ensureDataDir() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Partnerships Store
 // ─────────────────────────────────────────────────────────────────────────────
-export type PartnershipType = "FRANCHISE" | "DEALERSHIP";
-export type PartnershipStatus = "PENDING" | "CONTACTED" | "APPROVED";
+export type ApplicationType = "FRANCHISE" | "PARTNER";
+export type PartnerTier =
+  | "TIER_1_EXCLUSIVE_DISTRIBUTOR"
+  | "TIER_2_AUTHORIZED_DEALER"
+  | "TIER_3_REFERRAL_AGENT";
+export type ApplicationStatus = "PENDING" | "REVIEWED" | "CONTACTED" | "APPROVED" | "REJECTED";
 
-export interface PartnershipApplication {
+export interface PartnerApplication {
   id: string;
-  type: PartnershipType;
-  status: PartnershipStatus;
+  type: ApplicationType;
+  tier?: PartnerTier | null;
+  applicantName: string;
+  businessName?: string | null;
+  phone: string;
+  email: string;
+  location: string;
+  investmentRange: string;
+  experience?: string | null;
+  status: ApplicationStatus;
+  notes?: string | null;
   createdAt: string;
-  
-  // Franchise fields
+  updatedAt?: string;
+
+  // Legacy fallback compatibility fields
   fullName?: string;
+  contactPersonName?: string;
   mobileNumber?: string;
   emailAddress?: string;
   proposedCity?: string;
-  showroomSpace?: string;
+  primaryDistrict?: string;
   investmentCapacity?: string;
   businessBackground?: string;
-
-  // Dealership fields
-  businessName?: string;
-  contactPersonName?: string;
+  showroomSpace?: string;
   gstin?: string;
-  primaryDistrict?: string;
   productsInterested?: string[];
 }
 
-function readPartnerships(): Record<string, PartnershipApplication> {
+// Backward-compatibility alias
+export type PartnershipApplication = PartnerApplication;
+export type PartnershipType = ApplicationType;
+export type PartnershipStatus = ApplicationStatus;
+
+function readPartnerships(): Record<string, PartnerApplication> {
   ensureDataDir();
   if (!fs.existsSync(PARTNERSHIPS_FILE)) return {};
   try {
@@ -63,7 +79,7 @@ function readPartnerships(): Record<string, PartnershipApplication> {
   }
 }
 
-function writePartnerships(store: Record<string, PartnershipApplication>) {
+function writePartnerships(store: Record<string, PartnerApplication>) {
   try {
     ensureDataDir();
     fs.writeFileSync(PARTNERSHIPS_FILE, JSON.stringify(store, null, 2), "utf-8");
@@ -72,31 +88,49 @@ function writePartnerships(store: Record<string, PartnershipApplication>) {
   }
 }
 
-export function savePartnershipApplication(payload: Omit<PartnershipApplication, "id" | "status" | "createdAt">): PartnershipApplication {
+export function savePartnershipApplication(
+  payload: Omit<PartnerApplication, "id" | "status" | "createdAt"> & { status?: ApplicationStatus }
+): PartnerApplication {
   const store = readPartnerships();
   const id = "part_" + Math.random().toString(36).substring(2, 11);
-  const application: PartnershipApplication = {
+  const now = new Date().toISOString();
+  const application: PartnerApplication = {
     ...payload,
     id,
-    status: "PENDING",
-    createdAt: new Date().toISOString(),
+    status: payload.status || "PENDING",
+    createdAt: now,
+    updatedAt: now,
+    // Fill legacy fields for backward compatibility
+    fullName: payload.applicantName || payload.fullName,
+    mobileNumber: payload.phone || payload.mobileNumber,
+    emailAddress: payload.email || payload.emailAddress,
+    proposedCity: payload.location || payload.proposedCity,
+    primaryDistrict: payload.location || payload.primaryDistrict,
+    investmentCapacity: payload.investmentRange || payload.investmentCapacity,
+    businessBackground: payload.experience || payload.businessBackground || undefined,
   };
   store[id] = application;
   writePartnerships(store);
   return application;
 }
 
-export function getAllPartnerships(): PartnershipApplication[] {
+export function getAllPartnerships(): PartnerApplication[] {
   const store = readPartnerships();
   return Object.values(store).sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 }
 
-export function updatePartnershipStatus(id: string, status: PartnershipStatus): boolean {
+export function updatePartnershipStatus(
+  id: string,
+  status: ApplicationStatus,
+  notes?: string
+): boolean {
   const store = readPartnerships();
   if (!store[id]) return false;
   store[id].status = status;
+  if (notes !== undefined) store[id].notes = notes;
+  store[id].updatedAt = new Date().toISOString();
   writePartnerships(store);
   return true;
 }
@@ -108,6 +142,7 @@ export function deletePartnership(id: string): boolean {
   writePartnerships(store);
   return true;
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Contact Inquiries Store

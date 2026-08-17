@@ -11,6 +11,13 @@ import {
   Trash2,
   Store,
   RefreshCw,
+  Eye,
+  X,
+  MessageSquare,
+  User,
+  IndianRupee,
+  Briefcase,
+  Building,
 } from "lucide-react";
 
 export type ApplicationType = "FRANCHISE" | "DEALERSHIP";
@@ -46,6 +53,7 @@ export function AdminPartnershipsConsole() {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedApp, setSelectedApp] = useState<PartnershipApp | null>(null);
 
   const fetchApplications = useCallback(async () => {
     try {
@@ -78,6 +86,9 @@ export function AdminPartnershipsConsole() {
         setApplications((prev) =>
           prev.map((app) => (app.id === id ? { ...app, status: newStatus } : app))
         );
+        if (selectedApp && selectedApp.id === id) {
+          setSelectedApp({ ...selectedApp, status: newStatus });
+        }
       }
     } catch (err) {
       console.error("Failed to update status", err);
@@ -95,6 +106,7 @@ export function AdminPartnershipsConsole() {
       });
       if (res.ok) {
         setApplications((prev) => prev.filter((app) => app.id !== id));
+        if (selectedApp?.id === id) setSelectedApp(null);
       }
     } catch (err) {
       console.error("Failed to delete application", err);
@@ -109,10 +121,10 @@ export function AdminPartnershipsConsole() {
 
     const query = searchTerm.toLowerCase();
     const matchesQuery =
-      app.fullName.toLowerCase().includes(query) ||
-      app.phone.toLowerCase().includes(query) ||
-      app.email.toLowerCase().includes(query) ||
-      app.district.toLowerCase().includes(query) ||
+      (app.fullName || "").toLowerCase().includes(query) ||
+      (app.phone || "").toLowerCase().includes(query) ||
+      (app.email || "").toLowerCase().includes(query) ||
+      (app.district || "").toLowerCase().includes(query) ||
       (app.businessName && app.businessName.toLowerCase().includes(query));
 
     const matchesStatus = statusFilter === "ALL" || app.status === statusFilter;
@@ -314,18 +326,14 @@ export function AdminPartnershipsConsole() {
                         month: "short",
                         year: "numeric",
                       })}
-                      <br />
-                      <span className="text-[10px]">
-                        {new Date(app.createdAt).toLocaleTimeString("en-IN", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
                     </td>
 
                     {/* Applicant Info */}
                     <td className="py-3.5 px-4 align-top space-y-1">
                       <div className="font-bold text-slate-900 dark:text-white text-sm">{app.fullName}</div>
+                      {app.businessName && (
+                        <div className="text-xs font-semibold text-amber-600 dark:text-amber-400">{app.businessName}</div>
+                      )}
                       <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-mono">
                         <Phone className="w-3 h-3 text-amber-500" />
                         <a href={`tel:${app.phone}`} className="hover:underline">{app.phone}</a>
@@ -350,7 +358,7 @@ export function AdminPartnershipsConsole() {
                         <td className="py-3.5 px-4 align-top">
                           <div className="flex items-center gap-1.5 text-slate-800 dark:text-slate-300 font-medium">
                             <Store className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                            <span>{app.showroomSpaceSqFt ? `${app.showroomSpaceSqFt} sq. ft.` : "N/A"}</span>
+                            <span>{app.showroomSpaceSqFt ? `${app.showroomSpaceSqFt}` : "N/A"}</span>
                           </div>
                         </td>
 
@@ -364,6 +372,13 @@ export function AdminPartnershipsConsole() {
                           <p className="text-slate-700 dark:text-slate-300 text-[11px] line-clamp-2">
                             {app.businessExperience || "No experience details provided."}
                           </p>
+                          <button
+                            onClick={() => setSelectedApp(app)}
+                            className="text-[10px] font-bold text-amber-500 hover:underline inline-flex items-center gap-1 mt-1 cursor-pointer"
+                          >
+                            <Eye className="w-3 h-3" />
+                            <span>View Full Record</span>
+                          </button>
                         </td>
                       </>
                     ) : (
@@ -395,14 +410,23 @@ export function AdminPartnershipsConsole() {
 
                     {/* Actions */}
                     <td className="py-3.5 px-4 align-top text-right">
-                      <button
-                        onClick={() => handleDelete(app.id)}
-                        disabled={isUpdating === app.id}
-                        title="Delete Application"
-                        className="p-2 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors border border-transparent hover:border-rose-200 dark:hover:border-rose-500/20 disabled:opacity-50 cursor-pointer"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => setSelectedApp(app)}
+                          className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                          title="View Full Application Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(app.id)}
+                          disabled={isUpdating === app.id}
+                          title="Delete Application"
+                          className="p-1.5 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors border border-transparent hover:border-rose-200 dark:hover:border-rose-500/20 disabled:opacity-50 cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -411,6 +435,218 @@ export function AdminPartnershipsConsole() {
           </div>
         )}
       </div>
+
+      {/* FULL CATEGORIZED DETAIL MODAL DRAWER */}
+      {selectedApp && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-slate-900 border border-slate-800 text-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative space-y-6 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
+            
+            {/* Modal Header */}
+            <div className="flex items-start justify-between border-b border-slate-800 pb-4 pr-6">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span
+                    className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border ${
+                      selectedApp.type === "FRANCHISE"
+                        ? "bg-amber-500/20 text-amber-400 border-amber-500/40"
+                        : "bg-blue-500/20 text-blue-400 border-blue-500/40"
+                    }`}
+                  >
+                    {selectedApp.type} APPLICATION
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">Ref ID: {selectedApp.id}</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+                  {selectedApp.fullName}
+                </h3>
+                {selectedApp.businessName && (
+                  <p className="text-xs font-semibold text-amber-400 mt-0.5">
+                    {selectedApp.businessName}
+                  </p>
+                )}
+              </div>
+
+              <button
+                onClick={() => setSelectedApp(null)}
+                className="p-2 text-slate-400 hover:text-white rounded-full hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Categorized Content Grid */}
+            <div className="space-y-5 text-xs">
+              
+              {/* Category 1: Applicant Profile */}
+              <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <div className="font-bold text-amber-400 uppercase tracking-wider text-[11px] flex items-center gap-2 border-b border-slate-800 pb-2">
+                  <User className="w-4 h-4 text-amber-400" />
+                  <span>Category 1: Applicant &amp; Business Profile</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Full Name:</span>
+                    <span className="font-bold text-white text-sm">{selectedApp.fullName}</span>
+                  </div>
+
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Business / Firm Name:</span>
+                    <span className="font-bold text-white text-sm">{selectedApp.businessName || "N/A"}</span>
+                  </div>
+
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Partnership Model:</span>
+                    <span className="font-bold text-amber-400">{selectedApp.type}</span>
+                  </div>
+
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Submission Date:</span>
+                    <span className="font-mono text-slate-300">
+                      {new Date(selectedApp.createdAt).toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Category 2: Contact & Territory */}
+              <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <div className="font-bold text-emerald-400 uppercase tracking-wider text-[11px] flex items-center gap-2 border-b border-slate-800 pb-2">
+                  <Phone className="w-4 h-4 text-emerald-400" />
+                  <span>Category 2: Contact &amp; Territory Details</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Phone Number:</span>
+                    <span className="font-mono font-bold text-white text-xs">{selectedApp.phone}</span>
+                  </div>
+
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Email Address:</span>
+                    <span className="font-medium text-white text-xs">{selectedApp.email}</span>
+                  </div>
+
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Target Location:</span>
+                    <span className="font-bold text-emerald-400 text-xs">{selectedApp.district}</span>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex items-center gap-2">
+                  <a
+                    href={`tel:${selectedApp.phone}`}
+                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-[11px] inline-flex items-center gap-1.5"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Call Phone</span>
+                  </a>
+
+                  <a
+                    href={`https://wa.me/${selectedApp.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                      `Hello ${selectedApp.fullName}, regarding your Pragati EcoSolar ${selectedApp.type.toLowerCase()} application.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold rounded-xl text-[11px] inline-flex items-center gap-1.5"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>WhatsApp</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Category 3: Financial & Commercial */}
+              <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <div className="font-bold text-purple-400 uppercase tracking-wider text-[11px] flex items-center gap-2 border-b border-slate-800 pb-2">
+                  <IndianRupee className="w-4 h-4 text-purple-400" />
+                  <span>Category 3: Capital &amp; Showroom Space</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Investment Capacity:</span>
+                    <span className="font-bold text-purple-400 text-xs">{selectedApp.investmentCapacity || "N/A"}</span>
+                  </div>
+
+                  <div>
+                    <span className="text-slate-400 block text-[10px]">Showroom Space Sq. Ft.:</span>
+                    <span className="font-bold text-slate-200 text-xs">{selectedApp.showroomSpaceSqFt || "N/A"}</span>
+                  </div>
+
+                  {selectedApp.gstin && (
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">GSTIN:</span>
+                      <span className="font-mono text-slate-200">{selectedApp.gstin}</span>
+                    </div>
+                  )}
+
+                  {selectedApp.interestedProducts && selectedApp.interestedProducts.length > 0 && (
+                    <div className="col-span-2">
+                      <span className="text-slate-400 block text-[10px] mb-1">Products Interested:</span>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedApp.interestedProducts.map((p, idx) => (
+                          <span key={idx} className="px-2 py-0.5 bg-slate-800 border border-slate-700 text-slate-200 rounded text-[10px]">
+                            {p}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Category 4: Experience & Background */}
+              <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-2">
+                <div className="font-bold text-blue-400 uppercase tracking-wider text-[11px] flex items-center gap-2 border-b border-slate-800 pb-2">
+                  <Briefcase className="w-4 h-4 text-blue-400" />
+                  <span>Category 4: Business Background &amp; Solar Experience Notes</span>
+                </div>
+
+                <p className="text-xs text-slate-300 leading-relaxed font-medium bg-slate-900 p-3.5 rounded-xl border border-slate-800 whitespace-pre-wrap">
+                  {selectedApp.businessExperience || "No experience notes submitted."}
+                </p>
+              </div>
+
+              {/* Status Update Control Footer */}
+              <div className="border-t border-slate-800 pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-400">Status:</span>
+                  <select
+                    value={selectedApp.status}
+                    onChange={(e) => handleStatusChange(selectedApp.id, e.target.value as ApplicationStatus)}
+                    className="bg-amber-500 text-slate-950 font-black px-3 py-1.5 rounded-xl text-xs focus:outline-none cursor-pointer"
+                  >
+                    <option value="PENDING">PENDING</option>
+                    <option value="CONTACTED">CONTACTED</option>
+                    <option value="REVIEWED">REVIEWED</option>
+                    <option value="APPROVED">APPROVED</option>
+                    <option value="REJECTED">REJECTED</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleDelete(selectedApp.id)}
+                    className="px-4 py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 font-bold text-xs rounded-xl border border-rose-500/40 transition-colors cursor-pointer"
+                  >
+                    Delete Application
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedApp(null)}
+                    className="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
