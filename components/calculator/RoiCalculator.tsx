@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Calculator,
   Zap,
@@ -35,8 +36,18 @@ import {
 } from "@/lib/pincode";
 
 export default function RoiCalculator() {
+  const searchParams = useSearchParams();
   const [calcMode, setCalcMode] = useState<"bill" | "kw">("bill");
   const [propertyType, setPropertyType] = useState<"residential" | "commercial">("residential");
+
+  useEffect(() => {
+    const typeParam = searchParams.get("type");
+    if (typeParam === "residential") {
+      setPropertyType("residential");
+    } else if (typeParam === "commercial") {
+      setPropertyType("commercial");
+    }
+  }, [searchParams]);
   const [monthlyBill, setMonthlyBill] = useState<number>(3500);
   const [pincode, setPincode] = useState<string>("751024");
   const [directKw, setDirectKw] = useState<number>(3);

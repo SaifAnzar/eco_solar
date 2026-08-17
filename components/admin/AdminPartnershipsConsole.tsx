@@ -117,7 +117,9 @@ export function AdminPartnershipsConsole() {
 
   // Filter logic
   const filteredApplications = applications.filter((app) => {
-    if (app.type !== activeTab) return false;
+    const isDealer = app.type === "DEALERSHIP" || (app.type as any) === "PARTNER";
+    if (activeTab === "FRANCHISE" && app.type !== "FRANCHISE") return false;
+    if (activeTab === "DEALERSHIP" && !isDealer) return false;
 
     const query = searchTerm.toLowerCase();
     const matchesQuery =

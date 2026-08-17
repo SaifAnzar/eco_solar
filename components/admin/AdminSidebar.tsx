@@ -55,6 +55,12 @@ export function AdminSidebar({ adminEmail }: AdminSidebarProps) {
       icon: Handshake,
       badge: "Applications",
     },
+    {
+      label: "Eligibility Checks",
+      href: "/admin/eligibility-leads",
+      icon: ShieldCheck,
+      badge: "PM Surya Ghar",
+    },
   ];
 
   const cmsNavItems = [

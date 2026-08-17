@@ -33,12 +33,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const appType: ApplicationType = (type === "DEALERSHIP" || type === "PARTNER") ? "PARTNER" : "FRANCHISE";
+    const appType: ApplicationType = (type === "DEALERSHIP" || type === "PARTNER") ? "DEALERSHIP" : "FRANCHISE";
 
     // Always write to file data-store
     const fileRecord = savePartnershipApplication({
       type: appType,
-      tier: appType === "PARTNER" ? "TIER_2_AUTHORIZED_DEALER" : null,
+      tier: appType === "DEALERSHIP" ? "TIER_2_AUTHORIZED_DEALER" : null,
       applicantName: fullName,
       businessName: body.businessName || undefined,
       phone,
@@ -47,6 +47,18 @@ export async function POST(req: NextRequest) {
       investmentRange: investmentCapacity || "₹2L–₹5L",
       experience: businessExperience || undefined,
       status: "PENDING",
+      // Include Dealership & Franchise specific properties
+      fullName,
+      contactPersonName: body.contactPersonName || fullName,
+      mobileNumber: phone,
+      emailAddress: email,
+      proposedCity: district,
+      primaryDistrict: district,
+      investmentCapacity,
+      businessBackground: businessExperience,
+      showroomSpace: showroomSpaceSqFt,
+      gstin: body.gstin,
+      productsInterested: body.interestedProducts || body.productsInterested,
     });
 
     let dbRecord;

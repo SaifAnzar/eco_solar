@@ -211,4 +211,23 @@ model PartnerApplication {
   @@index([status])
 }
 
+model EligibilityLead {
+  id             String   @id @default(cuid())
+  consumerNumber String
+  fullName       String
+  phone          String
+  email          String
+  discom         String   @default("TPCODL")
+  roofOwnership  String   @default("OWNED")
+  monthlyBill    String?
+  status         String   @default("NEW")
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([phone])
+  @@index([consumerNumber])
+  @@index([status])
+}
+
 

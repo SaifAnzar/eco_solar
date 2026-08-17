@@ -16,6 +16,7 @@ import {
 import * as THREE from "three";
 import { calculateSolarQuote } from "@/lib/solar-engine";
 import { TypewriterHeadline } from "./TypewriterHeadline";
+import EligibilityModal from "@/components/forms/EligibilityModal";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CLASSIC HERO (Light theme — Original Calculator Card layout)
@@ -516,21 +517,25 @@ export const HeroSection3DSunOrbit: React.FC = () => {
             </p>
 
             {/* Primary Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3.5">
-              <Link
-                href="/contact?type=site-visit"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold text-sm rounded-xl transition-all shadow-[0_0_35px_rgba(16,185,129,0.4)] hover:scale-[1.02] active:scale-[0.98]"
-              >
-                Book Free Site Visit
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/contact?type=quote"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-slate-900/90 hover:bg-slate-800 text-slate-200 font-semibold text-sm rounded-xl border border-slate-700 hover:border-slate-500 shadow-sm transition-all"
-              >
-                <Phone className="w-4 h-4 text-emerald-400" />
-                Get a Custom Quote
-              </Link>
+            <div className="space-y-4">
+              <EligibilityModal variant="hero" />
+
+              <div className="flex flex-col sm:flex-row gap-3.5">
+                <Link
+                  href="/contact?type=site-visit"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold text-sm rounded-xl transition-all shadow-[0_0_35px_rgba(16,185,129,0.4)] hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Book Free Site Visit
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/contact?type=quote"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-slate-900/90 hover:bg-slate-800 text-slate-200 font-semibold text-sm rounded-xl border border-slate-700 hover:border-slate-500 shadow-sm transition-all"
+                >
+                  <Phone className="w-4 h-4 text-emerald-400" />
+                  Get a Custom Quote
+                </Link>
+              </div>
             </div>
 
             {/* Partnership CTAs */}

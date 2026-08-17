@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import ProductFilterTabs, { ProductCategory } from "@/components/products/ProductFilterTabs";
 import ProductCard from "@/components/products/ProductCard";
+import BrandPartnersGrid from "@/components/products/BrandPartnersGrid";
 import dynamic from "next/dynamic";
 import { PRODUCTS } from "@/lib/data/products";
 
@@ -52,31 +53,8 @@ export default function ProductsPage() {
           ))}
         </div>
 
-        {/* Brand Partners Strip */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between border-b border-slate-100 pb-4 gap-2">
-            <span className="text-xs font-semibold text-slate-900 uppercase tracking-wider font-mono">
-              OUR TRUSTED BRAND PARTNERS
-            </span>
-            <div className="flex gap-2 text-[11px] font-medium text-slate-600 font-mono">
-              <span>Government Approved</span>
-              <span>•</span>
-              <span>BIS Certified</span>
-              <span>•</span>
-              <span>ISO 9001:2015</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 text-center text-xs text-slate-700 font-medium font-mono">
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">Waaree Solar</div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">Adani Solar</div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">Sunora Power</div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">Statcon Power</div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">Servotech</div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">Polycab Wires</div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">KEI Cables</div>
-          </div>
-        </div>
+        {/* Brand Partners Grid */}
+        <BrandPartnersGrid />
 
       </div>
 

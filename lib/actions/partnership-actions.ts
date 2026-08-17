@@ -39,29 +39,31 @@ export async function getPartnershipsAction() {
     for (const item of partnerAppList) {
       if (item.id && !seenIds.has(item.id)) {
         seenIds.add(item.id);
+        const resolvedType = (item.type === "PARTNER" || item.type === "DEALERSHIP") ? "DEALERSHIP" : "FRANCHISE";
         combined.push({
           id: item.id,
-          type: item.type || "FRANCHISE",
+          type: resolvedType as any,
           tier: item.tier || null,
-          applicantName: item.applicantName || "N/A",
+          applicantName: item.applicantName || item.fullName || "N/A",
           businessName: item.businessName || null,
-          phone: item.phone || "N/A",
-          email: item.email || "N/A",
-          location: item.location || "N/A",
-          investmentRange: item.investmentRange || "N/A",
-          experience: item.experience || null,
+          phone: item.phone || item.mobileNumber || "N/A",
+          email: item.email || item.emailAddress || "N/A",
+          location: item.location || item.proposedCity || item.primaryDistrict || "N/A",
+          investmentRange: item.investmentRange || item.investmentCapacity || "N/A",
+          experience: item.experience || item.businessBackground || null,
           status: item.status || "PENDING",
           notes: item.notes || null,
           createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt),
           updatedAt: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : String(item.updatedAt || item.createdAt),
           // Fallbacks for UI
-          fullName: item.applicantName || "N/A",
-          mobileNumber: item.phone || "N/A",
-          emailAddress: item.email || "N/A",
-          proposedCity: item.location || "N/A",
-          primaryDistrict: item.location || "N/A",
-          investmentCapacity: item.investmentRange || "N/A",
-          businessBackground: item.experience || undefined,
+          fullName: item.applicantName || item.fullName || "N/A",
+          contactPersonName: item.applicantName || item.contactPersonName,
+          mobileNumber: item.phone || item.mobileNumber || "N/A",
+          emailAddress: item.email || item.emailAddress || "N/A",
+          proposedCity: item.location || item.proposedCity || "N/A",
+          primaryDistrict: item.location || item.primaryDistrict || "N/A",
+          investmentCapacity: item.investmentRange || item.investmentCapacity || "N/A",
+          businessBackground: item.experience || item.businessBackground || undefined,
         });
       }
     }
@@ -70,16 +72,16 @@ export async function getPartnershipsAction() {
     for (const item of legacyAppList) {
       if (item.id && !seenIds.has(item.id)) {
         seenIds.add(item.id);
-        const legacyType = item.type === "DEALERSHIP" ? "PARTNER" : "FRANCHISE";
+        const legacyType = (item.type === "DEALERSHIP" || item.type === "PARTNER") ? "DEALERSHIP" : "FRANCHISE";
         combined.push({
           id: item.id,
           type: legacyType as any,
-          tier: legacyType === "PARTNER" ? "TIER_2_AUTHORIZED_DEALER" : null,
-          applicantName: item.fullName || "N/A",
+          tier: legacyType === "DEALERSHIP" ? "TIER_2_AUTHORIZED_DEALER" : null,
+          applicantName: item.fullName || item.contactPersonName || "N/A",
           businessName: item.businessName || null,
-          phone: item.phone || "N/A",
-          email: item.email || "N/A",
-          location: item.district || "N/A",
+          phone: item.phone || item.mobileNumber || "N/A",
+          email: item.email || item.emailAddress || "N/A",
+          location: item.district || item.primaryDistrict || "N/A",
           investmentRange: item.investmentCapacity || "N/A",
           experience: item.businessExperience || item.notes || null,
           status: (item.status || "PENDING") as any,
@@ -87,14 +89,17 @@ export async function getPartnershipsAction() {
           createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt),
           updatedAt: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : String(item.updatedAt || item.createdAt),
           // Fallbacks
-          fullName: item.fullName || "N/A",
-          mobileNumber: item.phone || "N/A",
-          emailAddress: item.email || "N/A",
-          proposedCity: item.district || "N/A",
-          primaryDistrict: item.district || "N/A",
+          fullName: item.fullName || item.contactPersonName || "N/A",
+          contactPersonName: item.contactPersonName || item.fullName,
+          mobileNumber: item.phone || item.mobileNumber || "N/A",
+          emailAddress: item.email || item.emailAddress || "N/A",
+          proposedCity: item.district || item.proposedCity || "N/A",
+          primaryDistrict: item.district || item.primaryDistrict || "N/A",
           investmentCapacity: item.investmentCapacity || "N/A",
           businessBackground: item.businessExperience || item.notes || undefined,
           showroomSpace: item.showroomSpaceSqFt || undefined,
+          gstin: item.gstin || undefined,
+          productsInterested: item.interestedProducts || undefined,
         });
       }
     }
@@ -103,7 +108,11 @@ export async function getPartnershipsAction() {
     for (const item of jsonList) {
       if (item.id && !seenIds.has(item.id)) {
         seenIds.add(item.id);
-        combined.push(item);
+        const resolvedType = (item.type === "PARTNER" || item.type === "DEALERSHIP") ? "DEALERSHIP" : "FRANCHISE";
+        combined.push({
+          ...item,
+          type: resolvedType as any,
+        });
       }
     }
 

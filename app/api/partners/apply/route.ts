@@ -13,13 +13,13 @@ export async function POST(req: NextRequest) {
     const email = (body.email || body.emailAddress || "").trim();
     const location = (body.location || body.district || body.proposedCity || "").trim();
     
-    // Parse ApplicationType: FRANCHISE or PARTNER
+    // Parse ApplicationType: FRANCHISE or DEALERSHIP
     let rawType = (body.type || body.partnerType || "FRANCHISE").toUpperCase();
-    const type = rawType === "DEALERSHIP" ? "PARTNER" : (rawType === "PARTNER" ? "PARTNER" : "FRANCHISE");
+    const type = (rawType === "DEALERSHIP" || rawType === "PARTNER") ? "DEALERSHIP" : "FRANCHISE";
     
     // Parse PartnerTier
     let tier = body.tier || null;
-    if (type === "PARTNER" && !tier) {
+    if (type === "DEALERSHIP" && !tier) {
       tier = "TIER_2_AUTHORIZED_DEALER";
     }
 
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
       dbRecord = await (prisma as any).partnerApplication.create({
         data: {
           type,
-          tier: type === "PARTNER" ? tier : null,
+          tier: type === "DEALERSHIP" ? tier : null,
           applicantName,
           businessName: businessName || null,
           phone,

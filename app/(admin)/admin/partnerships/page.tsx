@@ -18,13 +18,8 @@ import {
   MessageSquare,
   Building,
   User,
-  Crown,
-  Handshake,
-  Award,
   Save,
   StickyNote,
-  ChevronRight,
-  Sparkles,
 } from "lucide-react";
 import {
   getPartnershipsAction,
@@ -34,8 +29,8 @@ import {
 
 export interface NormalizedPartnerApp {
   id: string;
-  type: "FRANCHISE" | "PARTNER";
-  tier?: "TIER_1_EXCLUSIVE_DISTRIBUTOR" | "TIER_2_AUTHORIZED_DEALER" | "TIER_3_REFERRAL_AGENT" | null;
+  type: "FRANCHISE" | "DEALERSHIP" | "PARTNER";
+  tier?: string | null;
   applicantName: string;
   businessName?: string | null;
   phone: string;
@@ -47,8 +42,9 @@ export interface NormalizedPartnerApp {
   notes?: string | null;
   createdAt: string;
 
-  // Fallbacks
+  // Fallbacks & Specific Fields
   fullName?: string;
+  contactPersonName?: string;
   mobileNumber?: string;
   emailAddress?: string;
   proposedCity?: string;
@@ -56,23 +52,22 @@ export interface NormalizedPartnerApp {
   investmentCapacity?: string;
   businessBackground?: string;
   showroomSpace?: string;
+  gstin?: string;
+  productsInterested?: string[];
 }
 
 export default function AdminPartnershipsPage() {
   const [applications, setApplications] = useState<NormalizedPartnerApp[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  
-  // Section Navigation: "ALL" | "FRANCHISE" | "PARTNER"
-  const [sectionTab, setSectionTab] = useState<"ALL" | "FRANCHISE" | "PARTNER">("ALL");
-  
-  // Sub-Tier Filter under Partnership Section: "ALL_TIERS" | "TIER_1" | "TIER_2" | "TIER_3"
-  const [tierSubFilter, setTierSubFilter] = useState<"ALL_TIERS" | "TIER_1" | "TIER_2" | "TIER_3">("ALL_TIERS");
+
+  // Section Navigation: "ALL" | "FRANCHISE" | "DEALERSHIP"
+  const [sectionTab, setSectionTab] = useState<"ALL" | "FRANCHISE" | "DEALERSHIP">("ALL");
 
   // Search & Status Filter
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Feedback & Selected Detail Modal State
   const [actionMessage, setActionMessage] = useState<{ type: "SUCCESS" | "ERROR"; text: string } | null>(null);
   const [selectedApp, setSelectedApp] = useState<NormalizedPartnerApp | null>(null);
@@ -91,7 +86,7 @@ export default function AdminPartnershipsPage() {
       if (res.success && res.data) {
         setApplications(res.data as any[]);
       } else {
-        setActionMessage({ type: "ERROR", text: res.error || "Failed to load partner applications." });
+        setActionMessage({ type: "ERROR", text: res.error || "Failed to load applications." });
       }
     } catch (err: any) {
       setActionMessage({ type: "ERROR", text: err.message || "Failed to fetch data." });
@@ -166,17 +161,14 @@ export default function AdminPartnershipsPage() {
     }
   };
 
+  // Helper to determine if app is Dealership
+  const isDealership = (app: NormalizedPartnerApp) => app.type === "DEALERSHIP" || app.type === "PARTNER";
+
   // Filter Logic
   const filteredApps = applications.filter((app) => {
     // 1. Section Tab Filter
     if (sectionTab === "FRANCHISE" && app.type !== "FRANCHISE") return false;
-    if (sectionTab === "PARTNER") {
-      if (app.type !== "PARTNER") return false;
-      // Sub-tier filtering inside Partnership Section
-      if (tierSubFilter === "TIER_1" && app.tier !== "TIER_1_EXCLUSIVE_DISTRIBUTOR") return false;
-      if (tierSubFilter === "TIER_2" && app.tier !== "TIER_2_AUTHORIZED_DEALER" && app.tier !== null) return false;
-      if (tierSubFilter === "TIER_3" && app.tier !== "TIER_3_REFERRAL_AGENT") return false;
-    }
+    if (sectionTab === "DEALERSHIP" && !isDealership(app)) return false;
 
     // 2. Status Filter
     if (statusFilter !== "ALL" && app.status !== statusFilter) return false;
@@ -184,14 +176,15 @@ export default function AdminPartnershipsPage() {
     // 3. Text Search
     if (searchQuery.trim() !== "") {
       const q = searchQuery.toLowerCase();
-      const nameMatch = (app.applicantName || app.fullName || "").toLowerCase().includes(q);
+      const nameMatch = (app.applicantName || app.fullName || app.contactPersonName || "").toLowerCase().includes(q);
       const bizMatch = (app.businessName || "").toLowerCase().includes(q);
       const phoneMatch = (app.phone || app.mobileNumber || "").includes(q);
       const emailMatch = (app.email || app.emailAddress || "").toLowerCase().includes(q);
-      const locationMatch = (app.location || app.proposedCity || "").toLowerCase().includes(q);
+      const locationMatch = (app.location || app.proposedCity || app.primaryDistrict || "").toLowerCase().includes(q);
       const expMatch = (app.experience || app.businessBackground || "").toLowerCase().includes(q);
       const notesMatch = (app.notes || "").toLowerCase().includes(q);
-      return nameMatch || bizMatch || phoneMatch || emailMatch || locationMatch || expMatch || notesMatch;
+      const gstinMatch = (app.gstin || "").toLowerCase().includes(q);
+      return nameMatch || bizMatch || phoneMatch || emailMatch || locationMatch || expMatch || notesMatch || gstinMatch;
     }
 
     return true;
@@ -199,64 +192,40 @@ export default function AdminPartnershipsPage() {
 
   const totalCount = applications.length;
   const franchiseCount = applications.filter((a) => a.type === "FRANCHISE").length;
-  const partnerCount = applications.filter((a) => a.type === "PARTNER").length;
-  const tier1Count = applications.filter((a) => a.type === "PARTNER" && a.tier === "TIER_1_EXCLUSIVE_DISTRIBUTOR").length;
-  const tier2Count = applications.filter((a) => a.type === "PARTNER" && (a.tier === "TIER_2_AUTHORIZED_DEALER" || !a.tier)).length;
-  const tier3Count = applications.filter((a) => a.type === "PARTNER" && a.tier === "TIER_3_REFERRAL_AGENT").length;
+  const dealershipCount = applications.filter((a) => isDealership(a)).length;
   const pendingCount = applications.filter((a) => a.status === "PENDING").length;
 
-  const getTierPill = (app: NormalizedPartnerApp) => {
+  const getTypeBadge = (app: NormalizedPartnerApp) => {
     if (app.type === "FRANCHISE") {
       return (
         <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
-          <Building2 className="w-3 h-3 text-amber-600 shrink-0" />
-          Franchise Outlet
+          <Building2 className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+          Franchise Apply
         </span>
       );
     }
-
-    if (app.tier === "TIER_1_EXCLUSIVE_DISTRIBUTOR") {
-      return (
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-purple-50 text-purple-800 border border-purple-200">
-          <Crown className="w-3 h-3 text-purple-600 shrink-0" />
-          Tier-1 Distributor
-        </span>
-      );
-    }
-
-    if (app.tier === "TIER_3_REFERRAL_AGENT") {
-      return (
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200">
-          <Handshake className="w-3 h-3 text-blue-600 shrink-0" />
-          Tier-3 Referral
-        </span>
-      );
-    }
-
-    // Default Tier-2
     return (
       <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-        <Package className="w-3 h-3 text-emerald-600 shrink-0" />
-        Tier-2 Dealer
+        <Package className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+        Dealership Apply
       </span>
     );
   };
 
   return (
     <div className="space-y-6 font-sans max-w-7xl mx-auto pb-12">
-      
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-slate-100 border border-slate-200 rounded-full text-slate-700 text-[11px] font-bold uppercase tracking-wider">
             <Building2 className="w-3.5 h-3.5 text-amber-600" />
-            <span>PARTNER NETWORK CONSOLE</span>
+            <span>PARTNER APPLICATIONS CONSOLE</span>
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight mt-1.5">
-            Franchise &amp; Partnership Applications
+            Franchise &amp; Dealership Applications
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Review incoming requests, filter by partnership tier, and manage onboarding status.
+            Review incoming requests for Franchise Outlets and Authorized Equipment Dealerships.
           </p>
         </div>
 
@@ -303,13 +272,13 @@ export default function AdminPartnershipsPage() {
         </div>
 
         <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-sm">
-          <div className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Franchise Outlets</div>
+          <div className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Franchise Applications</div>
           <div className="text-xl font-black text-amber-700 mt-0.5">{franchiseCount}</div>
         </div>
 
         <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-sm">
-          <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Partnership Program</div>
-          <div className="text-xl font-black text-emerald-700 mt-0.5">{partnerCount}</div>
+          <div className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Dealership Applications</div>
+          <div className="text-xl font-black text-emerald-700 mt-0.5">{dealershipCount}</div>
         </div>
 
         <div className="bg-amber-50/60 border border-amber-200/80 rounded-xl p-3.5 shadow-sm">
@@ -321,19 +290,13 @@ export default function AdminPartnershipsPage() {
         </div>
       </div>
 
-      {/* MINIMALIST FILTER & SECTION BAR */}
+      {/* FILTER & SECTION BAR */}
       <div className="bg-white border border-slate-200/80 rounded-2xl p-3 shadow-sm space-y-3">
-        
-        {/* Row 1: Primary Section Tabs + Search & Status Filter */}
         <div className="flex flex-col lg:flex-row items-center justify-between gap-3">
-          
           {/* Main Section Navigation */}
           <div className="flex items-center bg-slate-100 p-1 rounded-xl w-full lg:w-auto">
             <button
-              onClick={() => {
-                setSectionTab("ALL");
-                setTierSubFilter("ALL_TIERS");
-              }}
+              onClick={() => setSectionTab("ALL")}
               className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 sectionTab === "ALL"
                   ? "bg-white text-slate-900 shadow-sm"
@@ -344,10 +307,7 @@ export default function AdminPartnershipsPage() {
             </button>
 
             <button
-              onClick={() => {
-                setSectionTab("FRANCHISE");
-                setTierSubFilter("ALL_TIERS");
-              }}
+              onClick={() => setSectionTab("FRANCHISE")}
               className={`flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 sectionTab === "FRANCHISE"
                   ? "bg-amber-500 text-slate-950 shadow-sm"
@@ -355,27 +315,24 @@ export default function AdminPartnershipsPage() {
               }`}
             >
               <Building2 className="w-3.5 h-3.5" />
-              <span>Franchise Outlets ({franchiseCount})</span>
+              <span>Franchise Apply ({franchiseCount})</span>
             </button>
 
             <button
-              onClick={() => {
-                setSectionTab("PARTNER");
-              }}
+              onClick={() => setSectionTab("DEALERSHIP")}
               className={`flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                sectionTab === "PARTNER"
+                sectionTab === "DEALERSHIP"
                   ? "bg-emerald-600 text-white shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              <Award className="w-3.5 h-3.5" />
-              <span>Partnership Program ({partnerCount})</span>
+              <Package className="w-3.5 h-3.5" />
+              <span>Dealership Apply ({dealershipCount})</span>
             </button>
           </div>
 
           {/* Search & Status Filter */}
           <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full lg:w-auto">
-            
             {/* Search Input */}
             <div className="relative w-full sm:w-64">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -383,7 +340,7 @@ export default function AdminPartnershipsPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search name, phone, city..."
+                placeholder="Search name, phone, city, firm..."
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-1.5 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500"
               />
             </div>
@@ -404,75 +361,16 @@ export default function AdminPartnershipsPage() {
                 <option value="REJECTED">REJECTED</option>
               </select>
             </div>
-
           </div>
-
         </div>
-
-        {/* Row 2: Sub-Tier Categories inside Partnership Program Section */}
-        {sectionTab === "PARTNER" && (
-          <div className="pt-2 border-t border-slate-100 flex items-center gap-2 flex-wrap animate-in fade-in">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1">
-              Filter By Tier:
-            </span>
-
-            <button
-              onClick={() => setTierSubFilter("ALL_TIERS")}
-              className={`px-3 py-1 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
-                tierSubFilter === "ALL_TIERS"
-                  ? "bg-slate-900 text-white border-slate-900"
-                  : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
-              }`}
-            >
-              All Tiers ({partnerCount})
-            </button>
-
-            <button
-              onClick={() => setTierSubFilter("TIER_1")}
-              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
-                tierSubFilter === "TIER_1"
-                  ? "bg-purple-100 text-purple-900 border-purple-300"
-                  : "bg-purple-50/50 text-purple-700 border-purple-200 hover:bg-purple-100/60"
-              }`}
-            >
-              <Crown className="w-3.5 h-3.5 text-purple-600" />
-              <span>Tier-1 Exclusive Distributor ({tier1Count})</span>
-            </button>
-
-            <button
-              onClick={() => setTierSubFilter("TIER_2")}
-              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
-                tierSubFilter === "TIER_2"
-                  ? "bg-emerald-100 text-emerald-900 border-emerald-300"
-                  : "bg-emerald-50/50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/60"
-              }`}
-            >
-              <Package className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Tier-2 Authorized Dealer ({tier2Count})</span>
-            </button>
-
-            <button
-              onClick={() => setTierSubFilter("TIER_3")}
-              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
-                tierSubFilter === "TIER_3"
-                  ? "bg-blue-100 text-blue-900 border-blue-300"
-                  : "bg-blue-50/50 text-blue-700 border-blue-200 hover:bg-blue-100/60"
-              }`}
-            >
-              <Handshake className="w-3.5 h-3.5 text-blue-600" />
-              <span>Tier-3 Referral Agent ({tier3Count})</span>
-            </button>
-          </div>
-        )}
-
       </div>
 
-      {/* MINIMALIST APPLICATIONS TABLE */}
+      {/* APPLICATIONS TABLE */}
       <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-xs font-mono text-slate-500 flex items-center justify-center gap-2">
             <div className="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
-            Loading partner records...
+            Loading application records...
           </div>
         ) : filteredApps.length === 0 ? (
           <div className="p-16 text-center text-slate-500 space-y-2">
@@ -485,23 +383,24 @@ export default function AdminPartnershipsPage() {
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px] tracking-wider">
                   <th className="p-3.5 pl-5">Applicant &amp; Firm</th>
-                  <th className="p-3.5">Category &amp; Tier</th>
+                  <th className="p-3.5">Application Type</th>
                   <th className="p-3.5">Contact Details</th>
-                  <th className="p-3.5">Location</th>
-                  <th className="p-3.5">Capital Range</th>
+                  <th className="p-3.5">Location / District</th>
+                  <th className="p-3.5">Details / Specifications</th>
                   <th className="p-3.5 text-center">Status</th>
                   <th className="p-3.5 text-right pr-5">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredApps.map((app) => {
-                  const name = app.applicantName || app.fullName || "N/A";
+                  const name = app.applicantName || app.fullName || app.contactPersonName || "N/A";
                   const business = app.businessName;
                   const phone = app.phone || app.mobileNumber || "";
                   const email = app.email || app.emailAddress || "";
                   const location = app.location || app.proposedCity || app.primaryDistrict || "N/A";
-                  const capitalRange = app.investmentRange || app.investmentCapacity || "N/A";
+                  const capitalRange = app.investmentRange || app.investmentCapacity;
                   const hasNotes = Boolean(app.notes && app.notes.trim() !== "");
+                  const isDealer = isDealership(app);
 
                   return (
                     <tr
@@ -512,13 +411,10 @@ export default function AdminPartnershipsPage() {
                         setAdminNotesText(app.notes || "");
                       }}
                     >
-                      
                       {/* Column 1: Applicant & Firm */}
                       <td className="p-3.5 pl-5 align-middle space-y-0.5">
                         <div className="flex items-center gap-1.5">
-                          <span className="font-extrabold text-slate-900 text-xs">
-                            {name}
-                          </span>
+                          <span className="font-extrabold text-slate-900 text-xs">{name}</span>
                           {hasNotes && (
                             <span
                               title="Internal staff notes added"
@@ -526,7 +422,6 @@ export default function AdminPartnershipsPage() {
                             />
                           )}
                         </div>
-
                         {business && (
                           <div className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
                             <Building className="w-3 h-3 text-slate-400 shrink-0" />
@@ -535,10 +430,8 @@ export default function AdminPartnershipsPage() {
                         )}
                       </td>
 
-                      {/* Column 2: Category & Tier Pill */}
-                      <td className="p-3.5 align-middle">
-                        {getTierPill(app)}
-                      </td>
+                      {/* Column 2: Type Pill */}
+                      <td className="p-3.5 align-middle">{getTypeBadge(app)}</td>
 
                       {/* Column 3: Contact Details */}
                       <td className="p-3.5 align-middle space-y-0.5 text-slate-600 text-[11px]">
@@ -554,11 +447,42 @@ export default function AdminPartnershipsPage() {
                         </span>
                       </td>
 
-                      {/* Column 5: Capital Range */}
+                      {/* Column 5: Details / Specifications */}
                       <td className="p-3.5 align-middle">
-                        <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                          {capitalRange}
-                        </span>
+                        {isDealer ? (
+                          <div className="space-y-1">
+                            {app.gstin && (
+                              <div className="font-mono text-[10px] text-slate-600">GSTIN: {app.gstin}</div>
+                            )}
+                            {app.productsInterested && app.productsInterested.length > 0 ? (
+                              <div className="flex flex-wrap gap-1">
+                                {app.productsInterested.map((p, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="px-1.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded text-[9px] font-bold"
+                                  >
+                                    {p}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-[11px] text-slate-500">Standard Dealership</span>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="space-y-1">
+                            {capitalRange && (
+                              <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                {capitalRange}
+                              </span>
+                            )}
+                            {app.showroomSpace && (
+                              <div className="text-[10px] text-slate-500 font-mono">
+                                Space: {app.showroomSpace} sq.ft.
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </td>
 
                       {/* Column 6: Status Selector */}
@@ -590,7 +514,6 @@ export default function AdminPartnershipsPage() {
                       {/* Column 7: Actions */}
                       <td className="p-3.5 pr-5 align-middle text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1">
-                          {/* View Modal Action */}
                           <button
                             onClick={() => {
                               setSelectedApp(app);
@@ -602,11 +525,10 @@ export default function AdminPartnershipsPage() {
                             <Eye className="w-3.5 h-3.5" />
                           </button>
 
-                          {/* WhatsApp Action */}
                           {phone && (
                             <a
                               href={`https://wa.me/${phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-                                `Hello ${name}, regarding your request for a Pragati EcoSolar ${app.type === "FRANCHISE" ? "Franchise Outlet" : "Partner Program"}.`
+                                `Hello ${name}, regarding your application for a Pragati EcoSolar ${isDealer ? "Dealership" : "Franchise Outlet"}.`
                               )}`}
                               target="_blank"
                               rel="noopener noreferrer"
@@ -617,7 +539,6 @@ export default function AdminPartnershipsPage() {
                             </a>
                           )}
 
-                          {/* Delete Action */}
                           <button
                             onClick={() => handleDelete(app.id)}
                             disabled={updatingId === app.id}
@@ -628,7 +549,6 @@ export default function AdminPartnershipsPage() {
                           </button>
                         </div>
                       </td>
-
                     </tr>
                   );
                 })}
@@ -642,16 +562,15 @@ export default function AdminPartnershipsPage() {
       {selectedApp && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative space-y-5 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
-            
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-100 pb-4 pr-6">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  {getTierPill(selectedApp)}
+                  {getTypeBadge(selectedApp)}
                   <span className="text-[10px] font-mono text-slate-400">Ref ID: {selectedApp.id}</span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900">
-                  {selectedApp.applicantName || selectedApp.fullName}
+                  {selectedApp.applicantName || selectedApp.fullName || selectedApp.contactPersonName}
                 </h3>
                 {selectedApp.businessName && (
                   <p className="text-xs font-semibold text-amber-700 mt-0.5">
@@ -670,7 +589,6 @@ export default function AdminPartnershipsPage() {
 
             {/* Categorized Content Grid */}
             <div className="space-y-4 text-xs">
-              
               {/* Category 1: Applicant & Business Profile */}
               <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
                 <div className="font-bold text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-2 border-b border-slate-200/60 pb-2">
@@ -680,21 +598,21 @@ export default function AdminPartnershipsPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Full Applicant Name:</span>
-                    <span className="font-bold text-slate-900 text-sm">{selectedApp.applicantName || selectedApp.fullName}</span>
+                    <span className="text-slate-400 block text-[10px]">Contact Person / Applicant:</span>
+                    <span className="font-bold text-slate-900 text-sm">
+                      {selectedApp.applicantName || selectedApp.fullName || selectedApp.contactPersonName}
+                    </span>
                   </div>
 
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Business / Firm Name:</span>
+                    <span className="text-slate-400 block text-[10px]">Business / Shop Name:</span>
                     <span className="font-bold text-slate-900 text-sm">{selectedApp.businessName || "Not Specified"}</span>
                   </div>
 
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Application Type &amp; Tier:</span>
+                    <span className="text-slate-400 block text-[10px]">Application Category:</span>
                     <span className="font-extrabold text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
-                      {selectedApp.type === "FRANCHISE"
-                        ? "Franchise Outlet (Exclusive Showroom & Hub)"
-                        : `Partner Program (${selectedApp.tier || "TIER_2_AUTHORIZED_DEALER"})`}
+                      {isDealership(selectedApp) ? "Authorized Equipment Dealership" : "Franchise Outlet Showroom"}
                     </span>
                   </div>
 
@@ -720,17 +638,23 @@ export default function AdminPartnershipsPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <span className="text-slate-400 block text-[10px]">Mobile Phone Number:</span>
-                    <span className="font-mono font-bold text-slate-900 text-xs">{selectedApp.phone || selectedApp.mobileNumber}</span>
+                    <span className="font-mono font-bold text-slate-900 text-xs">
+                      {selectedApp.phone || selectedApp.mobileNumber}
+                    </span>
                   </div>
 
                   <div>
                     <span className="text-slate-400 block text-[10px]">Email Address:</span>
-                    <span className="font-medium text-slate-900 text-xs">{selectedApp.email || selectedApp.emailAddress}</span>
+                    <span className="font-medium text-slate-900 text-xs">
+                      {selectedApp.email || selectedApp.emailAddress}
+                    </span>
                   </div>
 
                   <div>
                     <span className="text-slate-400 block text-[10px]">Target City / District:</span>
-                    <span className="font-bold text-emerald-700 text-xs">{selectedApp.location || selectedApp.proposedCity}</span>
+                    <span className="font-bold text-emerald-700 text-xs">
+                      {selectedApp.location || selectedApp.proposedCity || selectedApp.primaryDistrict}
+                    </span>
                   </div>
                 </div>
 
@@ -746,7 +670,7 @@ export default function AdminPartnershipsPage() {
 
                   <a
                     href={`https://wa.me/${(selectedApp.phone || selectedApp.mobileNumber || "").replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-                      `Hello ${selectedApp.applicantName || selectedApp.fullName}, regarding your application for a Pragati EcoSolar ${selectedApp.type === "FRANCHISE" ? "Franchise Outlet" : "Partner Program"}.`
+                      `Hello ${selectedApp.applicantName || selectedApp.fullName || selectedApp.contactPersonName}, regarding your application for a Pragati EcoSolar ${isDealership(selectedApp) ? "Dealership" : "Franchise Outlet"}.`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -766,39 +690,69 @@ export default function AdminPartnershipsPage() {
                 </div>
               </div>
 
-              {/* Category 3: Financial & Commercial Specifications */}
+              {/* Category 3: Financial & Specifications */}
               <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
                 <div className="font-bold text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-2 border-b border-slate-200/60 pb-2">
                   <IndianRupee className="w-4 h-4 text-purple-600" />
-                  <span>Category 3: Capital &amp; Space Commitments</span>
+                  <span>Category 3: Commercial &amp; Product Specifications</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">Investment Capacity Bracket:</span>
-                    <span className="font-bold text-purple-800 text-xs">{selectedApp.investmentRange || selectedApp.investmentCapacity || "N/A"}</span>
-                  </div>
+                {isDealership(selectedApp) ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">GSTIN Number:</span>
+                      <span className="font-mono font-bold text-slate-900 text-xs">
+                        {selectedApp.gstin || "Not Provided"}
+                      </span>
+                    </div>
 
-                  <div>
-                    <span className="text-slate-400 block text-[10px]">Showroom Commercial Space:</span>
-                    <span className="font-bold text-slate-800 text-xs">{selectedApp.showroomSpace || "No space mandate specified"}</span>
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">Products Interested In:</span>
+                      {selectedApp.productsInterested && selectedApp.productsInterested.length > 0 ? (
+                        <div className="flex flex-wrap gap-1 mt-0.5">
+                          {selectedApp.productsInterested.map((p, idx) => (
+                            <span key={idx} className="px-2 py-0.5 bg-emerald-100 text-emerald-900 font-bold rounded text-[10px]">
+                              {p}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="font-medium text-slate-700">All Products (Panels, Inverters, Lights, Frames)</span>
+                      )}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">Investment Capacity Bracket:</span>
+                      <span className="font-bold text-purple-800 text-xs">
+                        {selectedApp.investmentRange || selectedApp.investmentCapacity || "N/A"}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-slate-400 block text-[10px]">Showroom Commercial Space:</span>
+                      <span className="font-bold text-slate-800 text-xs">
+                        {selectedApp.showroomSpace ? `${selectedApp.showroomSpace} sq.ft.` : "No space mandate specified"}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Category 4: Solar & Business Background Experience */}
+              {/* Category 4: Experience */}
               <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-2">
                 <div className="font-bold text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-2 border-b border-slate-200/60 pb-2">
                   <User className="w-4 h-4 text-blue-600" />
-                  <span>Category 4: Prior Business &amp; Solar Experience Notes</span>
+                  <span>Category 4: Business Background &amp; Experience</span>
                 </div>
 
                 <p className="text-xs text-slate-700 leading-relaxed font-medium bg-white p-3 rounded-xl border border-slate-200 whitespace-pre-wrap">
-                  {selectedApp.experience || selectedApp.businessBackground || "No prior background notes submitted."}
+                  {selectedApp.experience || selectedApp.businessBackground || "No background details provided."}
                 </p>
               </div>
 
-              {/* Category 5: Admin Internal Notes Editor */}
+              {/* Category 5: Admin Internal Notes */}
               <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 space-y-3">
                 <div className="font-bold text-amber-900 uppercase tracking-wider text-[11px] flex items-center justify-between border-b border-amber-200/80 pb-2">
                   <div className="flex items-center gap-2">
@@ -861,13 +815,10 @@ export default function AdminPartnershipsPage() {
                   </button>
                 </div>
               </div>
-
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 }

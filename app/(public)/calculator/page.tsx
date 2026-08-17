@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import SolarCalculator from "@/components/calculator/SolarCalculator";
 
 export const metadata = {
@@ -8,9 +8,11 @@ export const metadata = {
 
 export default function CalculatorPage() {
   return (
-    <div className="bg-[#FAFAFA] min-h-screen py-12">
+    <div className="bg-[#FAFAFA] min-h-screen py-12 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <SolarCalculator />
+        <Suspense fallback={<div className="text-center py-12 text-slate-500 font-medium font-sans">Loading Solar Calculator...</div>}>
+          <SolarCalculator />
+        </Suspense>
       </div>
     </div>
   );

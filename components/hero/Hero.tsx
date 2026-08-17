@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { calculateSolarQuote } from "@/lib/solar-engine";
 import { TypewriterHeadline } from "./TypewriterHeadline";
+import EligibilityModal from "@/components/forms/EligibilityModal";
 
 interface HeroProps {
   heroSubline?: string;
@@ -21,6 +22,7 @@ export const Hero: React.FC<HeroProps> = ({
   heroSubline = "Government-authorized installer under PM Surya Ghar Muft Bijli Yojana, empanelled across all four Odisha DISCOMs. From design to commissioning — we handle it all.",
 }) => {
   const [monthlyBill, setMonthlyBill] = useState<number>(3500);
+  const [openEligibility, setOpenEligibility] = useState(false);
 
   const estimatedKw = Math.max(1, Math.min(10, Math.round(monthlyBill / 1000)));
   const quote = calculateSolarQuote(estimatedKw, 4.5, true);
@@ -50,21 +52,24 @@ export const Hero: React.FC<HeroProps> = ({
               {heroSubline}
             </p>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/contact?type=site-visit"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg hover:shadow-emerald-600/20"
+            {/* Main Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              {/* Check Eligibility Trigger Button */}
+              <button
+                type="button"
+                onClick={() => setOpenEligibility(true)}
+                className="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg transition flex items-center justify-center gap-2 cursor-pointer"
               >
-                Book Free Site Visit
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+                <Zap className="w-4 h-4 fill-white" />
+                <span>Check Solar Subsidy Eligibility</span>
+              </button>
+
               <Link
                 href="/contact?type=quote"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl border border-slate-200 shadow-sm transition-all"
               >
                 <Phone className="w-4 h-4 text-emerald-400" />
-                Get a Custom Quote
+                <span>Get a Custom Quote</span>
               </Link>
             </div>
 
@@ -157,15 +162,22 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
             </div>
 
-            <Link
-              href="/calculator"
-              className="block w-full text-center py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-md"
+            <button
+              type="button"
+              onClick={() => setOpenEligibility(true)}
+              className="block w-full text-center py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-md cursor-pointer"
             >
-              Get My Full Solar Plan →
-            </Link>
+              Check My Solar Subsidy Eligibility →
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Controlled Eligibility Modal Popup */}
+      <EligibilityModal
+        isOpen={openEligibility}
+        onClose={() => setOpenEligibility(false)}
+      />
     </section>
   );
 };

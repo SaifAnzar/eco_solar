@@ -17,6 +17,7 @@ const LEADS_FILE = path.join(DATA_DIR, "leads.json");
 const CONFIG_FILE = path.join(DATA_DIR, "solar-config.json");
 const PARTNERSHIPS_FILE = path.join(DATA_DIR, "partnerships.json");
 const CONTACT_INQUIRIES_FILE = path.join(DATA_DIR, "contact-inquiries.json");
+const ELIGIBILITY_FILE = path.join(DATA_DIR, "eligibility-leads.json");
 
 function ensureDataDir() {
   if (!fs.existsSync(DATA_DIR)) {
@@ -27,7 +28,7 @@ function ensureDataDir() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Partnerships Store
 // ─────────────────────────────────────────────────────────────────────────────
-export type ApplicationType = "FRANCHISE" | "PARTNER";
+export type ApplicationType = "FRANCHISE" | "DEALERSHIP" | "PARTNER";
 export type PartnerTier =
   | "TIER_1_EXCLUSIVE_DISTRIBUTOR"
   | "TIER_2_AUTHORIZED_DEALER"
@@ -390,4 +391,88 @@ export function getSolarConfig(): SolarConfigOverride {
 export function saveSolarConfig(config: SolarConfigOverride): void {
   ensureDataDir();
   fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2), "utf-8");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Eligibility Leads Store
+// ─────────────────────────────────────────────────────────────────────────────
+export interface EligibilityLeadRecord {
+  id: string;
+  consumerNumber: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  discom: string;
+  roofOwnership: string;
+  monthlyBill?: string | null;
+  status: string;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+function readEligibilityLeads(): Record<string, EligibilityLeadRecord> {
+  ensureDataDir();
+  if (!fs.existsSync(ELIGIBILITY_FILE)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(ELIGIBILITY_FILE, "utf-8"));
+  } catch {
+    return {};
+  }
+}
+
+function writeEligibilityLeads(store: Record<string, EligibilityLeadRecord>) {
+  try {
+    ensureDataDir();
+    fs.writeFileSync(ELIGIBILITY_FILE, JSON.stringify(store, null, 2), "utf-8");
+  } catch (err) {
+    console.error("[DataStore] Error writing eligibility leads file:", err);
+  }
+}
+
+export function saveEligibilityLead(
+  payload: Omit<EligibilityLeadRecord, "id" | "status" | "createdAt"> & { status?: string }
+): EligibilityLeadRecord {
+  const store = readEligibilityLeads();
+  const id = "el_" + Math.random().toString(36).substring(2, 11);
+  const now = new Date().toISOString();
+  const record: EligibilityLeadRecord = {
+    ...payload,
+    id,
+    status: payload.status || "NEW",
+    createdAt: now,
+    updatedAt: now,
+  };
+  store[id] = record;
+  writeEligibilityLeads(store);
+  return record;
+}
+
+export function getAllEligibilityLeads(): EligibilityLeadRecord[] {
+  const store = readEligibilityLeads();
+  return Object.values(store).sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+}
+
+export function updateEligibilityLeadStatus(
+  id: string,
+  status: string,
+  notes?: string
+): boolean {
+  const store = readEligibilityLeads();
+  if (!store[id]) return false;
+  store[id].status = status;
+  if (notes !== undefined) store[id].notes = notes;
+  store[id].updatedAt = new Date().toISOString();
+  writeEligibilityLeads(store);
+  return true;
+}
+
+export function deleteEligibilityLead(id: string): boolean {
+  const store = readEligibilityLeads();
+  if (!store[id]) return false;
+  delete store[id];
+  writeEligibilityLeads(store);
+  return true;
 }

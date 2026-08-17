@@ -1,0 +1,6 @@
+<svg viewBox="0 0 180 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="4" y="8" width="24" height="28" rx="5" fill="#0F766E" />
+  <path d="M18 13L12 22H19L15 31" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="36" y="25" fill="#1E293B" font-size="15" font-weight="900" font-family="system-ui, sans-serif">STATCON</text>
+  <text x="36" y="35" fill="#0F766E" font-size="9" font-weight="800" font-family="system-ui, sans-serif" letter-spacing="1">ENERGIAA</text>
+</svg>
