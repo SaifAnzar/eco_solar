@@ -77,53 +77,92 @@ export function unitsToBill(
 }
 
 /**
- * Calculate estimated monthly consumed units from total monthly electricity bill
+ * Binary Search Inverse Formula: Monthly Bill (₹) to Consumed Units (kWh)
+ * Uses exact binary search to invert telescopic tariff slabs without altering forward logic.
  */
 export function billToUnits(
-  monthlyBill: number,
-  config: TariffConfigData = DEFAULT_ODISHA_TARIFF,
-  systemKw: number = 3
+  targetBill: number,
+  sanctionedKw: number = 2,
+  config: TariffConfigData = DEFAULT_ODISHA_TARIFF
 ): number {
-  if (monthlyBill <= 0) return 0;
+  if (targetBill <= 0) return 0;
 
-  const fixedCharge = (systemKw || 3) * (config.fixedRatePerKw ?? 20);
-  const netEnergyBill = Math.max(0, monthlyBill - fixedCharge);
-  
-  // Exclude electricity duty (6%) to get net energy charge
-  const dutyRate = config.dutyRate ?? 0.06;
-  let remainingEnergyCharge = netEnergyBill / (1 + dutyRate);
+  let low = 0;
+  let high = 100000;
+  let bestUnits = 0;
 
-  const sortedSlabs = [...(config.slabs || DEFAULT_ODISHA_TARIFF.slabs)].sort((a, b) => {
-    if (a.upto === null) return 1;
-    if (b.upto === null) return -1;
-    return a.upto - b.upto;
-  });
-
-  let totalUnits = 0;
-  let previousLimit = 0;
-
-  for (const slab of sortedSlabs) {
-    if (remainingEnergyCharge <= 0) break;
-
-    const slabLimit = slab.upto;
-    const slabCapacity = slabLimit === null ? Infinity : slabLimit - previousLimit;
-    const maxSlabCost = slabCapacity === Infinity ? Infinity : slabCapacity * slab.rate;
-
-    if (remainingEnergyCharge >= maxSlabCost) {
-      totalUnits += slabCapacity;
-      remainingEnergyCharge -= maxSlabCost;
+  for (let i = 0; i < 30; i++) {
+    const mid = (low + high) / 2;
+    const calculatedBill = unitsToBill(mid, config, sanctionedKw);
+    if (calculatedBill <= targetBill) {
+      bestUnits = mid;
+      low = mid;
     } else {
-      totalUnits += remainingEnergyCharge / slab.rate;
-      remainingEnergyCharge = 0;
-      break;
-    }
-
-    if (slabLimit !== null) {
-      previousLimit = slabLimit;
+      high = mid;
     }
   }
 
-  return Math.round(totalUnits);
+  return Math.round(bestUnits);
+}
+
+/**
+ * System Sizing Formula: Estimate system capacity (kW) from monthly electricity bill
+ */
+export function estimateKwFromBill(
+  monthlyBill: number,
+  sanctionedKw: number = 2,
+  unitsPerKwPerDay: number = 4.2,
+  config: TariffConfigData = DEFAULT_ODISHA_TARIFF
+): number {
+  if (monthlyBill <= 0) return 1;
+  const monthlyUnits = billToUnits(monthlyBill, sanctionedKw, config);
+  const dailyUnits = monthlyUnits / 30;
+  const estimatedKw = Math.max(1, Math.min(10, Math.round((dailyUnits / unitsPerKwPerDay) * 2) / 2));
+  return estimatedKw;
+}
+
+/**
+ * Full Cost & Subsidy Calculation Breakdown
+ */
+export function calculateBillToSolarMath(
+  monthlyBill: number,
+  isResidential: boolean = true,
+  sanctionedKw: number = 2,
+  config: TariffConfigData = DEFAULT_ODISHA_TARIFF
+) {
+  const monthlyUnits = billToUnits(monthlyBill, sanctionedKw, config);
+  const dailyUnits = monthlyUnits / 30;
+  const estimatedKw = Math.max(1, Math.min(10, Math.round((dailyUnits / 4.2) * 2) / 2));
+
+  const baseCost = estimatedKw * (config.basePricePerKw || 75000);
+  const subsidy = isResidential
+    ? estimatedKw === 1
+      ? 30000
+      : estimatedKw === 2
+      ? 60000
+      : 78000
+    : 0;
+  const netCost = Math.max(0, baseCost - subsidy);
+
+  // Estimated ~90% bill reduction
+  const unitsAfterSolar = Math.round(monthlyUnits * 0.1);
+  const newBillAfterSolar = unitsToBill(unitsAfterSolar, config, sanctionedKw);
+  const monthlySavings = Math.max(0, monthlyBill - newBillAfterSolar);
+
+  const rooftopAreaSqFt = Math.round(estimatedKw * 100);
+  const estimatedMonthlyGenKwh = Math.round(estimatedKw * 120);
+
+  return {
+    monthlyUnits,
+    estimatedKw,
+    baseCost,
+    subsidy,
+    netCost,
+    newBillAfterSolar,
+    monthlySavings,
+    rooftopAreaSqFt,
+    estimatedMonthlyGenKwh,
+  };
 }
 
 /**
@@ -138,14 +177,11 @@ export function estimateKw(
   if (monthlyBillOrUnits <= 0) return 1;
 
   const units = isBill
-    ? billToUnits(monthlyBillOrUnits, config)
+    ? billToUnits(monthlyBillOrUnits, 2, config)
     : monthlyBillOrUnits;
 
-  // Monthly generation per kW = Peak Sun Hours * 30 days * 0.78 (Performance Ratio)
   const monthlyGenPerKw = psh * 30 * 0.78;
   const rawKw = units / (monthlyGenPerKw || 1);
 
-  // Round to nearest 0.5 kW, minimum 1 kW, maximum 100 kW
-  const roundedKw = Math.max(1, Math.min(100, Math.ceil(rawKw * 2) / 2));
-  return roundedKw;
+  return Math.max(1, Math.min(100, Math.ceil(rawKw * 2) / 2));
 }

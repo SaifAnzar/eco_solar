@@ -230,4 +230,29 @@ model EligibilityLead {
   @@index([status])
 }
 
+enum PartnerNetworkType {
+  FRANCHISE
+  DEALER
+}
+
+model ApprovedPartner {
+  id            String             @id @default(cuid())
+  type          PartnerNetworkType
+  name          String
+  contactPerson String?
+  phone         String
+  email         String?
+  district      String
+  fullAddress   String
+  pincode       String?
+  googleMapUrl  String?
+  isActive      Boolean            @default(true)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@index([type])
+  @@index([district])
+  @@index([isActive])
+}
+
 

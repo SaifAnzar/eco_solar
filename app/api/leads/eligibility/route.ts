@@ -69,9 +69,11 @@ export async function GET() {
   try {
     let dbLeads: any[] = [];
     try {
-      dbLeads = await (prisma as any).eligibilityLead.findMany({
-        orderBy: { createdAt: "desc" },
-      });
+      if ((prisma as any).eligibilityLead) {
+        dbLeads = await (prisma as any).eligibilityLead.findMany({
+          orderBy: { createdAt: "desc" },
+        });
+      }
     } catch (dbErr) {
       console.warn("[EligibilityLead GET] Prisma fallback to file store:", dbErr);
     }

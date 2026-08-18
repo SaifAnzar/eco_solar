@@ -20,11 +20,19 @@ import {
   Mail,
   Loader2,
   AlertTriangle,
+  Sparkles,
+  Check,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { lookupPincodeAndCalculate, PincodeLookupResponse } from "@/lib/actions/pincode-action";
 import { saveLeadAndNotifyWhatsApp } from "@/lib/actions/lead-action";
 import { calculateSolarQuote, SolarCalculationResult } from "@/lib/solar-engine";
+import {
+  unitsToBill,
+  billToUnits,
+  estimateKwFromBill,
+  calculateBillToSolarMath,
+} from "@/lib/solar-calculations";
 import { QuotationPdfDocument } from "../pdf/QuotationPdfDocument";
 import {
   fetchPincodeDetails,
@@ -37,7 +45,9 @@ import {
 
 export default function RoiCalculator() {
   const searchParams = useSearchParams();
-  const [calcMode, setCalcMode] = useState<"bill" | "kw">("bill");
+
+  // Mode: "bill" | "units" | "kw"
+  const [calcMode, setCalcMode] = useState<"bill" | "units" | "kw">("bill");
   const [propertyType, setPropertyType] = useState<"residential" | "commercial">("residential");
 
   useEffect(() => {
@@ -48,7 +58,9 @@ export default function RoiCalculator() {
       setPropertyType("commercial");
     }
   }, [searchParams]);
+
   const [monthlyBill, setMonthlyBill] = useState<number>(3500);
+  const [rawUnitsInput, setRawUnitsInput] = useState<number>(500);
   const [pincode, setPincode] = useState<string>("751024");
   const [directKw, setDirectKw] = useState<number>(3);
   const [showBom, setShowBom] = useState<boolean>(false);
@@ -98,13 +110,10 @@ export default function RoiCalculator() {
         if (!isMounted) return;
         setIsPincodeLoading(false);
         setPincodeDetails(res);
-
         if (res.success) {
           setIsFallbackMode(false);
         } else {
           setIsFallbackMode(true);
-          const mapped = mapDistrictToDiscom(manualDistrict, "Odisha");
-          setManualDiscom(mapped.discomCode);
         }
       });
 
@@ -112,24 +121,30 @@ export default function RoiCalculator() {
         isMounted = false;
       };
     } else {
-      setIsPincodeLoading(false);
-      setPincodeDetails(null);
       setIsFallbackMode(false);
     }
   }, [pincode]);
 
-  // Recalculate quote whenever inputs or location metadata change
+  // Recalculate quote in real-time when inputs change
   useEffect(() => {
     startTransition(async () => {
       try {
         const isRes = propertyType === "residential";
-        const targetKwInput = calcMode === "kw" ? directKw : undefined;
         const mDistrict = isFallbackMode ? manualDistrict : undefined;
-        const mDiscom = isFallbackMode ? DISCOM_DESCRIPTIONS[manualDiscom] : undefined;
+        const mDiscom = isFallbackMode ? manualDiscom : undefined;
+
+        let targetBill = monthlyBill;
+        let targetKwInput: number | undefined = undefined;
+
+        if (calcMode === "units") {
+          targetBill = unitsToBill(rawUnitsInput);
+        } else if (calcMode === "kw") {
+          targetKwInput = directKw;
+        }
 
         const res = await lookupPincodeAndCalculate(
           pincode,
-          monthlyBill,
+          targetBill,
           targetKwInput,
           isRes,
           mDistrict,
@@ -142,9 +157,15 @@ export default function RoiCalculator() {
         console.error("ROI calculation error caught safely:", err);
       }
     });
-  }, [calcMode, propertyType, monthlyBill, pincode, directKw, pincodeDetails, manualDistrict, manualDiscom, isFallbackMode]);
+  }, [calcMode, propertyType, monthlyBill, rawUnitsInput, pincode, directKw, pincodeDetails, manualDistrict, manualDiscom, isFallbackMode]);
 
   const calc: SolarCalculationResult = calcData.calculation;
+
+  // Real-time Bill-to-Solar math
+  const billMath = calculateBillToSolarMath(
+    calcMode === "units" ? unitsToBill(rawUnitsInput) : monthlyBill,
+    propertyType === "residential"
+  );
 
   const handleManualDistrictSelect = (dist: string) => {
     setManualDistrict(dist);
@@ -181,59 +202,59 @@ export default function RoiCalculator() {
         <QuotationPdfDocument
           customerName={leadForm.name}
           phone={leadForm.phone}
-          email={leadForm.email}
-          address={leadForm.address}
+          email={leadForm.email || undefined}
+          address={leadForm.address || undefined}
           pincode={pincode}
           locationLabel={calcData.locationLabel}
           discom={calcData.discom}
-          calculation={calc}
           quotationRef={quotationRef}
-          dateStr={dateStr}
+          quotationDate={dateStr}
+          calculation={calc}
         />
       );
 
       const { pdf } = await import("@react-pdf/renderer");
-      const asPdf = pdf(doc);
-      const blob = await asPdf.toBlob();
+      const blob = await pdf(doc).toBlob();
       const url = URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `Pragati_EcoSolar_Quotation_${quotationRef}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Pragati_EcoSolar_Quotation_${quotationRef}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
       setLastRef(quotationRef);
       setLeadSubmitted(true);
     } catch (err) {
-      console.error("PDF generation or lead submission failed:", err);
+      console.error("Failed to generate PDF:", err);
+      alert("Quotation PDF generation encountered an issue. Please try again.");
     } finally {
       setIsGeneratingPdf(false);
     }
   };
 
-  return (
-    <div className="w-full space-y-8">
-      {/* Top Header Card */}
-      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none"></div>
+  const residentialPresetChips = [1500, 2500, 4000, 6000, 10000];
+  const commercialPresetChips = [15000, 30000, 50000, 100000];
+  const activePresetChips = propertyType === "residential" ? residentialPresetChips : commercialPresetChips;
 
-        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-6 mb-8">
+  return (
+    <div className="space-y-8 font-sans">
+      {/* Header Container */}
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+        
+        {/* Top Badges */}
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="p-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-600">
-                <Calculator className="w-5 h-5" />
-              </span>
-              <span className="text-xs font-mono uppercase tracking-widest text-amber-700 font-bold">
-                PRAGATI ECOSOLAR SIZING ENGINE v3.0
-              </span>
+            <div className="inline-flex items-center space-x-2 px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded-full text-xs font-mono uppercase tracking-wider font-bold mb-2">
+              <Zap className="w-3.5 h-3.5 text-amber-600 fill-amber-500" />
+              <span>Odisha 2026-27 OERC LT Slab Tariff Engine</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-2">
-              Interactive Rooftop Solar & Subsidy ROI Calculator
-            </h2>
-            <p className="text-xs text-slate-600 mt-1">
-              Real-time India Post API Verification • Odisha DISCOM Net-Metering • PM Surya Ghar Subsidies
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Solar Yield &amp; PM Surya Ghar Subsidy Calculator
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              Enter your monthly electricity bill (₹) to instantly estimate capacity, PM Surya Ghar subsidy (up to ₹78,000), net bill reduction, and 15-item BOM breakdown.
             </p>
           </div>
 
@@ -249,40 +270,53 @@ export default function RoiCalculator() {
 
         {/* Input Controls Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
           {/* Controls Column */}
           <div className="lg:col-span-6 space-y-6">
-            {/* Mode Switcher */}
+            
+            {/* 1. Sizing Mode Segmented Switcher */}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-600 mb-2 font-semibold">
                 1. Select Sizing Mode
               </label>
-              <div className="grid grid-cols-2 gap-3 p-1.5 bg-[#FAFAFA] border border-slate-200 rounded-2xl">
+              <div className="grid grid-cols-3 gap-2 p-1.5 bg-[#FAFAFA] border border-slate-200 rounded-2xl">
                 <button
                   type="button"
                   onClick={() => setCalcMode("bill")}
-                  className={`py-2.5 px-4 text-xs font-bold rounded-xl transition-all ${
+                  className={`py-2.5 px-3 text-[11px] sm:text-xs font-bold rounded-xl transition-all ${
                     calcMode === "bill"
-                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
+                      ? "bg-slate-900 text-amber-400 shadow-md"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
-                  By Monthly Bill (₹)
+                  Enter Monthly Bill (₹)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCalcMode("units")}
+                  className={`py-2.5 px-3 text-[11px] sm:text-xs font-bold rounded-xl transition-all ${
+                    calcMode === "units"
+                      ? "bg-emerald-600 text-white shadow-md"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Enter Units (kWh)
                 </button>
                 <button
                   type="button"
                   onClick={() => setCalcMode("kw")}
-                  className={`py-2.5 px-4 text-xs font-bold rounded-xl transition-all ${
+                  className={`py-2.5 px-3 text-[11px] sm:text-xs font-bold rounded-xl transition-all ${
                     calcMode === "kw"
-                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
+                      ? "bg-amber-600 text-white shadow-md"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
-                  By Direct Capacity (kW)
+                  Direct Capacity (kW)
                 </button>
               </div>
             </div>
 
-            {/* Property Classification Switcher */}
+            {/* 2. Property Classification Switcher */}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-600 mb-2 font-semibold">
                 2. Property Classification
@@ -293,7 +327,7 @@ export default function RoiCalculator() {
                   onClick={() => setPropertyType("residential")}
                   className={`py-2.5 px-4 text-xs font-bold rounded-xl transition-all flex items-center justify-center space-x-2 ${
                     propertyType === "residential"
-                      ? "bg-amber-50 text-amber-800 border border-amber-300 shadow-sm"
+                      ? "bg-amber-50 text-amber-900 border border-amber-300 shadow-sm"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
@@ -305,24 +339,23 @@ export default function RoiCalculator() {
                   onClick={() => setPropertyType("commercial")}
                   className={`py-2.5 px-4 text-xs font-bold rounded-xl transition-all flex items-center justify-center space-x-2 ${
                     propertyType === "commercial"
-                      ? "bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-sm"
+                      ? "bg-emerald-50 text-emerald-900 border border-emerald-300 shadow-sm"
                       : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
                   <Building2 className="w-3.5 h-3.5" />
-                  <span>Commercial & Industrial</span>
+                  <span>Commercial &amp; Industrial</span>
                 </button>
               </div>
             </div>
 
-            {/* Pincode Verification Section */}
+            {/* 3. Odisha Pincode Verification */}
             <div>
               <label className="block text-xs font-mono uppercase tracking-wider text-slate-600 mb-2 font-semibold flex justify-between">
-                <span>3. Odisha Pincode (India Post Real-Time API)</span>
-                <span className="text-emerald-700">PSH: {calcData.peakSunHours} Hrs/Day</span>
+                <span>3. Odisha Pincode (India Post API)</span>
+                <span className="text-emerald-700 font-bold">PSH: {calcData.peakSunHours} Hrs/Day</span>
               </label>
 
-              {/* Input field with inline Loader2 spinner */}
               <div className="relative">
                 <input
                   type="text"
@@ -343,7 +376,6 @@ export default function RoiCalculator() {
                 </div>
               </div>
 
-              {/* Active Green Badge */}
               {(pincodeDetails?.success || calcData.success) && !isFallbackMode && (
                 <div className="mt-2.5 p-3 bg-emerald-50/90 border border-emerald-200 rounded-xl flex items-start space-x-2 text-emerald-900 text-xs shadow-sm">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
@@ -360,13 +392,12 @@ export default function RoiCalculator() {
                 </div>
               )}
 
-              {/* Fallback Alert & Manual Selector */}
               {isFallbackMode && (
                 <div className="mt-2.5 p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs space-y-2.5 font-sans shadow-sm">
                   <div className="flex items-start space-x-2 text-amber-800 font-medium">
                     <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                     <span>
-                      Unable to verify pincode &quot;{pincode}&quot; via Postal API. Select district manually to proceed with quotation calculation:
+                      Unable to verify pincode &quot;{pincode}&quot; via Postal API. Select district manually to proceed:
                     </span>
                   </div>
 
@@ -409,14 +440,13 @@ export default function RoiCalculator() {
               )}
             </div>
 
-            {/* 4. Current Monthly Power Bill Section / System Capacity Section */}
-            {calcMode === "bill" ? (
+            {/* 4. Main Dynamic Input Field Section */}
+            {calcMode === "bill" && (
               <div className="space-y-4">
-                {/* Dedicated Separate Field for Manual Bill Typing */}
                 <div>
                   <label className="block text-xs font-mono uppercase tracking-wider text-slate-600 mb-2 font-semibold flex justify-between">
-                    <span>4. CURRENT MONTHLY POWER BILL</span>
-                    <span className="text-amber-700 font-bold font-mono">₹{monthlyBill.toLocaleString()} / MO</span>
+                    <span>4. ENTER MONTHLY ELECTRICITY BILL (₹)</span>
+                    <span className="text-amber-700 font-bold font-mono">₹{monthlyBill.toLocaleString("en-IN")} / MO</span>
                   </label>
 
                   <div className="relative">
@@ -430,7 +460,7 @@ export default function RoiCalculator() {
                         setMonthlyBill(val);
                       }}
                       placeholder="e.g. 3500"
-                      className="w-full pl-4 pr-16 py-3 bg-[#FAFAFA] border border-slate-200 rounded-xl text-sm font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-600 transition-colors shadow-sm"
+                      className="w-full pl-4 pr-16 py-3 bg.white border border-slate-300 rounded-xl text-base font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors shadow-sm"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
                       <span className="text-xs font-mono text-slate-400 font-bold">₹ / Mo</span>
@@ -438,31 +468,88 @@ export default function RoiCalculator() {
                   </div>
                 </div>
 
-                {/* Range Slider for fast adjustment */}
+                {/* Preset Amount Quick Chips */}
+                <div className="space-y-2 pt-1">
+                  <label className="block text-[11px] font-mono text-slate-500 uppercase font-semibold">
+                    Preset Amount Quick Chips:
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {activePresetChips.map((chipVal) => (
+                      <button
+                        key={chipVal}
+                        type="button"
+                        onClick={() => setMonthlyBill(chipVal)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer border ${
+                          monthlyBill === chipVal
+                            ? "bg-slate-900 text-amber-400 border-slate-900 shadow-md"
+                            : "bg-white text-slate-700 border-slate-200 hover:border-amber-400 hover:bg-amber-50/50"
+                        }`}
+                      >
+                        ₹{chipVal >= 100000 ? `${(chipVal / 100000).toFixed(1)} Lakh+` : chipVal.toLocaleString("en-IN")}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Range Slider */}
                 <div>
                   <input
                     type="range"
                     min={1000}
-                    max={50000}
+                    max={100000}
                     step={500}
                     value={monthlyBill || 1000}
                     onChange={(e) => setMonthlyBill(Number(e.target.value))}
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-600"
                   />
                   <div className="flex justify-between text-[11px] font-mono text-slate-500 mt-1">
                     <span>₹1,000</span>
-                    <span>₹25,000</span>
-                    <span>₹50,000+</span>
+                    <span>₹50,000</span>
+                    <span>₹1,00,000+</span>
                   </div>
                 </div>
               </div>
-            ) : (
+            )}
+
+            {calcMode === "units" && (
               <div className="space-y-4">
-                {/* Dedicated Separate Field for Manual kW Typing */}
+                <div>
+                  <label className="block text-xs font-mono uppercase tracking-wider text-slate-600 mb-2 font-semibold flex justify-between">
+                    <span>4. ENTER MONTHLY CONSUMPTION (kWh)</span>
+                    <span className="text-emerald-700 font-bold font-mono">{rawUnitsInput} Units / Mo</span>
+                  </label>
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={rawUnitsInput === 0 ? "" : rawUnitsInput}
+                      onChange={(e) => {
+                        const clean = e.target.value.replace(/\D/g, "");
+                        const val = clean === "" ? 0 : Number(clean);
+                        setRawUnitsInput(val);
+                      }}
+                      placeholder="e.g. 500"
+                      className="w-full pl-4 pr-20 py-3 bg-white border border-slate-300 rounded-xl text-base font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors shadow-sm"
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
+                      <span className="text-xs font-mono text-slate-400 font-bold">kWh / Mo</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 font-mono">
+                  Calculated Monthly Bill from OERC Slabs: <strong>₹{unitsToBill(rawUnitsInput).toLocaleString("en-IN")}</strong>
+                </div>
+              </div>
+            )}
+
+            {calcMode === "kw" && (
+              <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-mono uppercase tracking-wider text-slate-600 mb-2 font-semibold flex justify-between">
                     <span>4. TARGET SOLAR CAPACITY</span>
-                    <span className="text-emerald-700 font-bold font-mono">{directKw} kW System</span>
+                    <span className="text-amber-700 font-bold font-mono">{directKw} kW System</span>
                   </label>
 
                   <div className="relative">
@@ -476,7 +563,7 @@ export default function RoiCalculator() {
                         setDirectKw(val);
                       }}
                       placeholder="e.g. 5"
-                      className="w-full pl-4 pr-16 py-3 bg-[#FAFAFA] border border-slate-200 rounded-xl text-sm font-mono font-bold text-slate-900 focus:outline-none focus:border-emerald-600 transition-colors shadow-sm"
+                      className="w-full pl-4 pr-16 py-3 bg-white border border-slate-300 rounded-xl text-base font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors shadow-sm"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
                       <span className="text-xs font-mono text-slate-400 font-bold">kW</span>
@@ -484,7 +571,6 @@ export default function RoiCalculator() {
                   </div>
                 </div>
 
-                {/* Range Slider for fast adjustment */}
                 <div>
                   <input
                     type="range"
@@ -493,7 +579,7 @@ export default function RoiCalculator() {
                     step={1}
                     value={directKw || 1}
                     onChange={(e) => setDirectKw(Number(e.target.value))}
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-600"
                   />
                   <div className="flex justify-between text-[11px] font-mono text-slate-500 mt-1">
                     <span>1 kW</span>
@@ -511,324 +597,272 @@ export default function RoiCalculator() {
                 <strong className="text-slate-900">{calc.panelCount} × 600W MonoPERC/TOPCon</strong>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Roof Area Needed:</span>
-                <strong className="text-amber-700">{calc.requiredRoofAreaSqFt} Sq. Ft.</strong>
+                <span>Rooftop Area Required:</span>
+                <strong className="text-amber-700">{calc.requiredRoofAreaSqFt || calc.systemKw * 100} Sq. Ft.</strong>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Discom Net-Metering:</span>
-                <strong className="text-emerald-700">{calcData.discom}</strong>
+                <span>Estimated Monthly Gen:</span>
+                <strong className="text-emerald-700">~{calc.monthlyGenerationKwh || Math.round(calc.systemKw * 120)} Units / Month</strong>
               </div>
             </div>
+
           </div>
 
-          {/* Output Display Column */}
+          {/* Real-Time Dynamic Output Display Column */}
           <div className="lg:col-span-6 bg-[#FAFAFA] p-6 sm:p-8 rounded-2xl border border-slate-200 flex flex-col justify-between shadow-inner">
-            <div>
-              <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
-                <span className="text-xs font-mono uppercase tracking-wider text-slate-600 font-bold">
-                  OFFICIAL QUOTATION SUMMARY
+            <div className="space-y-6">
+              
+              <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+                <span className="text-xs font-mono uppercase tracking-wider text-slate-600 font-bold flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                  REAL-TIME QUOTATION SUMMARY
                 </span>
                 {isPending ? (
                   <span className="flex items-center space-x-1 text-xs text-amber-700 font-mono">
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Recalculating...</span>
+                    <span>Calculating...</span>
                   </span>
                 ) : (
                   <span className="text-[11px] font-mono px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
-                    ODISHA TARIFF: ₹7.0 / UNIT
+                    PM SURYA GHAR EMPANELED
                   </span>
                 )}
               </div>
 
-              {/* Financial Calculations */}
-              <div className="space-y-4 font-mono">
-                <div className="flex justify-between items-center text-sm text-slate-700">
-                  <span>Turnkey System Capacity:</span>
-                  <span className="font-bold text-slate-900 text-base">{calc.systemKw} kW Rooftop</span>
+              {/* Core Output Cards Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono">
+                
+                {/* Recommended System Size */}
+                <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-1">
+                  <div className="text-[10px] text-slate-500 uppercase font-bold">Recommended System Size</div>
+                  <div className="text-xl font-black text-slate-900">
+                    {calc.systemKw} kW Rooftop
+                  </div>
+                  <div className="text-[11px] text-slate-400">~{calc.panelCount} ALMM Panels</div>
                 </div>
 
-                <div className="flex justify-between items-center text-sm text-slate-700">
-                  <span>Gross EPC Project Cost:</span>
-                  <span className="font-semibold text-slate-900">₹{calc.grossSystemCost.toLocaleString()}</span>
+                {/* Rooftop Area Required */}
+                <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-1">
+                  <div className="text-[10px] text-slate-500 uppercase font-bold">Rooftop Area Required</div>
+                  <div className="text-xl font-black text-amber-600">
+                    {calc.requiredRoofAreaSqFt} Sq. Ft.
+                  </div>
+                  <div className="text-[11px] text-slate-400">~100 sq. ft. per kW</div>
+                </div>
+
+                {/* Estimated Monthly Generation */}
+                <div className="p-4 bg-white border border-slate-200 rounded-xl space-y-1">
+                  <div className="text-[10px] text-slate-500 uppercase font-bold">Est. Monthly Generation</div>
+                  <div className="text-xl font-black text-emerald-600">
+                    {calc.monthlyGenerationKwh} Units
+                  </div>
+                  <div className="text-[11px] text-slate-400">~120 units / kW / mo</div>
+                </div>
+
+                {/* New Monthly Bill After Solar */}
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-1">
+                  <div className="text-[10px] text-emerald-800 uppercase font-bold">New Bill After Solar</div>
+                  <div className="text-xl font-black text-emerald-700">
+                    ₹{billMath.newBillAfterSolar.toLocaleString("en-IN")}
+                  </div>
+                  <div className="text-[11px] text-emerald-700 font-bold">Estimated ~90% Reduction</div>
+                </div>
+
+              </div>
+
+              {/* Cost & Subsidy Breakdown Table */}
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 font-mono text-xs">
+                
+                <div className="flex justify-between items-center text-slate-700">
+                  <span>Total System Cost (@ ₹75k/kW benchmark):</span>
+                  <span className="font-bold text-slate-900 text-sm">₹{calc.grossSystemCost.toLocaleString("en-IN")}</span>
                 </div>
 
                 {propertyType === "residential" ? (
-                  <div className="space-y-2.5">
-                    <div className="flex justify-between items-center text-xs text-emerald-900 bg-emerald-50/90 p-3 rounded-xl border border-emerald-200 font-bold">
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
-                        Central Govt Subsidy (PM Surya Ghar):
-                      </span>
-                      <span className="font-mono text-sm">- ₹{(calc.centralSubsidy || calc.pmSuryaGharSubsidy).toLocaleString()}</span>
+                  <div className="space-y-2 pt-2 border-t border-slate-100">
+                    <div className="flex justify-between items-center text-emerald-900 bg-emerald-50/90 p-2.5 rounded-xl border border-emerald-200 font-bold">
+                      <span>PM Surya Ghar Govt Subsidy (Up to ₹78k):</span>
+                      <span className="text-sm">- ₹{(calc.centralSubsidy || calc.pmSuryaGharSubsidy).toLocaleString("en-IN")}</span>
                     </div>
 
-                    <div className="flex justify-between items-center text-xs text-amber-950 bg-amber-50/90 p-3 rounded-xl border border-amber-200/80 font-bold">
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-amber-600"></span>
-                        Odisha State Govt Subsidy Top-Up:
-                      </span>
-                      <span className="font-mono text-sm">- ₹{(calc.stateSubsidy || 0).toLocaleString()}</span>
-                    </div>
-
-                    <div className="flex justify-between items-center text-[11px] text-slate-600 px-2 py-0.5 font-semibold">
-                      <span>Total Government Subsidy Benefit:</span>
-                      <span className="text-emerald-700 font-bold font-mono text-xs">
-                        - ₹{(calc.totalSubsidy || (calc.pmSuryaGharSubsidy + (calc.stateSubsidy || 0))).toLocaleString()}
-                      </span>
+                    <div className="flex justify-between items-center text-amber-950 bg-amber-50/90 p-2.5 rounded-xl border border-amber-200/80 font-bold">
+                      <span>Odisha State Top-up Subsidy:</span>
+                      <span className="text-sm">- ₹{(calc.stateSubsidy || 0).toLocaleString("en-IN")}</span>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex justify-between items-center text-sm text-emerald-800 bg-emerald-50 p-3 rounded-xl border border-emerald-200 font-bold">
-                    <span>80% Accelerated Depreciation Benefit:</span>
-                    <span>- ₹{calc.taxBenefit80AD.toLocaleString()}</span>
+                  <div className="flex justify-between items-center text-emerald-900 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 font-bold">
+                    <span>80% Tax Depreciation Benefit:</span>
+                    <span>- ₹{calc.taxBenefit80AD.toLocaleString("en-IN")}</span>
                   </div>
                 )}
 
-                <div className="flex justify-between items-center text-base font-bold text-slate-900 pt-3 border-t border-slate-200">
-                  <span className="text-xs uppercase font-sans text-slate-600">Net Out-of-Pocket Cost:</span>
-                  <span className="text-2xl text-amber-700">₹{calc.netPayableCost.toLocaleString()}</span>
+                <div className="flex justify-between items-center text-sm font-bold text-slate-900 pt-3 border-t border-slate-200">
+                  <span className="text-xs uppercase font-sans text-slate-600">Net Payable Amount:</span>
+                  <span className="text-2xl text-amber-700">₹{calc.netPayableCost.toLocaleString("en-IN")}</span>
                 </div>
+
               </div>
 
-              {/* ROI & Savings Metrics Grid */}
-              <div className="grid grid-cols-2 gap-3 mt-6">
-                <div className="p-3.5 bg-white border border-slate-200 rounded-xl">
-                  <div className="text-[10px] font-mono uppercase text-slate-500">Monthly Solar Units</div>
-                  <div className="text-lg font-extrabold text-slate-900 font-mono mt-0.5">
-                    {calc.monthlyGenerationKwh} Units
-                  </div>
-                </div>
-
-                <div className="p-3.5 bg-white border border-slate-200 rounded-xl">
-                  <div className="text-[10px] font-mono uppercase text-slate-500">Est. Monthly Savings</div>
-                  <div className="text-lg font-extrabold text-emerald-600 font-mono mt-0.5">
-                    ₹{calc.monthlySavingsRs.toLocaleString()}
-                  </div>
-                </div>
-
-                <div className="p-3.5 bg-white border border-slate-200 rounded-xl">
-                  <div className="text-[10px] font-mono uppercase text-slate-500">Annual Savings</div>
-                  <div className="text-lg font-extrabold text-emerald-600 font-mono mt-0.5">
-                    ₹{calc.annualSavingsRs.toLocaleString()}
-                  </div>
-                </div>
-
-                <div className="p-3.5 bg-white border border-slate-200 rounded-xl">
-                  <div className="text-[10px] font-mono uppercase text-slate-500">Payback Period</div>
-                  <div className="text-lg font-extrabold text-amber-600 font-mono mt-0.5">
-                    {calc.paybackPeriodYears} Years
-                  </div>
-                </div>
-              </div>
             </div>
 
-            {/* CTAs */}
-            <div className="mt-8 space-y-3 pt-4 border-t border-slate-200">
+            {/* Bottom Actions */}
+            <div className="pt-6 border-t border-slate-200 space-y-3">
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="w-full py-3.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center space-x-2"
+                className="w-full py-4 px-6 bg-slate-900 hover:bg-amber-600 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-slate-900/10 transition-all flex items-center justify-center space-x-2 cursor-pointer"
               >
-                <Download className="w-4 h-4" />
-                <span>Download Official Stamped Quotation (PDF)</span>
+                <Download className="w-4 h-4 text-amber-400" />
+                <span>Download Official 15-Item BOM Quotation (PDF)</span>
               </button>
 
-              <button
-                type="button"
-                onClick={() => setShowBom(!showBom)}
-                className="w-full py-2.5 px-4 bg-white border border-slate-200 text-slate-700 hover:text-slate-900 font-semibold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5 font-mono"
-              >
-                <Layers className="w-3.5 h-3.5 text-amber-600" />
-                <span>{showBom ? "Hide 15-Item BOM Breakdown" : "View 15-Item Itemized BOM Breakdown"}</span>
-              </button>
+              <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 px-1">
+                <span>DISCOM Net-Metering Ready</span>
+                <span>•</span>
+                <span>25-Yr Panel Warranty</span>
+                <span>•</span>
+                <span>Odisha EPC empaneled</span>
+              </div>
             </div>
+
           </div>
+
         </div>
 
-        {/* 15-Item BOM Table Accordion */}
-        <AnimatePresence>
-          {showBom && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="mt-8 pt-8 border-t border-slate-200 overflow-hidden"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-base font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-emerald-600" />
-                  <span>Itemized Bill of Materials (15-Item Technical Spec) — {calc.systemKw} kW System</span>
-                </h3>
-                <span className="text-xs font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full font-bold">
-                  MNRE / DISCOM Compliant
-                </span>
-              </div>
-
-              <div className="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
-                <table className="w-full text-left text-xs font-mono">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 uppercase">
-                    <tr>
-                      <th className="py-3 px-4">#</th>
-                      <th className="py-3 px-4">Component Category</th>
-                      <th className="py-3 px-4">Make / Specification</th>
-                      <th className="py-3 px-4">Qty</th>
-                      <th className="py-3 px-4">Unit Rate</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-800">
-                    {(calc.bom || []).map((item, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="py-2.5 px-4 font-bold text-slate-500">{item.slNo || idx + 1}</td>
-                        <td className="py-2.5 px-4 font-semibold text-slate-900">{item.itemCategory}</td>
-                        <td className="py-2.5 px-4 text-slate-700">{item.description} ({item.specification})</td>
-                        <td className="py-2.5 px-4 font-bold text-emerald-800">{item.quantity} {item.unit}</td>
-                        <td className="py-2.5 px-4 text-amber-700 font-semibold">₹{item.unitRate.toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
-      {/* PDF & Lead Submission Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 sm:p-8 relative overflow-hidden"
+      {/* Download PDF Lead Capture Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm animate-in fade-in font-sans">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative space-y-6 animate-in zoom-in-95">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
             >
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <X className="w-5 h-5" />
+            </button>
 
-              {!leadSubmitted ? (
-                <div className="space-y-6">
+            {!leadSubmitted ? (
+              <>
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200 text-amber-800 rounded-full text-xs font-mono uppercase tracking-wider font-bold mb-2">
+                    <FileText className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Download Official Quotation PDF</span>
+                  </div>
+                  <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+                    Get Customized Solar Quotation
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Enter your contact details to download the 15-item Bill of Materials (BOM) &amp; PM Surya Ghar subsidy application breakdown.
+                  </p>
+                </div>
+
+                <form onSubmit={handleLeadSubmitAndDownloadPdf} className="space-y-4">
                   <div>
-                    <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-emerald-700 px-3 py-1 bg-emerald-50 rounded-full border border-emerald-200">
-                      INSTANT PDF GENERATOR
-                    </span>
-                    <h3 className="text-xl font-bold text-slate-900 tracking-tight mt-3">
-                      Download Official Pragati EcoSolar Quotation
-                    </h3>
-                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                      Enter your details to generate and download the official stamped PDF quotation with DISCOM net-metering details.
-                    </p>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Full Name <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={leadForm.name}
+                      onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
+                      placeholder="e.g. Subhashish Swain"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+                    />
                   </div>
 
-                  <form onSubmit={handleLeadSubmitAndDownloadPdf} className="space-y-4 text-xs font-mono">
-                    <div>
-                      <label className="block text-slate-700 uppercase font-semibold mb-1">
-                        Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={leadForm.name}
-                        onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                        placeholder="e.g. Ramesh Chandra Swain"
-                        className="w-full px-4 py-3 bg-[#FAFAFA] border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 uppercase font-semibold mb-1">
-                        Mobile Phone Number *
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        value={leadForm.phone}
-                        onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                        placeholder="e.g. 98610 12345"
-                        className="w-full px-4 py-3 bg-[#FAFAFA] border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 uppercase font-semibold mb-1">
-                        Email Address (Optional)
-                      </label>
-                      <input
-                        type="email"
-                        value={leadForm.email}
-                        onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                        placeholder="e.g. ramesh@example.com"
-                        className="w-full px-4 py-3 bg-[#FAFAFA] border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-slate-700 uppercase font-semibold mb-1">
-                        Installation Address / Area
-                      </label>
-                      <textarea
-                        rows={2}
-                        value={leadForm.address}
-                        onChange={(e) => setLeadForm({ ...leadForm, address: e.target.value })}
-                        placeholder="e.g. Plot 412, Patia Square, Bhubaneswar"
-                        className="w-full px-4 py-2.5 bg-[#FAFAFA] border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
-                      />
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        type="submit"
-                        disabled={isGeneratingPdf}
-                        className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-400 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center space-x-2 font-sans"
-                      >
-                        {isGeneratingPdf ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            <span>Generating Stamped PDF Quotation...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Download className="w-4 h-4" />
-                            <span>Download Quotation PDF Now</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              ) : (
-                <div className="text-center py-6 space-y-4">
-                  <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="w-6 h-6" />
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Mobile Number <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={leadForm.phone}
+                      onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
+                      placeholder="10-digit mobile number"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+                    />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900">Quotation Generated!</h3>
-                  <p className="text-xs text-slate-600 font-mono">
-                    Reference ID: <strong className="text-emerald-700">{lastRef}</strong>
-                  </p>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Your official Pragati EcoSolar PDF quotation has been downloaded. Our Odisha solar team will contact you shortly to arrange a free site inspection.
-                  </p>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Email Address (Optional)
+                    </label>
+                    <input
+                      type="email"
+                      value={leadForm.email}
+                      onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
+                      placeholder="your.name@example.com"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Installation Address (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={leadForm.address}
+                      onChange={(e) => setLeadForm({ ...leadForm, address: e.target.value })}
+                      placeholder="e.g. House No. 42, Patia, Bhubaneswar"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+                    />
+                  </div>
+
                   <button
-                    type="button"
-                    onClick={() => {
-                      setIsModalOpen(false);
-                      setLeadSubmitted(false);
-                    }}
-                    className="py-2.5 px-6 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl"
+                    type="submit"
+                    disabled={isGeneratingPdf}
+                    className="w-full py-3.5 bg-slate-900 hover:bg-amber-600 text-white font-black text-sm rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
-                    Close
+                    {isGeneratingPdf ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                        <span>Generating Official PDF...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4 text-amber-400" />
+                        <span>Download Quotation PDF Instantly</span>
+                      </>
+                    )}
                   </button>
+                </form>
+              </>
+            ) : (
+              <div className="text-center space-y-4 py-4">
+                <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                  <Check className="w-8 h-8" />
                 </div>
-              )}
-            </motion.div>
+
+                <div className="space-y-1">
+                  <h3 className="text-2xl font-black text-slate-900">Quotation PDF Downloaded!</h3>
+                  <p className="text-xs text-slate-500">
+                    Reference ID: <strong className="text-slate-900 font-mono">{lastRef}</strong>
+                  </p>
+                </div>
+
+                <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 border border-slate-200 p-3.5 rounded-xl font-medium">
+                  Your customized solar quote has been generated. Our Odisha technical engineer will review your DISCOM net-metering feasibility and reach out shortly.
+                </p>
+
+                <button
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setLeadSubmitted(false);
+                  }}
+                  className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors"
+                >
+                  Close Window
+                </button>
+              </div>
+            )}
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 }

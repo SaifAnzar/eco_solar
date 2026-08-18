@@ -18,6 +18,7 @@ const CONFIG_FILE = path.join(DATA_DIR, "solar-config.json");
 const PARTNERSHIPS_FILE = path.join(DATA_DIR, "partnerships.json");
 const CONTACT_INQUIRIES_FILE = path.join(DATA_DIR, "contact-inquiries.json");
 const ELIGIBILITY_FILE = path.join(DATA_DIR, "eligibility-leads.json");
+const APPROVED_PARTNERS_FILE = path.join(DATA_DIR, "approved-partners.json");
 
 function ensureDataDir() {
   if (!fs.existsSync(DATA_DIR)) {
@@ -474,5 +475,91 @@ export function deleteEligibilityLead(id: string): boolean {
   if (!store[id]) return false;
   delete store[id];
   writeEligibilityLeads(store);
+  return true;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Approved Network Partners Store
+// ─────────────────────────────────────────────────────────────────────────────
+export interface ApprovedPartnerRecord {
+  id: string;
+  type: "FRANCHISE" | "DEALER";
+  name: string;
+  contactPerson?: string | null;
+  phone: string;
+  email?: string | null;
+  district: string;
+  fullAddress: string;
+  pincode?: string | null;
+  googleMapUrl?: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+function readApprovedPartners(): Record<string, ApprovedPartnerRecord> {
+  ensureDataDir();
+  if (!fs.existsSync(APPROVED_PARTNERS_FILE)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(APPROVED_PARTNERS_FILE, "utf-8"));
+  } catch {
+    return {};
+  }
+}
+
+function writeApprovedPartners(store: Record<string, ApprovedPartnerRecord>) {
+  try {
+    ensureDataDir();
+    fs.writeFileSync(APPROVED_PARTNERS_FILE, JSON.stringify(store, null, 2), "utf-8");
+  } catch (err) {
+    console.error("[DataStore] Error writing approved partners file:", err);
+  }
+}
+
+export function saveApprovedPartner(
+  payload: Omit<ApprovedPartnerRecord, "id" | "createdAt"> & { id?: string }
+): ApprovedPartnerRecord {
+  const store = readApprovedPartners();
+  const id = payload.id || "ap_" + Math.random().toString(36).substring(2, 11);
+  const now = new Date().toISOString();
+  const record: ApprovedPartnerRecord = {
+    ...payload,
+    id,
+    isActive: payload.isActive !== undefined ? payload.isActive : true,
+    createdAt: now,
+    updatedAt: now,
+  };
+  store[id] = record;
+  writeApprovedPartners(store);
+  return record;
+}
+
+export function getAllApprovedPartners(): ApprovedPartnerRecord[] {
+  const store = readApprovedPartners();
+  return Object.values(store).sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+}
+
+export function updateApprovedPartnerRecord(
+  id: string,
+  payload: Partial<ApprovedPartnerRecord>
+): boolean {
+  const store = readApprovedPartners();
+  if (!store[id]) return false;
+  store[id] = {
+    ...store[id],
+    ...payload,
+    updatedAt: new Date().toISOString(),
+  };
+  writeApprovedPartners(store);
+  return true;
+}
+
+export function deleteApprovedPartnerRecord(id: string): boolean {
+  const store = readApprovedPartners();
+  if (!store[id]) return false;
+  delete store[id];
+  writeApprovedPartners(store);
   return true;
 }

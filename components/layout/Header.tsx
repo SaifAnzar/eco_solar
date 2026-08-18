@@ -27,6 +27,7 @@ import {
   Briefcase,
   MoreHorizontal,
   Handshake,
+  MapPin,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import SiteVisitModal from "../common/SiteVisitModal";
@@ -151,18 +152,25 @@ export default function Header() {
 
   const partnershipsDropdownItems = [
     {
-      name: "Dealership Program",
-      desc: "Become an authorized solar equipment distributor & regional partner",
+      name: "Apply for Franchise",
+      desc: "Launch an official Pragati EcoSolar retail store in your city",
+      href: "/franchise",
+      icon: Store,
+      iconBg: "bg-rose-50 text-rose-600 border-rose-200",
+    },
+    {
+      name: "Become a Dealer",
+      desc: "Become an authorized solar equipment distributor & channel partner",
       href: "/dealership",
       icon: Briefcase,
       iconBg: "bg-teal-50 text-teal-600 border-teal-200",
     },
     {
-      name: "Franchise Opportunity",
-      desc: "Launch an official Pragati EcoSolar retail store in your city",
-      href: "/franchise",
-      icon: Store,
-      iconBg: "bg-rose-50 text-rose-600 border-rose-200",
+      name: "Locate Franchise & Dealers",
+      desc: "Find empaneled Pragati EcoSolar experience centers & dealers across Odisha",
+      href: "/network",
+      icon: MapPin,
+      iconBg: "bg-amber-50 text-amber-600 border-amber-200",
     },
   ];
 

@@ -11,6 +11,7 @@ import {
   Calculator,
 } from "lucide-react";
 import { calculateSolarQuote } from "@/lib/solar-engine";
+import { estimateKwFromBill } from "@/lib/solar-calculations";
 import { TypewriterHeadline } from "./TypewriterHeadline";
 import EligibilityModal from "@/components/forms/EligibilityModal";
 
@@ -24,8 +25,10 @@ export const Hero: React.FC<HeroProps> = ({
   const [monthlyBill, setMonthlyBill] = useState<number>(3500);
   const [openEligibility, setOpenEligibility] = useState(false);
 
-  const estimatedKw = Math.max(1, Math.min(10, Math.round(monthlyBill / 1000)));
+  const estimatedKw = estimateKwFromBill(monthlyBill, 2, 4.2);
   const quote = calculateSolarQuote(estimatedKw, 4.5, true);
+
+  const heroPresetChips = [1500, 2500, 4000, 6000, 10000];
 
   return (
     <section className="relative py-20 lg:py-28 border-b border-slate-100 overflow-hidden bg-white">
@@ -121,20 +124,46 @@ export const Hero: React.FC<HeroProps> = ({
               <p className="text-sm text-slate-500">Enter your monthly bill to get an instant estimate.</p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Monthly Electricity Bill (₹)
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex justify-between">
+                  <span>Monthly Electricity Bill (₹)</span>
+                  <span className="text-amber-700 font-mono font-bold">₹{monthlyBill.toLocaleString("en-IN")} / Mo</span>
                 </label>
-                <input
-                  type="number"
-                  value={monthlyBill}
-                  onChange={(e) => setMonthlyBill(Number(e.target.value) || 0)}
-                  step="500"
-                  min="500"
-                  max="50000"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-base font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={monthlyBill === 0 ? "" : monthlyBill}
+                    onChange={(e) => {
+                      const clean = e.target.value.replace(/\D/g, "");
+                      setMonthlyBill(clean === "" ? 0 : Number(clean));
+                    }}
+                    placeholder="e.g. 3500"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-base font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono"
+                  />
+                  <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-xs font-mono text-slate-400 font-bold">
+                    ₹ / Mo
+                  </div>
+                </div>
+              </div>
+
+              {/* Preset Chips */}
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {heroPresetChips.map((chipVal) => (
+                  <button
+                    key={chipVal}
+                    type="button"
+                    onClick={() => setMonthlyBill(chipVal)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer border ${
+                      monthlyBill === chipVal
+                        ? "bg-slate-900 text-amber-400 border-slate-900 shadow-sm"
+                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-amber-50 hover:border-amber-300"
+                    }`}
+                  >
+                    ₹{chipVal.toLocaleString("en-IN")}
+                  </button>
+                ))}
               </div>
             </div>
 

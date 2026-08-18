@@ -16,6 +16,7 @@ import {
   ExternalLink,
   ShieldCheck,
   Coins,
+  Store,
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -60,6 +61,12 @@ export function AdminSidebar({ adminEmail }: AdminSidebarProps) {
       href: "/admin/eligibility-leads",
       icon: ShieldCheck,
       badge: "PM Surya Ghar",
+    },
+    {
+      label: "Partner Directory",
+      href: "/admin/network",
+      icon: Store,
+      badge: "Experience Centers",
     },
   ];
 

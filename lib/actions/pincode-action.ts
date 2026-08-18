@@ -3,6 +3,7 @@
 import { calculateSolarQuote, SolarCalculationResult } from "../solar-engine";
 import { getSolarConfig } from "../data-store";
 import { fetchPincodeDetails, mapDistrictToDiscom, PincodeDetails } from "../pincode";
+import { estimateKwFromBill } from "../solar-calculations";
 
 export interface PincodeLookupResponse {
   success: boolean;
@@ -88,12 +89,10 @@ export async function lookupPincodeAndCalculate(
     // Load admin-configurable solar parameters
     const solarConfig = getSolarConfig();
 
-    // Calculate target system capacity (kW)
+    // Calculate target system capacity (kW) using binary search inverse formula
     let targetKw = directKwInput || 3;
     if (!directKwInput && monthlyBillAmount > 0) {
-      const monthlyUnits = monthlyBillAmount / (solarConfig.gridTariffRate || 7.0);
-      const estimatedKw = monthlyUnits / 120;
-      targetKw = Math.max(1, Math.min(100, Math.round(estimatedKw)));
+      targetKw = estimateKwFromBill(monthlyBillAmount, 2, 4.2);
     }
 
     // Execute calculation engine
