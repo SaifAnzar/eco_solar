@@ -41,7 +41,7 @@ export default function HardwarePartners() {
     },
     {
       category: "SAFETY EARTHING",
-      brand: "IS 3043 Certified Earthing",
+      brand: "Chemical Earthing System",
       specs: "Maintenance-Free Grounding System",
       description: "Keeps your solar system safe from lightning and electrical faults. Mandatory for all safe solar installations.",
       icon: ShieldCheck,

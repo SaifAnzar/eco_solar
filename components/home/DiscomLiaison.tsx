@@ -1,27 +1,36 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { CheckCircle2, ArrowRight, Zap, FileCheck } from "lucide-react";
+import EligibilityModal from "@/components/forms/EligibilityModal";
 
 export default function DiscomLiaison() {
+  const [isEligibilityOpen, setIsEligibilityOpen] = useState(false);
+
   const steps = [
     {
       step: "01",
       title: "We Apply on Your Behalf",
-      description: "We fill and submit your solar application on the PM Surya Ghar portal and your local electricity office within 24 hours of installation.",
+      description:
+        "We fill and submit your solar application on the PM Surya Ghar portal and your local electricity office within 24 hours of installation.",
     },
     {
       step: "02",
       title: "Electricity Office Inspection",
-      description: "The electricity department sends their team to inspect your solar system. We coordinate and handle this for you — no stress.",
+      description:
+        "The electricity department sends their team to inspect your solar system. We coordinate and handle this for you — no stress.",
     },
     {
       step: "03",
       title: "Panel & Inverter Installation",
-      description: "Our trained team installs your solar panels, inverter, and all connections to the highest safety standards.",
+      description:
+        "Our trained team installs your solar panels, inverter, and all connections to the highest safety standards.",
     },
     {
       step: "04",
       title: "New Meter Fitted — You Start Saving",
-      description: "A two-way meter is fitted so the extra electricity your panels make goes back to the grid, reducing your next bill further.",
+      description:
+        "A two-way meter is fitted so the extra electricity your panels make goes back to the grid, reducing your next bill further.",
     },
   ];
 
@@ -33,11 +42,9 @@ export default function DiscomLiaison() {
   ];
 
   return (
-    <section id="discom" className="py-24 bg-[#FAFAFA] relative">
+    <section id="discom" className="py-24 bg-[#FAFAFA] relative font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
           {/* Left Column */}
           <div className="lg:col-span-5 space-y-6">
             <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full inline-block">
@@ -69,13 +76,14 @@ export default function DiscomLiaison() {
             </div>
 
             <div className="pt-2">
-              <a
-                href="/calculator"
-                className="inline-flex items-center space-x-2 py-3 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/20 transition-all"
+              <button
+                type="button"
+                onClick={() => setIsEligibilityOpen(true)}
+                className="inline-flex items-center space-x-2 py-3.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
               >
                 <span>Check If I Am Eligible</span>
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </button>
             </div>
           </div>
 
@@ -118,10 +126,14 @@ export default function DiscomLiaison() {
               </span>
             </div>
           </div>
-
         </div>
-
       </div>
+
+      {/* Controlled Eligibility Modal Popup */}
+      <EligibilityModal
+        isOpen={isEligibilityOpen}
+        onClose={() => setIsEligibilityOpen(false)}
+      />
     </section>
   );
 }

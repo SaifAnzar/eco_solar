@@ -57,6 +57,13 @@ export default function RoiCalculator() {
     } else if (typeParam === "commercial") {
       setPropertyType("commercial");
     }
+    const billParam = searchParams.get("bill");
+    if (billParam && !isNaN(Number(billParam))) {
+      const billVal = Number(billParam);
+      if (billVal > 0) {
+        setMonthlyBill(billVal);
+      }
+    }
   }, [searchParams]);
 
   const [monthlyBill, setMonthlyBill] = useState<number>(3500);

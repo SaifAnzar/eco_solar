@@ -147,23 +147,29 @@ export default function ServicesSection() {
               >
                 <div>
                   {/* Card Image */}
-                  <div className="aspect-video w-full overflow-hidden relative bg-slate-900">
-                    <SolarImageFallback
+                  <div className="aspect-[16/10] w-full overflow-hidden relative bg-slate-950">
+                    <img
                       src={service.image}
                       alt={service.alt}
-                      category={service.category}
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        // Fallback to root path if /images/ alias has an issue
+                        if (service.image.startsWith("/images/")) {
+                          e.currentTarget.src = service.image.replace("/images/", "/");
+                        }
+                      }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/20 pointer-events-none" />
 
                     {/* Capacity Badge */}
-                    <div className="absolute top-3 left-3">
-                      <span className="bg-slate-900/90 text-amber-400 font-extrabold text-[10px] font-mono px-3 py-1 rounded-full shadow border border-slate-700">
+                    <div className="absolute top-3.5 left-3.5">
+                      <span className="bg-slate-900/90 text-amber-400 font-extrabold text-[10px] font-mono px-3 py-1 rounded-full shadow-md border border-slate-700/80 backdrop-blur-xs">
                         {service.capacityBadge}
                       </span>
                     </div>
 
-                    <div className="absolute bottom-3 left-3">
-                      <div className="p-2 rounded-xl bg-emerald-600 text-white shadow-md">
+                    <div className="absolute bottom-3.5 left-3.5">
+                      <div className="p-2.5 rounded-xl bg-emerald-600/90 backdrop-blur-xs text-white shadow-md border border-emerald-500/30">
                         <Icon className="w-4 h-4" />
                       </div>
                     </div>

@@ -54,7 +54,7 @@ const PROJECTS_DATA: Record<
       { label: "Solar Panels", detail: "Waaree 600W+ Made-in-India Solar Panels" },
       { label: "Inverter", detail: "Statcon Grid-Tied Smart Inverter with Phone Monitoring" },
       { label: "Mounting Frame", detail: "Rust-Proof Steel Frame — Cyclone-Safe (150 km/h)" },
-      { label: "Safety System", detail: "IS 3043 Earthing with Lightning Protection" },
+      { label: "Safety System", detail: "Chemical Earthing with Lightning Protection" },
     ],
   },
   "cuttack-commercial-50kw": {
@@ -94,7 +94,7 @@ const PROJECTS_DATA: Record<
       { label: "Solar Panels", detail: "600W Government-Approved Solar Panels" },
       { label: "Pump Controller", detail: "Weatherproof MPPT Controller with Dry-Run Safety" },
       { label: "Mounting Frame", detail: "Rust-Proof Steel Frame — Outdoor Safe" },
-      { label: "Safety System", detail: "IS 3043 Earthing with Lightning Arrestor" },
+      { label: "Safety System", detail: "Chemical Earthing with Lightning Arrestor" },
     ],
   },
   "bbsr-residential-5kw": {
@@ -114,7 +114,7 @@ const PROJECTS_DATA: Record<
       { label: "Solar Panels", detail: "Waaree 540W+ Made-in-India Solar Panels" },
       { label: "Inverter", detail: "Sunora Grid-Tied Inverter with App Monitoring" },
       { label: "Mounting Frame", detail: "Rust-Proof Steel Frame — Roof-Safe Installation" },
-      { label: "Safety System", detail: "IS 3043 Chemical Earthing System" },
+      { label: "Safety System", detail: "Chemical Maintenance-Free Earthing System" },
     ],
   },
   "sambalpur-school-25kw": {
@@ -154,7 +154,7 @@ const PROJECTS_DATA: Record<
       { label: "Solar Panels", detail: "Waaree 540W DCR Made-in-India Panels" },
       { label: "Inverter", detail: "Sunora 3 kW Grid-Tied Inverter" },
       { label: "Mounting Frame", detail: "Rust-Proof Steel Frame — Wind Safe" },
-      { label: "Safety System", detail: "IS 3043 Earthing with Surge Protection" },
+      { label: "Safety System", detail: "Chemical Earthing with Surge Protection" },
     ],
   },
   "berhampur-factory-100kw": {

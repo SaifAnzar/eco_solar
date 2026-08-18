@@ -21,24 +21,19 @@ interface ProductCardProps {
   onRequestQuote: (product: ProductItem) => void;
 }
 
-// Per-category fallback images — each product type shows a relevant photo
+// Per-category fallback images using local asset paths
 const CATEGORY_FALLBACKS: Record<string, string> = {
-  modules:
-    "https://images.unsplash.com/photo-1559302504-64aae6ca6890?w=800&auto=format&fit=crop&q=80",
-  inverters:
-    "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&auto=format&fit=crop&q=80",
-  structures:
-    "https://images.unsplash.com/photo-1611365892117-00ac5ef43c90?w=800&auto=format&fit=crop&q=80",
-  "cables-earthing":
-    "https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?w=800&auto=format&fit=crop&q=80",
-  "street-lights":
-    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&auto=format&fit=crop&q=80",
+  modules: "/images/products/waaree-panel.png",
+  inverters: "/images/products/statcon-inverter.png",
+  structures: "/images/products/mounting-structure.png",
+  "cables-earthing": "/images/brands/polycab.jpg",
+  "street-lights": "/images/products/solar-street-light.png",
 };
 
 export default function ProductCard({ product, onRequestQuote }: ProductCardProps) {
   const defaultFallback =
     CATEGORY_FALLBACKS[product.category] ??
-    "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&auto=format&fit=crop&q=80";
+    "/images/products/waaree-panel.png";
 
   const [imgSrc, setImgSrc] = useState(product.image);
 
@@ -69,20 +64,26 @@ export default function ProductCard({ product, onRequestQuote }: ProductCardProp
   };
 
   return (
-    <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between font-sans group">
+    <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between font-sans group">
       <div>
-        {/* 16:9 Image Frame */}
-        <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
+        {/* 16:10 Premium Image Frame */}
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-950/5 flex items-center justify-center p-3">
           <img
             src={imgSrc}
             alt={product.name}
-            onError={() => setImgSrc(defaultFallback)}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={() => {
+              if (imgSrc.startsWith("/images/products/")) {
+                setImgSrc(imgSrc.replace("/images/products/", "/"));
+              } else {
+                setImgSrc(defaultFallback);
+              }
+            }}
+            className="max-h-full w-auto object-contain transition-transform duration-500 group-hover:scale-105"
           />
 
-          {/* Badge Overlay Sitting Cleanly */}
+          {/* Badge Overlay */}
           {product.badge && (
-            <span className="absolute top-3 right-3 rounded-full bg-slate-900/80 backdrop-blur-md px-3 py-1 text-xs font-medium text-white shadow-sm">
+            <span className="absolute top-3 right-3 rounded-full bg-slate-900/90 border border-slate-700/80 backdrop-blur-md px-3 py-1 text-[11px] font-mono font-bold text-amber-400 shadow-sm">
               {product.badge}
             </span>
           )}

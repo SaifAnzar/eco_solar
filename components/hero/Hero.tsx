@@ -191,13 +191,12 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setOpenEligibility(true)}
-              className="block w-full text-center py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-md cursor-pointer"
+            <Link
+              href={`/calculator?bill=${monthlyBill}`}
+              className="block w-full text-center py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-emerald-600/30"
             >
-              Check My Solar Subsidy Eligibility →
-            </button>
+              Get My Full Solar Plan →
+            </Link>
           </div>
         </div>
       </div>

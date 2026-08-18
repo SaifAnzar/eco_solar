@@ -343,7 +343,7 @@ export function calculateSolarQuote(
     {
       slNo: 8,
       itemCategory: "Chemical Earthing Electrodes",
-      description: "Maintenance-Free Gel Filled Grounding Rods (IS 3043 Standard)",
+      description: "Maintenance-Free Gel Filled Grounding Rods (BIS Standard)",
       specification: "50mm dia 3-Meter Copper-Bonded Chemical Earthing Rods",
       quantity: equipmentBand.earthingPitsCount,
       unit: "Pits",

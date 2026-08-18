@@ -27,14 +27,9 @@ export const COMPANY_DETAILS = {
 export const HERO_IMAGE =
   "https://images.unsplash.com/photo-1611365892117-00ac5ef43c90?w=1200&auto=format&fit=crop&q=80";
 
-export const RESIDENTIAL_IMAGE =
-  "https://images.unsplash.com/photo-1592833159057-651427233c1d?w=800&auto=format&fit=crop&q=80";
-
-export const COMMERCIAL_IMAGE =
-  "https://images.unsplash.com/photo-1548337138-e87d889cc369?w=1200&auto=format&fit=crop&q=80";
-
-export const AGRICULTURAL_IMAGE =
-  "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&auto=format&fit=crop&q=80";
+export const RESIDENTIAL_IMAGE = "/images/home-solar.png";
+export const COMMERCIAL_IMAGE = "/images/plant-solar.png";
+export const AGRICULTURAL_IMAGE = "/images/pump-solar.png";
 
 export const PRODUCT_IMAGES = {
   modules:
