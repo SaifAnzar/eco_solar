@@ -55,7 +55,7 @@ const PRODUCTS_DATA: Record<string, {
     warranty: "25-Year Outdoor Operating Guarantee",
   },
   "is-3043-chemical-earthing": {
-    name: "IS 3043 Chemical Maintenance-Free Earthing Pit",
+    name: "Chemical Maintenance-Free Earthing Pit",
     category: "Safety & Grounding",
     specs: "50mm Dia 3-Meter Copper Bonded Rods with Bentonite Fill",
     description: "Dedicated earthing system for AC, DC, and Lightning Arrestor circuits with bentonite backfill for low soil resistivity.",
@@ -63,7 +63,7 @@ const PRODUCTS_DATA: Record<string, {
       "Zero maintenance chemical compound fill",
       "Copper bonded high tensile carbon steel core",
       "High fault current dissipation capability",
-      "IS 3043 & IEC 62561 Compliant",
+      "BIS & IEC 62561 Compliant",
     ],
     warranty: "15-Year Zero-Maintenance Performance Guarantee",
   },
