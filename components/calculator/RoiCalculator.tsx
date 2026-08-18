@@ -209,6 +209,7 @@ export default function RoiCalculator() {
           discom={calcData.discom}
           quotationRef={quotationRef}
           quotationDate={dateStr}
+          dateStr={dateStr}
           calculation={calc}
         />
       );

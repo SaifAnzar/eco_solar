@@ -213,7 +213,8 @@ export interface QuotationPdfProps {
   discom: string;
   calculation: SolarCalculationResult;
   quotationRef: string;
-  dateStr: string;
+  quotationDate?: string;
+  dateStr?: string;
 }
 
 export function QuotationPdfDocument({
@@ -226,8 +227,11 @@ export function QuotationPdfDocument({
   discom,
   calculation: calc,
   quotationRef,
+  quotationDate,
   dateStr,
 }: QuotationPdfProps) {
+  const displayDate = quotationDate || dateStr || "";
+
   return (
     <Document title={`Pragati_EcoSolar_Quotation_${quotationRef}`}>
       <Page size="A4" style={styles.page}>
@@ -252,7 +256,7 @@ export function QuotationPdfDocument({
           <View style={styles.headerRight}>
             <Text style={styles.docLabel}>TURNKEY SOLAR PROPOSAL</Text>
             <Text style={styles.metaText}>Ref: {quotationRef}</Text>
-            <Text style={styles.metaText}>Date: {dateStr}</Text>
+            <Text style={styles.metaText}>Date: {displayDate}</Text>
             <Text style={styles.metaText}>Valid Till: 15 Days</Text>
           </View>
         </View>
