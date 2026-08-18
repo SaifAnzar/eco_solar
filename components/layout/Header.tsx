@@ -254,10 +254,12 @@ export default function Header() {
         <div className="bg-slate-900 text-white text-center py-1.5 px-4 text-[11px] font-semibold tracking-wide hidden sm:block">
           <span className="text-amber-400 mr-1.5">⚡</span>
           PM Surya Ghar Muft Bijli Yojana — Get up to{" "}
-          <span className="text-emerald-400 font-bold">₹78,000 Central Subsidy</span> + Odisha State Benefits.{" "}
+          <span className="text-emerald-400 font-bold">₹78,000 Central</span> +{" "}
+          <span className="text-amber-400 font-bold">₹60,000 Odisha State Subsidy</span>{" "}
+          (<span className="text-emerald-300 font-extrabold">Total ₹1,38,000 Govt Subsidy</span>).{" "}
           <button
             onClick={() => setIsCalculatorOpen(true)}
-            className="underline underline-offset-2 text-white hover:text-amber-300 transition-colors ml-1"
+            className="underline underline-offset-2 text-white hover:text-amber-300 transition-colors ml-1 cursor-pointer"
           >
             Calculate Savings →
           </button>

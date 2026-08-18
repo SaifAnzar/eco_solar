@@ -3,7 +3,6 @@ import { Hero } from "@/components/hero/Hero";
 import AboutSection from "@/components/home/AboutSection";
 import MetricsStrip from "@/components/home/MetricsStrip";
 import ServicesSection from "@/components/home/ServicesSection";
-import StepByStepProcess from "@/components/common/StepByStepProcess";
 import DiscomLiaison from "@/components/home/DiscomLiaison";
 import HardwarePartners from "@/components/home/HardwarePartners";
 import FaqAccordion from "@/components/home/FaqAccordion";
@@ -34,10 +33,7 @@ export default async function HomePage() {
       {/* 4. SERVICES OVERVIEW */}
       <ServicesSection />
 
-      {/* 5. STEP-BY-STEP PROJECT PROCESS (8-Step Execution Roadmap) */}
-      <StepByStepProcess />
-
-      {/* 6. DISCOM LIAISON & ZONES */}
+      {/* 5. DISCOM LIAISON & ZONES */}
       <DiscomLiaison />
 
       {/* 6. HARDWARE STANDARDS & EPC COMPLIANCE */}
