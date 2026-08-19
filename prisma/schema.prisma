@@ -145,6 +145,7 @@ model SiteSettings {
   capacityDelivered  String   @default("5+ MW")
   discomZonesCovered String   @default("4 Zones")
   epcScope           String   @default("100% EPC")
+  typewriterWords    String[] @default(["On-Grid, Off-Grid & Hybrid Solutions.", "Powering Homes & Businesses.", "PM Surya Ghar Subsidy Authorized.", "Save Up to 90% Electricity Bills."])
 
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt

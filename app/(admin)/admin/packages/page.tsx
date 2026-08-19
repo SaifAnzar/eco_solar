@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Package, Plus, Trash2, Edit3, CheckCircle2, X, Loader2 } from "lucide-react";
 import { getSolarPackages, upsertSolarPackage, deleteSolarPackage } from "@/lib/actions/admin-actions";
+import { showToast, scrollToTop, showConfirmDialog } from "@/lib/toast";
 
 export default function AdminPackagesPage() {
   const [packages, setPackages] = useState<any[]>([]);
@@ -79,25 +80,33 @@ export default function AdminPackagesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this solar package?")) return;
+    const confirmed = await showConfirmDialog(
+      "Delete Solar Package?",
+      "Are you sure you want to delete this package pricing option?",
+      "Yes, Delete"
+    );
+    if (!confirmed) return;
     const res = await deleteSolarPackage(id);
     if (res.success) {
+      showToast("Solar package deleted successfully!", "success");
       fetchPackages();
+    } else {
+      showToast(res.error || "Failed to delete package.", "error");
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setMessage(null);
 
     const res = await upsertSolarPackage(form);
     if (res.success) {
-      setMessage("Package saved successfully!");
       setIsModalOpen(false);
       fetchPackages();
+      scrollToTop();
+      showToast(res.message || "Solar package saved successfully!", "success");
     } else {
-      setMessage("Error saving package.");
+      showToast(res.error || "Error saving package.", "error");
     }
     setSaving(false);
   };

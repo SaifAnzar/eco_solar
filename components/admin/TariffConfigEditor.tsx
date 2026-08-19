@@ -15,6 +15,7 @@ import {
   Layers,
 } from "lucide-react";
 import { DEFAULT_ODISHA_TARIFF, TariffConfigData, TariffSlab } from "@/lib/solar-calculations";
+import { showToast, scrollToTop, showConfirmDialog } from "@/lib/toast";
 
 export function TariffConfigEditor() {
   const [tariff, setTariff] = useState<TariffConfigData>(DEFAULT_ODISHA_TARIFF);
@@ -88,9 +89,17 @@ export function TariffConfigEditor() {
     setTariff({ ...tariff, slabs: updated });
   };
 
-  const handleResetDefaults = () => {
-    setTariff(DEFAULT_ODISHA_TARIFF);
-    setStatusMessage({ type: "success", text: "Reset to default Odisha 2026-27 OERC rates." });
+  const handleResetDefaults = async () => {
+    const confirmed = await showConfirmDialog(
+      "Reset Tariff Defaults?",
+      "Are you sure you want to reset all OERC tariff slabs to standard Odisha defaults?",
+      "Yes, Reset"
+    );
+    if (confirmed) {
+      setTariff(DEFAULT_ODISHA_TARIFF);
+      scrollToTop();
+      showToast("Reset to default Odisha 2026-27 OERC rates.", "info");
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -110,12 +119,16 @@ export function TariffConfigEditor() {
 
       if (res.ok && data.success) {
         setTariff(data.tariff);
+        scrollToTop();
+        showToast("Tariff configuration saved successfully!", "success");
         setStatusMessage({ type: "success", text: "Tariff configuration saved successfully!" });
       } else {
+        showToast(data.error || "Failed to save tariff settings.", "error");
         setStatusMessage({ type: "error", text: data.error || "Failed to save tariff settings." });
       }
     } catch (err: any) {
       setSaving(false);
+      showToast(err.message || "Network error while saving.", "error");
       setStatusMessage({ type: "error", text: err.message || "Network error while saving." });
     }
   };

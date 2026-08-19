@@ -16,8 +16,12 @@ export default async function HomePage() {
 
   return (
     <div className="w-full font-sans bg-[#FAFAFA]">
-      {/* 1. HERO SECTION (With dynamic CMS subline & isolated ROI calculator card) */}
-      <Hero heroSubline={settings?.heroSubline} />
+      {/* 1. HERO SECTION (With dynamic CMS headline, subline & isolated ROI calculator card) */}
+      <Hero
+        heroHeadline={settings?.heroHeadline}
+        heroSubline={settings?.heroSubline}
+        typewriterWords={settings?.typewriterWords}
+      />
 
       {/* 2. ABOUT SECTION (Company credentials & core EPC values) */}
       <AboutSection />

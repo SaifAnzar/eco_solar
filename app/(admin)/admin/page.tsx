@@ -12,21 +12,29 @@ import {
   Zap,
 } from "lucide-react";
 import { getLeads, getSolarPackages, getProjects, getSiteSettings } from "@/lib/actions/admin-actions";
+import { getContactInquiriesAction } from "@/lib/actions/contact-inquiry-actions";
 
 export default async function AdminDashboardPage() {
-  const [leadsRes, packagesRes, projectsRes, settingsRes] = await Promise.all([
+  const [leadsRes, contactInquiriesRes, packagesRes, projectsRes, settingsRes] = await Promise.all([
     getLeads(),
+    getContactInquiriesAction(),
     getSolarPackages(),
     getProjects(),
     getSiteSettings(),
   ]);
 
   const leads = leadsRes.data || [];
+  const contactInquiries = contactInquiriesRes.data || [];
   const packages = packagesRes.data || [];
   const projects = projectsRes.data || [];
   const settings = settingsRes.data;
 
-  const pendingLeadsCount = leads.filter((l: any) => l.status === "PENDING").length;
+  // Combine inquiries for listing, prioritizing site visit & contact inquiries
+  const displayInquiries = contactInquiries.length > 0 ? contactInquiries : leads;
+  const totalInquiriesCount = Math.max(contactInquiries.length, leads.length);
+  const pendingInquiriesCount = displayInquiries.filter(
+    (item: any) => item.status === "NEW" || item.status === "PENDING"
+  ).length;
 
   return (
     <div className="space-y-8">
@@ -60,8 +68,8 @@ export default async function AdminDashboardPage() {
               <Users className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-3xl font-extrabold text-slate-900">{leads.length}</div>
-          <div className="text-xs text-amber-600 font-bold">{pendingLeadsCount} Pending Review</div>
+          <div className="text-3xl font-extrabold text-slate-900">{totalInquiriesCount}</div>
+          <div className="text-xs text-amber-600 font-bold">{pendingInquiriesCount} Pending Review</div>
         </div>
 
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
@@ -121,7 +129,7 @@ export default async function AdminDashboardPage() {
           </Link>
 
           <Link
-            href="/admin/leads"
+            href="/admin/contact-leads"
             className="bg-white border border-slate-200 hover:border-amber-400 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all space-y-3 group"
           >
             <div className="flex items-center justify-between">
@@ -249,14 +257,14 @@ export default async function AdminDashboardPage() {
             <p className="text-xs text-slate-500">Latest site visit and quote requests submitted via website.</p>
           </div>
           <Link
-            href="/admin/leads"
+            href="/admin/contact-leads"
             className="text-xs font-bold text-emerald-700 hover:text-emerald-800 transition-colors"
           >
-            View All ({leads.length}) →
+            View All ({displayInquiries.length}) →
           </Link>
         </div>
 
-        {leads.length === 0 ? (
+        {displayInquiries.length === 0 ? (
           <div className="p-8 text-center text-xs text-slate-500 font-mono">
             No inquiries recorded yet. Form submissions from /contact and site visit modals will appear here.
           </div>
@@ -267,41 +275,45 @@ export default async function AdminDashboardPage() {
                 <tr>
                   <th className="p-3.5">Customer Name</th>
                   <th className="p-3.5">Mobile</th>
-                  <th className="p-3.5">District / Pincode</th>
-                  <th className="p-3.5">DISCOM Zone</th>
-                  <th className="p-3.5">System / Category</th>
+                  <th className="p-3.5">Location / District</th>
+                  <th className="p-3.5">DISCOM / Type</th>
+                  <th className="p-3.5">Details</th>
                   <th className="p-3.5">Status</th>
                   <th className="p-3.5">Date</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {leads.slice(0, 5).map((l: any) => (
-                  <tr key={l.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="p-3.5 font-bold text-slate-900">{l.fullName}</td>
-                    <td className="p-3.5 font-mono text-slate-700">{l.mobileNumber}</td>
-                    <td className="p-3.5 text-slate-700">
-                      {l.district} ({l.pincode})
-                    </td>
-                    <td className="p-3.5 font-mono text-emerald-700 font-bold">{l.discom || "N/A"}</td>
-                    <td className="p-3.5 text-slate-600">
-                      {l.systemType} ({l.category})
-                    </td>
-                    <td className="p-3.5">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                          l.status === "PENDING"
-                            ? "bg-amber-100 text-amber-800 border border-amber-200"
-                            : "bg-emerald-100 text-emerald-800 border border-emerald-200"
-                        }`}
-                      >
-                        {l.status}
-                      </span>
-                    </td>
-                    <td className="p-3.5 text-slate-400 text-[11px] font-mono">
-                      {new Date(l.createdAt).toLocaleDateString("en-IN")}
-                    </td>
-                  </tr>
-                ))}
+                {displayInquiries.slice(0, 5).map((l: any) => {
+                  const name = l.fullName || "N/A";
+                  const phone = l.phone || l.mobileNumber || "N/A";
+                  const location = l.location || l.district || "N/A";
+                  const discomOrType = l.discomRegion || l.discom || l.systemType || "Site Visit";
+                  const details = l.message || l.category || "Rooftop Solar";
+                  const status = l.status || "NEW";
+                  const dateStr = l.createdAt ? new Date(l.createdAt).toLocaleDateString("en-IN") : "N/A";
+
+                  return (
+                    <tr key={l.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="p-3.5 font-bold text-slate-900">{name}</td>
+                      <td className="p-3.5 font-mono text-slate-700">{phone}</td>
+                      <td className="p-3.5 text-slate-700">{location}</td>
+                      <td className="p-3.5 font-mono text-emerald-700 font-bold">{discomOrType}</td>
+                      <td className="p-3.5 text-slate-600 max-w-xs truncate">{details}</td>
+                      <td className="p-3.5">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                            status === "NEW" || status === "PENDING"
+                              ? "bg-amber-100 text-amber-800 border border-amber-200"
+                              : "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                          }`}
+                        >
+                          {status}
+                        </span>
+                      </td>
+                      <td className="p-3.5 text-slate-400 text-[11px] font-mono">{dateStr}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

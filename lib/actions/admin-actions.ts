@@ -7,13 +7,7 @@ import { revalidatePath } from "next/cache";
 // MODULE 1: SITE CONTENT & HERO CMS ACTIONS
 // ─────────────────────────────────────────────────────────────────────────────
 
-let cachedSettingsData: any = null;
-
 export async function getSiteSettings() {
-  if (cachedSettingsData) {
-    return { success: true, data: cachedSettingsData };
-  }
-
   try {
     const db = prisma as any;
     let settings = await db.siteSettings.findUnique({
@@ -34,11 +28,30 @@ export async function getSiteSettings() {
           capacityDelivered: "5+ MW",
           discomZonesCovered: "4 Zones",
           epcScope: "100% EPC",
+          typewriterWords: [
+            "On-Grid, Off-Grid & Hybrid Solutions.",
+            "Powering Homes & Businesses.",
+            "PM Surya Ghar Subsidy Authorized.",
+            "Save Up to 90% Electricity Bills.",
+          ],
         },
       });
     }
 
-    cachedSettingsData = settings;
+    // Try fetching typewriterWords via raw SQL query if Prisma Client didn't return it
+    if (!settings.typewriterWords || !Array.isArray(settings.typewriterWords) || settings.typewriterWords.length === 0) {
+      try {
+        const rawRes: any = await (prisma as any).$queryRaw`
+          SELECT "typewriterWords" FROM "SiteSettings" WHERE "id" = 'default'
+        `;
+        if (rawRes && rawRes[0] && Array.isArray(rawRes[0].typewriterWords) && rawRes[0].typewriterWords.length > 0) {
+          settings.typewriterWords = rawRes[0].typewriterWords;
+        }
+      } catch (e) {
+        // Fallback default array if column or query isn't ready
+      }
+    }
+
     return { success: true, data: settings };
   } catch (error: any) {
     console.error("Error getting site settings:", error);
@@ -56,6 +69,12 @@ export async function getSiteSettings() {
         capacityDelivered: "5+ MW",
         discomZonesCovered: "4 Zones",
         epcScope: "100% EPC",
+        typewriterWords: [
+          "On-Grid, Off-Grid & Hybrid Solutions.",
+          "Powering Homes & Businesses.",
+          "PM Surya Ghar Subsidy Authorized.",
+          "Save Up to 90% Electricity Bills.",
+        ],
       },
     };
   }
@@ -72,23 +91,51 @@ export async function updateSiteSettings(data: {
   capacityDelivered: string;
   discomZonesCovered: string;
   epcScope: string;
+  typewriterWords?: string[];
 }) {
   try {
     const db = prisma as any;
-    const updated = await db.siteSettings.upsert({
-      where: { id: "default" },
-      update: data,
-      create: { id: "default", ...data },
-    });
+    const { typewriterWords, ...baseData } = data;
 
-    cachedSettingsData = updated;
+    let updated: any;
+    try {
+      updated = await db.siteSettings.upsert({
+        where: { id: "default" },
+        update: data,
+        create: { id: "default", ...data },
+      });
+    } catch (err) {
+      // Fallback: upsert base fields if Prisma Client JS hasn't recompiled typewriterWords
+      updated = await db.siteSettings.upsert({
+        where: { id: "default" },
+        update: baseData,
+        create: { id: "default", ...baseData },
+      });
+    }
+
+    // Safely update typewriterWords array in PostgreSQL via raw query
+    if (typewriterWords && Array.isArray(typewriterWords)) {
+      try {
+        await (prisma as any).$executeRaw`
+          UPDATE "SiteSettings"
+          SET "typewriterWords" = ${typewriterWords}
+          WHERE "id" = 'default'
+        `;
+        updated.typewriterWords = typewriterWords;
+      } catch (rawErr) {
+        console.error("Note on raw typewriterWords update:", rawErr);
+      }
+    }
+
     revalidatePath("/");
     revalidatePath("/about");
     revalidatePath("/contact");
+    revalidatePath("/admin");
+    revalidatePath("/admin/site-content");
     return { success: true, message: "Site content & settings saved successfully!", data: updated };
   } catch (error: any) {
     console.error("Error updating site settings:", error);
-    return { success: false, error: "Failed to update site settings." };
+    return { success: false, error: error?.message || "Failed to update site settings." };
   }
 }
 

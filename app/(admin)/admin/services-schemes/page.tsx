@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Award, Save, CheckCircle2, FileText, Loader2 } from "lucide-react";
 import { getSchemeAndService, upsertSchemeAndService } from "@/lib/actions/admin-actions";
+import { showToast, scrollToTop } from "@/lib/toast";
 
 export default function AdminServicesSchemesPage() {
   const [activeSection, setActiveSection] = useState("services_intro");
@@ -64,8 +65,12 @@ export default function AdminServicesSchemesPage() {
 
     const res = await upsertSchemeAndService(activeSection, form.title, form.content);
     if (res.success) {
-      setMessage(`"${sections.find((s) => s.key === activeSection)?.label}" content updated successfully!`);
+      const sectionLabel = sections.find((s) => s.key === activeSection)?.label || "Section";
+      scrollToTop();
+      showToast(`"${sectionLabel}" updated successfully!`, "success");
+      setMessage(`"${sectionLabel}" content updated successfully!`);
     } else {
+      showToast(res.error || "Error updating section.", "error");
       setMessage("Error updating section.");
     }
     setSaving(false);

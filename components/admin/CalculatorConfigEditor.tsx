@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useState, useTransition, useEffect } from "react";
 import { saveSolarConfigAction } from "@/lib/actions/admin-action";
 import type { SolarConfigOverride } from "@/lib/data-store";
 import type { EquipmentBand } from "@/lib/solar-engine";
+import { showToast, scrollToTop } from "@/lib/toast";
 
 interface Props {
   initialConfig: SolarConfigOverride;
@@ -13,6 +14,13 @@ export function CalculatorConfigEditor({ initialConfig }: Props) {
   const [state, formAction] = useActionState(saveSolarConfigAction, { success: false, message: "" });
   const [bands, setBands] = useState<EquipmentBand[]>(initialConfig.equipmentBands);
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (state.message) {
+      scrollToTop();
+      showToast(state.message, state.success ? "success" : "error");
+    }
+  }, [state]);
 
   const handleBandChange = (
     idx: number,

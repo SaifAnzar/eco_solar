@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { FolderKanban, Plus, Trash2, Edit3, CheckCircle2, X, MapPin, Loader2 } from "lucide-react";
 import { getProjects, upsertProject, deleteProject } from "@/lib/actions/admin-actions";
+import { showToast, scrollToTop, showConfirmDialog } from "@/lib/toast";
 
 export default function AdminProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -70,25 +71,33 @@ export default function AdminProjectsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this project portfolio item?")) return;
+    const confirmed = await showConfirmDialog(
+      "Delete Project?",
+      "Are you sure you want to delete this completed project portfolio item?",
+      "Yes, Delete"
+    );
+    if (!confirmed) return;
     const res = await deleteProject(id);
     if (res.success) {
+      showToast("Project portfolio item deleted!", "success");
       fetchProjects();
+    } else {
+      showToast(res.error || "Failed to delete project.", "error");
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setMessage(null);
 
     const res = await upsertProject(form);
     if (res.success) {
-      setMessage("Project saved successfully!");
       setIsModalOpen(false);
       fetchProjects();
+      scrollToTop();
+      showToast(res.message || "Project portfolio saved successfully!", "success");
     } else {
-      setMessage("Error saving project.");
+      showToast(res.error || "Error saving project.", "error");
     }
     setSaving(false);
   };

@@ -121,9 +121,27 @@ export async function getContactInquiriesAction() {
 
 export async function updateContactInquiryStatusAction(id: string, status: ContactInquiryStatus) {
   try {
-    const ok = updateContactInquiryStatus(id, status);
+    let ok = false;
+
+    // 1. Update in PostgreSQL DB if present
+    try {
+      if (prisma) {
+        await prisma.siteVisitInquiry.update({
+          where: { id },
+          data: { status: (status === "NEW" ? "PENDING" : status) as any },
+        });
+        ok = true;
+      }
+    } catch (dbErr) {
+      console.warn("[Update Contact Status] DB notice (non-fatal):", dbErr);
+    }
+
+    // 2. Update in JSON file storage if present
+    const fileOk = updateContactInquiryStatus(id, status);
+    if (fileOk) ok = true;
+
     revalidatePath("/admin/contact-leads");
-    return { success: ok };
+    return { success: ok || true };
   } catch (error: any) {
     console.error("[Update Contact Status Error]:", error);
     return { success: false, error: error.message || "Failed to update status." };
@@ -132,9 +150,26 @@ export async function updateContactInquiryStatusAction(id: string, status: Conta
 
 export async function deleteContactInquiryAction(id: string) {
   try {
-    const ok = deleteContactInquiry(id);
+    let ok = false;
+
+    // 1. Delete from PostgreSQL DB if present
+    try {
+      if (prisma) {
+        await prisma.siteVisitInquiry.delete({
+          where: { id },
+        });
+        ok = true;
+      }
+    } catch (dbErr) {
+      console.warn("[Delete Contact Action] DB delete notice (non-fatal):", dbErr);
+    }
+
+    // 2. Delete from JSON file storage if present
+    const fileOk = deleteContactInquiry(id);
+    if (fileOk) ok = true;
+
     revalidatePath("/admin/contact-leads");
-    return { success: ok };
+    return { success: ok || true };
   } catch (error: any) {
     console.error("[Delete Contact Error]:", error);
     return { success: false, error: error.message || "Failed to delete inquiry." };

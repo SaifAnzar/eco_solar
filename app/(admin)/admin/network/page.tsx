@@ -22,6 +22,7 @@ import {
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
+import { showToast, scrollToTop, showConfirmDialog } from "@/lib/toast";
 
 export interface ApprovedPartnerItem {
   id: string;
@@ -182,7 +183,15 @@ export default function AdminNetworkPage() {
       if (res.ok && data.success) {
         setIsModalOpen(false);
         fetchPartners();
+        scrollToTop();
+        showToast(
+          editingPartner
+            ? "Partner details updated successfully!"
+            : "New partner saved and published!",
+          "success"
+        );
       } else {
+        showToast(data.error || "Failed to save partner.", "error");
         throw new Error(data.error || "Failed to save partner.");
       }
     } catch (err: any) {
@@ -204,23 +213,37 @@ export default function AdminNetworkPage() {
         setPartners((prev) =>
           prev.map((p) => (p.id === partner.id ? { ...p, isActive: newActive } : p))
         );
+        showToast(
+          `Partner status updated to ${newActive ? "Active" : "Hidden"}.`,
+          "info"
+        );
       }
     } catch (err) {
       console.error("Failed to toggle active status:", err);
+      showToast("Failed to update active status.", "error");
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this partner record?")) return;
+    const confirmed = await showConfirmDialog(
+      "Delete Partner Record?",
+      "Are you sure you want to delete this franchise/dealer partner record?",
+      "Yes, Delete"
+    );
+    if (!confirmed) return;
     try {
       const res = await fetch(`/api/admin/network?id=${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
         setPartners((prev) => prev.filter((p) => p.id !== id));
+        showToast("Partner record deleted successfully!", "success");
+      } else {
+        showToast("Failed to delete partner record.", "error");
       }
     } catch (err) {
       console.error("Failed to delete partner:", err);
+      showToast("Error deleting partner record.", "error");
     }
   };
 

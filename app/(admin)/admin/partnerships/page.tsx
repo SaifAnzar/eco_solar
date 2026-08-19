@@ -26,6 +26,7 @@ import {
   updatePartnershipStatusAction,
   deletePartnershipAction,
 } from "@/lib/actions/partnership-actions";
+import { showToast, scrollToTop, showConfirmDialog } from "@/lib/toast";
 
 export interface NormalizedPartnerApp {
   id: string;
@@ -108,12 +109,13 @@ export default function AdminPartnershipsPage() {
         if (selectedApp && selectedApp.id === id) {
           setSelectedApp({ ...selectedApp, status: newStatus as any });
         }
+        showToast(`Application status updated to ${newStatus}.`, "info");
         setActionMessage({ type: "SUCCESS", text: `Status updated to ${newStatus}.` });
       } else {
-        throw new Error(res.error || "Failed to update status.");
+        showToast(res.error || "Failed to update status.", "error");
       }
     } catch (err: any) {
-      setActionMessage({ type: "ERROR", text: err.message || "Failed to update status." });
+      showToast(err.message || "Failed to update status.", "error");
     } finally {
       setUpdatingId(null);
     }
@@ -130,19 +132,24 @@ export default function AdminPartnershipsPage() {
           prev.map((app) => (app.id === selectedApp.id ? { ...app, notes: adminNotesText } : app))
         );
         setSelectedApp({ ...selectedApp, notes: adminNotesText });
-        setActionMessage({ type: "SUCCESS", text: "Internal admin notes saved!" });
+        showToast("Internal admin notes saved successfully!", "success");
       } else {
-        throw new Error(res.error || "Failed to save notes.");
+        showToast(res.error || "Failed to save notes.", "error");
       }
     } catch (err: any) {
-      setActionMessage({ type: "ERROR", text: err.message || "Failed to save notes." });
+      showToast(err.message || "Failed to save notes.", "error");
     } finally {
       setSavingNotes(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this application record?")) return;
+    const confirmed = await showConfirmDialog(
+      "Delete Application Record?",
+      "Are you sure you want to delete this partner application submission?",
+      "Yes, Delete"
+    );
+    if (!confirmed) return;
     setUpdatingId(id);
     setActionMessage(null);
     try {
@@ -150,12 +157,12 @@ export default function AdminPartnershipsPage() {
       if (res.success) {
         setApplications((prev) => prev.filter((app) => app.id !== id));
         if (selectedApp?.id === id) setSelectedApp(null);
-        setActionMessage({ type: "SUCCESS", text: "Application record deleted." });
+        showToast("Application record deleted successfully!", "success");
       } else {
-        throw new Error(res.error || "Failed to delete application.");
+        showToast(res.error || "Failed to delete application.", "error");
       }
     } catch (err: any) {
-      setActionMessage({ type: "ERROR", text: err.message || "Failed to delete." });
+      showToast(err.message || "Failed to delete application.", "error");
     } finally {
       setUpdatingId(null);
     }

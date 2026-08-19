@@ -52,9 +52,9 @@ export function AdminNavbar({ adminEmail = "admin@pragatiecosolar.in" }: AdminNa
         {/* Center Navigation Shortcuts (Scrollable on Zoom) */}
         <nav className="flex items-center gap-1 shrink-0">
           <Link
-            href="/admin/dashboard"
+            href="/admin"
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
-              pathname === "/admin/dashboard"
+              pathname === "/admin" || pathname === "/admin/dashboard"
                 ? "bg-amber-500/15 text-amber-700 dark:text-amber-400 font-bold"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}

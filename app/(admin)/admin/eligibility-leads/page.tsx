@@ -18,6 +18,7 @@ import {
   Calendar,
   AlertCircle,
 } from "lucide-react";
+import { showToast, scrollToTop, showConfirmDialog } from "@/lib/toast";
 
 export interface EligibilityLeadItem {
   id: string;
@@ -75,14 +76,23 @@ export default function AdminEligibilityLeadsPage() {
         if (selectedLead && selectedLead.id === id) {
           setSelectedLead({ ...selectedLead, status: newStatus as any });
         }
+        showToast(`Eligibility status updated to ${newStatus}.`, "info");
+      } else {
+        showToast("Failed to update status.", "error");
       }
     } catch (err) {
       console.error("Failed to update status:", err);
+      showToast("Error updating status.", "error");
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this eligibility check record?")) return;
+    const confirmed = await showConfirmDialog(
+      "Delete Eligibility Record?",
+      "Are you sure you want to delete this PM Surya Ghar eligibility lead record?",
+      "Yes, Delete"
+    );
+    if (!confirmed) return;
     try {
       const res = await fetch(`/api/leads/eligibility?id=${id}`, {
         method: "DELETE",
@@ -92,9 +102,13 @@ export default function AdminEligibilityLeadsPage() {
         if (selectedLead && selectedLead.id === id) {
           setSelectedLead(null);
         }
+        showToast("Eligibility record deleted successfully!", "success");
+      } else {
+        showToast("Failed to delete record.", "error");
       }
     } catch (err) {
       console.error("Failed to delete lead:", err);
+      showToast("Error deleting record.", "error");
     }
   };
 

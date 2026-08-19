@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Users, Filter, Download, MessageSquare, CheckCircle2, Search, Loader2 } from "lucide-react";
 import { getLeads, updateLeadStatus } from "@/lib/actions/admin-actions";
+import { showToast } from "@/lib/toast";
 
 export default function AdminLeadsPage() {
   const [leads, setLeads] = useState<any[]>([]);
@@ -28,6 +29,9 @@ export default function AdminLeadsPage() {
     const res = await updateLeadStatus(id, newStatus);
     if (res.success) {
       setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status: newStatus } : l)));
+      showToast(`Lead status updated to ${newStatus}.`, "info");
+    } else {
+      showToast(res.error || "Failed to update lead status.", "error");
     }
   };
 
@@ -57,6 +61,7 @@ export default function AdminLeadsPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    showToast(`Exported ${leads.length} lead records to CSV file!`, "success");
   };
 
   const filteredLeads = leads.filter((l) => {

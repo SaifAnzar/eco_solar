@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Mail, Trash2, MessageSquare, CheckCircle2, Search, Loader2, Calendar, MapPin, Phone, Filter } from "lucide-react";
 import { getContactInquiriesAction, updateContactInquiryStatusAction, deleteContactInquiryAction } from "@/lib/actions/contact-inquiry-actions";
+import { showToast, scrollToTop, showConfirmDialog } from "@/lib/toast";
 
 export default function AdminContactLeadsPage() {
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -25,18 +26,33 @@ export default function AdminContactLeadsPage() {
   };
 
   const handleStatusChange = async (id: string, newStatus: string) => {
+    setInquiries((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, status: newStatus as any } : item))
+    );
     const res = await updateContactInquiryStatusAction(id, newStatus as any);
     if (res.success) {
-      setMessage("Status updated successfully!");
+      showToast(`Status updated to ${newStatus}.`, "info");
+      fetchInquiries();
+    } else {
+      showToast(res.error || "Failed to update status.", "error");
       fetchInquiries();
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this record?")) return;
+    const confirmed = await showConfirmDialog(
+      "Delete Contact Inquiry?",
+      "Are you sure you want to delete this site visit / contact inquiry record?",
+      "Yes, Delete"
+    );
+    if (!confirmed) return;
+    setInquiries((prev) => prev.filter((item) => item.id !== id));
     const res = await deleteContactInquiryAction(id);
     if (res.success) {
-      setMessage("Record deleted.");
+      showToast("Record deleted successfully!", "success");
+      fetchInquiries();
+    } else {
+      showToast(res.error || "Failed to delete record.", "error");
       fetchInquiries();
     }
   };
@@ -84,12 +100,7 @@ export default function AdminContactLeadsPage() {
         </div>
       </div>
 
-      {message && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 text-emerald-800 text-xs font-bold shadow-sm">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-          <span>{message}</span>
-        </div>
-      )}
+
 
       {/* Tabs & Search Toolbar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">

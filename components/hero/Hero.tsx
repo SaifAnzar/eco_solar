@@ -16,11 +16,15 @@ import { TypewriterHeadline } from "./TypewriterHeadline";
 import EligibilityModal from "@/components/forms/EligibilityModal";
 
 interface HeroProps {
+  heroHeadline?: string;
   heroSubline?: string;
+  typewriterWords?: string[];
 }
 
 export const Hero: React.FC<HeroProps> = ({
+  heroHeadline,
   heroSubline = "Government-authorized installer under PM Surya Ghar Muft Bijli Yojana, empanelled across all four Odisha DISCOMs. From design to commissioning — we handle it all.",
+  typewriterWords,
 }) => {
   const [monthlyBill, setMonthlyBill] = useState<number>(3500);
   const [openEligibility, setOpenEligibility] = useState(false);
@@ -48,7 +52,7 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
 
             {/* Dynamic Typewriter Headline */}
-            <TypewriterHeadline />
+            <TypewriterHeadline heroHeadline={heroHeadline} words={typewriterWords} />
 
             {/* Subtitle */}
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-lg font-medium">
