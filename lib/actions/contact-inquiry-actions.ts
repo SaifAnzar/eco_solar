@@ -3,6 +3,7 @@
 import {
   saveContactInquiry,
   getAllContactInquiries,
+  getAllLeads,
   updateContactInquiryStatus,
   deleteContactInquiry,
   ContactInquiryStatus,
@@ -59,6 +60,7 @@ export async function submitContactInquiryAction(input: SubmitInquiryInput) {
       console.warn("[Contact Action] Prisma DB save notice (non-fatal):", dbErr);
     }
 
+    revalidatePath("/admin");
     revalidatePath("/admin/contact-leads");
     return { success: true, data: saved };
   } catch (error: any) {
@@ -70,6 +72,22 @@ export async function submitContactInquiryAction(input: SubmitInquiryInput) {
 export async function getContactInquiriesAction() {
   try {
     const fileList = getAllContactInquiries();
+    const leadList = getAllLeads().map((l) => ({
+      id: l.leadId,
+      fullName: l.customerName,
+      phone: l.phone,
+      email: l.email || "",
+      location: l.locationLabel || l.address || "Odisha",
+      discomRegion: l.discom || "TPCODL",
+      systemType: `${l.calculation?.systemKw || 50} kW Commercial / Solar Plant`,
+      monthlyBill: l.calculation?.monthlySavingsRs ? `₹${l.calculation.monthlySavingsRs.toLocaleString()}/month savings` : "",
+      rooftopArea: l.calculation?.requiredRoofAreaSqFt ? `${l.calculation.requiredRoofAreaSqFt} sq.ft` : "",
+      message: `Solar / Commercial Proposal Request for ${l.calculation?.systemKw || 50} kW (${l.address || l.locationLabel || "Odisha"})`,
+      inquiryType: "SITE_VISIT" as const,
+      status: "NEW" as ContactInquiryStatus,
+      createdAt: l.createdAt || new Date().toISOString(),
+    }));
+
     let dbList: any[] = [];
 
     try {
@@ -101,7 +119,7 @@ export async function getContactInquiriesAction() {
 
     // Merge and deduplicate by phone/id
     const combinedMap = new Map<string, any>();
-    [...dbList, ...fileList].forEach((item) => {
+    [...dbList, ...leadList, ...fileList].forEach((item) => {
       const key = item.id || `${item.phone}_${item.createdAt}`;
       if (!combinedMap.has(key)) {
         combinedMap.set(key, item);

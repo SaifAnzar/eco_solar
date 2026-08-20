@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   Users,
   Package,
-  FolderKanban,
   FileText,
   Award,
   Calculator,
@@ -11,22 +10,20 @@ import {
   ArrowUpRight,
   Zap,
 } from "lucide-react";
-import { getLeads, getSolarPackages, getProjects, getSiteSettings } from "@/lib/actions/admin-actions";
+import { getLeads, getSolarPackages, getSiteSettings } from "@/lib/actions/admin-actions";
 import { getContactInquiriesAction } from "@/lib/actions/contact-inquiry-actions";
 
 export default async function AdminDashboardPage() {
-  const [leadsRes, contactInquiriesRes, packagesRes, projectsRes, settingsRes] = await Promise.all([
+  const [leadsRes, contactInquiriesRes, packagesRes, settingsRes] = await Promise.all([
     getLeads(),
     getContactInquiriesAction(),
     getSolarPackages(),
-    getProjects(),
     getSiteSettings(),
   ]);
 
   const leads = leadsRes.data || [];
   const contactInquiries = contactInquiriesRes.data || [];
   const packages = packagesRes.data || [];
-  const projects = projectsRes.data || [];
   const settings = settingsRes.data;
 
   // Combine inquiries for listing, prioritizing site visit & contact inquiries
@@ -46,7 +43,7 @@ export default async function AdminDashboardPage() {
           </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Pragati EcoSolar Control Panel</h1>
           <p className="text-xs text-slate-300 mt-1">
-            Manage site copy, pricing tables, completed installation portfolio, solar engine parameters, and partner applications.
+            Manage site copy, pricing tables, solar engine parameters, and partner applications across Odisha.
           </p>
         </div>
 
@@ -60,7 +57,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* KPI Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Inquiries</span>
@@ -81,17 +78,6 @@ export default async function AdminDashboardPage() {
           </div>
           <div className="text-3xl font-extrabold text-slate-900">{packages.length}</div>
           <div className="text-xs text-emerald-600 font-bold">On-Grid / Off-Grid / Hybrid</div>
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Completed Projects</span>
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-xl border border-blue-200">
-              <FolderKanban className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="text-3xl font-extrabold text-slate-900">{projects.length}</div>
-          <div className="text-xs text-blue-600 font-bold">Portfolio Sites</div>
         </div>
 
         <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
@@ -165,24 +151,6 @@ export default async function AdminDashboardPage() {
           </Link>
 
           <Link
-            href="/admin/projects"
-            className="bg-white border border-slate-200 hover:border-purple-400 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all space-y-3 group"
-          >
-            <div className="flex items-center justify-between">
-              <div className="p-3 bg-purple-50 text-purple-700 rounded-xl border border-purple-200">
-                <FolderKanban className="w-6 h-6" />
-              </div>
-              <ArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-purple-600 transition-colors" />
-            </div>
-            <h3 className="text-base font-bold text-slate-900 group-hover:text-purple-600 transition-colors">
-              Module 4: Projects Portfolio Manager
-            </h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Manage completed site installation photos, client testimonials, system kW size, and Odisha district locations.
-            </p>
-          </Link>
-
-          <Link
             href="/admin/services-schemes"
             className="bg-white border border-slate-200 hover:border-rose-400 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all space-y-3 group"
           >
@@ -193,7 +161,7 @@ export default async function AdminDashboardPage() {
               <ArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-rose-600 transition-colors" />
             </div>
             <h3 className="text-base font-bold text-slate-900 group-hover:text-rose-600 transition-colors">
-              Module 5: Services &amp; Schemes CMS
+              Module 4: Services &amp; Schemes CMS
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed">
               Manage EPC service text descriptions, water pump features, street lighting, and PM Surya Ghar scheme rules.
@@ -211,7 +179,7 @@ export default async function AdminDashboardPage() {
               <ArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-amber-600 transition-colors" />
             </div>
             <h3 className="text-base font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
-              Module 6: Calculator Settings
+              Module 5: Calculator Settings
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed">
               Configure solar benchmark rates (₹/kW), grid tariffs, PM Surya Ghar central subsidies, and Odisha state subsidies.
@@ -229,14 +197,14 @@ export default async function AdminDashboardPage() {
               <ArrowUpRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-600 transition-colors" />
             </div>
             <h3 className="text-base font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
-              Module 7: Franchise &amp; Dealership Requests
+              Module 6: Franchise &amp; Dealership Requests
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed">
               View and manage prospective solar franchise partners and equipment dealer applications submitted across Odisha.
             </p>
           </Link>
 
-          <div className="bg-slate-900 text-white p-6 rounded-2xl shadow-sm space-y-3 border border-slate-800">
+          <div className="bg-slate-900 text-white p-6 rounded-2xl shadow-sm space-y-3 border border-slate-800 md:col-span-3 lg:col-span-1">
             <div className="flex items-center gap-2 text-amber-400 text-xs font-mono uppercase font-bold">
               <Zap className="w-4 h-4" />
               <span>Calculator Protection</span>

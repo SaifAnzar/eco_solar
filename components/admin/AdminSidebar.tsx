@@ -84,12 +84,6 @@ export function AdminSidebar({ adminEmail }: AdminSidebarProps) {
       badge: "CMS 3",
     },
     {
-      label: "Projects Portfolio",
-      href: "/admin/projects",
-      icon: FolderKanban,
-      badge: "CMS 4",
-    },
-    {
       label: "Services & Schemes",
       href: "/admin/services-schemes",
       icon: Award,

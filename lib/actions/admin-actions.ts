@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { getAllLeads, getAllContactInquiries } from "@/lib/data-store";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MODULE 1: SITE CONTENT & HERO CMS ACTIONS
@@ -146,24 +147,71 @@ export async function updateSiteSettings(data: {
 export async function getLeads(filters?: { district?: string; discom?: string; status?: string }) {
   try {
     const db = prisma as any;
-    const where: any = {};
+    let dbInquiries: any[] = [];
+    try {
+      if (db) {
+        dbInquiries = await db.siteVisitInquiry.findMany({
+          orderBy: { createdAt: "desc" },
+        });
+      }
+    } catch (e) {
+      console.warn("DB query notice in getLeads:", e);
+    }
 
-    if (filters?.district && filters.district !== "ALL") {
-      where.district = { contains: filters.district, mode: "insensitive" };
-    }
-    if (filters?.discom && filters.discom !== "ALL") {
-      where.discom = filters.discom;
-    }
-    if (filters?.status && filters.status !== "ALL") {
-      where.status = filters.status;
-    }
+    const fileLeads = getAllLeads().map((l) => ({
+      id: l.leadId,
+      fullName: l.customerName,
+      mobileNumber: l.phone,
+      email: l.email || "",
+      pincode: l.pincode || "751024",
+      district: l.locationLabel || l.address || "Odisha",
+      discom: l.discom || "TPCODL",
+      category: l.calculation?.propertyType?.toUpperCase() || "COMMERCIAL",
+      systemType: `${l.calculation?.systemKw || 50} kW Solar`,
+      monthlyBill: l.calculation?.monthlySavingsRs || 0,
+      status: "PENDING",
+      createdAt: l.createdAt || new Date().toISOString(),
+    }));
 
-    const inquiries = await db.siteVisitInquiry.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
+    const fileContactInquiries = getAllContactInquiries().map((c) => ({
+      id: c.id,
+      fullName: c.fullName,
+      mobileNumber: c.phone,
+      email: c.email || "",
+      pincode: c.location.match(/\d{6}/)?.[0] || "751024",
+      district: c.discomRegion || c.location,
+      discom: c.discomRegion || "TPCODL",
+      category: "RESIDENTIAL",
+      systemType: c.systemType || "Rooftop Solar",
+      monthlyBill: 0,
+      status: c.status === "NEW" ? "PENDING" : c.status,
+      createdAt: c.createdAt || new Date().toISOString(),
+    }));
+
+    // Deduplicate all combined leads
+    const combinedMap = new Map<string, any>();
+    [...dbInquiries, ...fileLeads, ...fileContactInquiries].forEach((item) => {
+      const key = item.id || `${item.mobileNumber}_${item.createdAt}`;
+      if (!combinedMap.has(key)) {
+        combinedMap.set(key, item);
+      }
     });
 
-    return { success: true, data: inquiries };
+    let merged = Array.from(combinedMap.values()).sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    if (filters?.district && filters.district !== "ALL") {
+      merged = merged.filter((i) => i.district?.toLowerCase().includes(filters.district!.toLowerCase()));
+    }
+    if (filters?.discom && filters.discom !== "ALL") {
+      merged = merged.filter((i) => i.discom === filters.discom);
+    }
+    if (filters?.status && filters.status !== "ALL") {
+      merged = merged.filter((i) => i.status === filters.status);
+    }
+
+    return { success: true, data: merged };
   } catch (error: any) {
     console.error("Error fetching leads:", error);
     return { success: false, data: [] };

@@ -1,7 +1,9 @@
 "use server";
 
 import { SolarCalculationResult } from "../solar-engine";
-import { saveLead } from "../data-store";
+import { saveLead, saveContactInquiry } from "../data-store";
+import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 export interface LeadSubmissionPayload {
   customerName: string;
@@ -28,7 +30,7 @@ export async function saveLeadAndNotifyWhatsApp(
   const leadId = `PES-LEAD-${Date.now().toString().slice(-6)}`;
 
   try {
-    // 1. Persist lead record to file store
+    // 1. Persist lead record to file store (leads.json)
     try {
       saveLead(leadId, payload);
       console.log(`[Lead Action] Saved Lead #${leadId} for ${payload.customerName} (${payload.phone})`);
@@ -36,7 +38,49 @@ export async function saveLeadAndNotifyWhatsApp(
       console.error("[Lead Action] Error storing lead record:", err);
     }
 
-    // 2. Trigger WhatsApp API Webhook Notification
+    // 2. Persist lead record to contact-inquiries.json as well so it shows in all inquiry views
+    try {
+      saveContactInquiry({
+        fullName: payload.customerName,
+        phone: payload.phone,
+        email: payload.email || "",
+        location: payload.locationLabel || payload.address || "Odisha",
+        discomRegion: payload.discom || "TPCODL",
+        systemType: `${payload.calculation?.systemKw || 50} kW Solar Plant`,
+        monthlyBill: payload.calculation?.monthlySavingsRs ? `₹${payload.calculation.monthlySavingsRs.toLocaleString()}/month savings` : "",
+        rooftopArea: payload.calculation?.requiredRoofAreaSqFt ? `${payload.calculation.requiredRoofAreaSqFt} sq.ft` : "",
+        message: `Commercial / Solar Proposal Request for ${payload.calculation?.systemKw || 50} kW (${payload.address || payload.locationLabel || "Odisha"})`,
+        inquiryType: "SITE_VISIT",
+      });
+    } catch (inqErr) {
+      console.warn("[Lead Action] Notice on contact inquiry fallback save:", inqErr);
+    }
+
+    // 3. Persist to PostgreSQL Prisma DB if connected
+    try {
+      if (prisma) {
+        await prisma.siteVisitInquiry.create({
+          data: {
+            fullName: payload.customerName,
+            mobileNumber: payload.phone,
+            email: payload.email || null,
+            pincode: payload.pincode || "751024",
+            district: payload.locationLabel || payload.address || "Khordha",
+            message: `Solar Proposal Request (${payload.calculation?.systemKw || 50} kW)`,
+            status: "PENDING",
+          },
+        });
+      }
+    } catch (dbErr) {
+      console.warn("[Lead Action] Prisma DB save notice (non-fatal):", dbErr);
+    }
+
+    // Revalidate all admin pages so filled data appears immediately
+    revalidatePath("/admin");
+    revalidatePath("/admin/leads");
+    revalidatePath("/admin/contact-leads");
+
+    // 4. Trigger WhatsApp API Webhook Notification
     let whatsappStatus: "sent" | "failed" | "mocked" = "mocked";
     try {
       const formattedPhone = payload.phone.startsWith("+91")
