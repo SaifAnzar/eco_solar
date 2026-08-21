@@ -188,12 +188,44 @@ export async function getLeads(filters?: { district?: string; discom?: string; s
       createdAt: c.createdAt || new Date().toISOString(),
     }));
 
-    // Deduplicate all combined leads
+    // Deduplicate all combined leads seamlessly by composite key (Phone + Name)
     const combinedMap = new Map<string, any>();
-    [...dbInquiries, ...fileLeads, ...fileContactInquiries].forEach((item) => {
-      const key = item.id || `${item.mobileNumber}_${item.createdAt}`;
-      if (!combinedMap.has(key)) {
-        combinedMap.set(key, item);
+    const seenCompositeKeys = new Set<string>();
+
+    const makeKey = (phone?: string, name?: string) => {
+      const p = (phone || "").replace(/\D/g, "");
+      const n = (name || "").trim().toLowerCase();
+      return p ? `${p}_${n}` : null;
+    };
+
+    // 1. Add DB items first
+    dbInquiries.forEach((item) => {
+      if (item && item.id) {
+        combinedMap.set(item.id, item);
+        const compositeKey = makeKey(item.mobileNumber, item.fullName);
+        if (compositeKey) seenCompositeKeys.add(compositeKey);
+      }
+    });
+
+    // 2. Merge File Leads
+    fileLeads.forEach((item) => {
+      if (item && item.id) {
+        const compositeKey = makeKey(item.mobileNumber, item.fullName);
+        if (!combinedMap.has(item.id) && (!compositeKey || !seenCompositeKeys.has(compositeKey))) {
+          combinedMap.set(item.id, item);
+          if (compositeKey) seenCompositeKeys.add(compositeKey);
+        }
+      }
+    });
+
+    // 3. Merge File Contact Inquiries
+    fileContactInquiries.forEach((item) => {
+      if (item && item.id) {
+        const compositeKey = makeKey(item.mobileNumber, item.fullName);
+        if (!combinedMap.has(item.id) && (!compositeKey || !seenCompositeKeys.has(compositeKey))) {
+          combinedMap.set(item.id, item);
+          if (compositeKey) seenCompositeKeys.add(compositeKey);
+        }
       }
     });
 

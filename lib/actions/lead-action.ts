@@ -30,33 +30,8 @@ export async function saveLeadAndNotifyWhatsApp(
   const leadId = `PES-LEAD-${Date.now().toString().slice(-6)}`;
 
   try {
-    // 1. Persist lead record to file store (leads.json)
-    try {
-      saveLead(leadId, payload);
-      console.log(`[Lead Action] Saved Lead #${leadId} for ${payload.customerName} (${payload.phone})`);
-    } catch (err) {
-      console.error("[Lead Action] Error storing lead record:", err);
-    }
-
-    // 2. Persist lead record to contact-inquiries.json as well so it shows in all inquiry views
-    try {
-      saveContactInquiry({
-        fullName: payload.customerName,
-        phone: payload.phone,
-        email: payload.email || "",
-        location: payload.locationLabel || payload.address || "Odisha",
-        discomRegion: payload.discom || "TPCODL",
-        systemType: `${payload.calculation?.systemKw || 50} kW Solar Plant`,
-        monthlyBill: payload.calculation?.monthlySavingsRs ? `₹${payload.calculation.monthlySavingsRs.toLocaleString()}/month savings` : "",
-        rooftopArea: payload.calculation?.requiredRoofAreaSqFt ? `${payload.calculation.requiredRoofAreaSqFt} sq.ft` : "",
-        message: `Commercial / Solar Proposal Request for ${payload.calculation?.systemKw || 50} kW (${payload.address || payload.locationLabel || "Odisha"})`,
-        inquiryType: "SITE_VISIT",
-      });
-    } catch (inqErr) {
-      console.warn("[Lead Action] Notice on contact inquiry fallback save:", inqErr);
-    }
-
-    // 3. Persist to PostgreSQL Prisma DB if connected
+    // 1. Try Primary Storage in PostgreSQL DB
+    let savedInDb = false;
     try {
       if (prisma) {
         await prisma.siteVisitInquiry.create({
@@ -66,13 +41,24 @@ export async function saveLeadAndNotifyWhatsApp(
             email: payload.email || null,
             pincode: payload.pincode || "751024",
             district: payload.locationLabel || payload.address || "Khordha",
-            message: `Solar Proposal Request (${payload.calculation?.systemKw || 50} kW)`,
+            message: `Solar Proposal Request (${payload.calculation?.systemKw || 5} kW)`,
             status: "PENDING",
           },
         });
+        savedInDb = true;
       }
     } catch (dbErr) {
-      console.warn("[Lead Action] Prisma DB save notice (non-fatal):", dbErr);
+      console.warn("[Lead Action] Prisma DB save notice (falling back to JSON store):", dbErr);
+    }
+
+    // 2. Fallback to File DataStore ONLY if DB save failed
+    if (!savedInDb) {
+      try {
+        saveLead(leadId, payload);
+        console.log(`[Lead Action] Saved Lead #${leadId} to file store for ${payload.customerName} (${payload.phone})`);
+      } catch (err) {
+        console.error("[Lead Action] Error storing lead record in fallback file store:", err);
+      }
     }
 
     // Revalidate all admin pages so filled data appears immediately

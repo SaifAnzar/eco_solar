@@ -182,7 +182,7 @@ export default function RoiCalculator() {
 
   const handleLeadSubmitAndDownloadPdf = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!leadForm.name || !leadForm.phone) return;
+    if (isGeneratingPdf || !leadForm.name || !leadForm.phone) return;
 
     setIsGeneratingPdf(true);
     const quotationRef = `PES-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;

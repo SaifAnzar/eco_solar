@@ -1,1 +1,32 @@
-{}
+{
+  "inq_7u1kjjhjo": {
+    "fullName": "Saif Anzar",
+    "phone": "07735783533",
+    "email": "saifanzar8@gmail.com",
+    "location": "Bajrakabari Road, Cuttack, Odisha",
+    "discomRegion": "TPCODL (Central Odisha)",
+    "systemType": "1 kW Solar Plant",
+    "monthlyBill": "₹764/month savings",
+    "rooftopArea": "90 sq.ft",
+    "message": "Commercial / Solar Proposal Request for 1 kW (Bajrakabari Road, Cuttack, Odisha)",
+    "inquiryType": "SITE_VISIT",
+    "id": "inq_7u1kjjhjo",
+    "status": "NEW",
+    "createdAt": "2026-08-21T14:49:20.496Z"
+  },
+  "inq_db5owcrp9": {
+    "fullName": "salam ",
+    "phone": "8763357443",
+    "email": "salamabdul42588@gmail.com",
+    "location": "K I I T, Khorda, Odisha",
+    "discomRegion": "TPCODL (Central Odisha)",
+    "systemType": "5.5 kW Solar Plant",
+    "monthlyBill": "₹4,202/month savings",
+    "rooftopArea": "495 sq.ft",
+    "message": "Commercial / Solar Proposal Request for 5.5 kW (K I I T, Khorda, Odisha)",
+    "inquiryType": "SITE_VISIT",
+    "id": "inq_db5owcrp9",
+    "status": "NEW",
+    "createdAt": "2026-08-21T14:57:52.115Z"
+  }
+}

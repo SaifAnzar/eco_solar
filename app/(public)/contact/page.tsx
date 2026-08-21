@@ -21,7 +21,7 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.fullName || !form.phone) return;
+    if (isSubmitting || !form.fullName || !form.phone) return;
     setIsSubmitting(true);
 
     try {
@@ -34,62 +34,6 @@ export default function ContactPage() {
         systemType: form.systemType,
         message: `GENERAL CONTACT INQUIRY — Category: ${form.category}. ${form.message}`,
         inquiryType: "GENERAL_CONTACT",
-      });
-
-      // 1. Submit to Prisma database via /api/inquiries API Route
-      await fetch("/api/inquiries", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName: form.fullName,
-          mobileNumber: form.phone,
-          email: form.email || null,
-          pincode: "751024",
-          district: form.location || "Khordha",
-          discom: "TPCODL",
-          category: form.category === "Residential" ? "RESIDENTIAL" : form.category === "Agricultural" ? "AGRICULTURAL" : "COMMERCIAL_INDUSTRIAL",
-          systemType: form.systemType === "Off-Grid" ? "OFF_GRID" : form.systemType === "Hybrid" ? "HYBRID" : form.systemType === "Solar Water Pump" ? "SOLAR_PUMP" : form.systemType === "Solar Street Light" ? "STREET_LIGHTING" : "ON_GRID",
-          message: form.message,
-        }),
-      });
-
-      // 2. Also notify WhatsApp action
-      await saveLeadAndNotifyWhatsApp({
-        customerName: form.fullName,
-        phone: form.phone,
-        email: form.email,
-        address: `${form.location} - ${form.message}`,
-        pincode: "751024",
-        locationLabel: form.location || "Patia, Bhubaneswar",
-        discom: "TPCODL (Central Odisha)",
-        calculation: {
-          systemKw: 3,
-          propertyType: form.category === "Residential" ? "residential" : "commercial",
-          panelCount: 5,
-          panelWp: 600,
-          panelUnitPrice: 14000,
-          totalPanelCost: 70000,
-          requiredRoofAreaSqFt: 270,
-          benchmarkRatePerKw: 65000,
-          grossSystemCost: 195000,
-          pmSuryaGharSubsidy: 78000,
-          centralSubsidy: 78000,
-          stateSubsidy: 0,
-          totalSubsidy: 78000,
-          taxBenefit80AD: 0,
-          netPayableCost: 117000,
-          pshUsed: 4.6,
-          annualGenerationKwh: 4200,
-          monthlyGenerationKwh: 350,
-          avoidedTariffPerUnit: 7.0,
-          annualSavingsRs: 29400,
-          monthlySavingsRs: 2450,
-          paybackPeriodYears: 3.9,
-          co2OffsetTonsPerYear: 3.3,
-          equipmentBand: { minKw: 1, maxKw: 3, acdbDcdbSpec: "1P DCDB/ACDB", dcCableSpec: "4sqmm DC", acCableSpec: "2.5sqmm AC", earthingPitsCount: 2, laSpec: "Copper LA" },
-          bom: [],
-        },
-        quotationRef: `CNT-${Date.now().toString().slice(-4)}`,
       });
 
       setSubmitted(true);

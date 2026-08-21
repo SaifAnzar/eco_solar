@@ -72,7 +72,7 @@ export default function CommercialSolarPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.phone) return;
+    if (loading || !form.name || !form.phone) return;
     setLoading(true);
     try {
       await saveLeadAndNotifyWhatsApp({
