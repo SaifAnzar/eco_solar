@@ -36,24 +36,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Always save to file data-store for immediate resilience
-    const fileRecord = savePartnershipApplication({
-      type,
-      tier,
-      applicantName,
-      businessName: businessName || undefined,
-      phone,
-      email,
-      location,
-      investmentRange,
-      experience: experience || undefined,
-      status: "PENDING",
-    });
-
-    let dbRecord;
+    // Primary: Attempt Prisma DB insertion first
+    let record;
     try {
-      // Attempt Prisma DB insertion
-      dbRecord = await (prisma as any).partnerApplication.create({
+      record = await (prisma as any).partnerApplication.create({
         data: {
           type,
           tier: type === "DEALERSHIP" ? tier : null,
@@ -68,14 +54,30 @@ export async function POST(req: NextRequest) {
         },
       });
     } catch (dbError) {
-      console.warn("[PartnersApply API] DB insertion notice (using file store):", dbError);
+      console.warn("[PartnersApply API] DB insertion notice (falling back to file store):", dbError);
+    }
+
+    // Fallback to file data-store ONLY if DB save failed
+    if (!record) {
+      record = savePartnershipApplication({
+        type,
+        tier,
+        applicantName,
+        businessName: businessName || undefined,
+        phone,
+        email,
+        location,
+        investmentRange,
+        experience: experience || undefined,
+        status: "PENDING",
+      });
     }
 
     return NextResponse.json(
       {
         success: true,
         message: "Partner application submitted successfully! Our expansion team will contact you within 24 hours.",
-        data: dbRecord || fileRecord,
+        data: record,
       },
       { status: 201 }
     );

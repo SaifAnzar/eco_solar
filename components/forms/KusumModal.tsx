@@ -56,6 +56,7 @@ export default function KusumModal({ isOpen, onClose }: KusumModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setErrorMessage(null);
 
     const cleanMobile = phone.replace(/\D/g, "").trim();

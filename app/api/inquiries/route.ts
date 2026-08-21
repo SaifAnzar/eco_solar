@@ -72,42 +72,46 @@ export async function POST(request: Request) {
       parsedSystemType = systemType as SystemType;
     }
 
-    // Save to PostgreSQL via Prisma Client
-    const prismaClient = prisma as any;
-    const newInquiry = await prismaClient.siteVisitInquiry.create({
-      data: {
-        fullName: fullName.trim(),
-        mobileNumber: mobileNumber.trim(),
-        email: email ? email.trim() : null,
-        pincode: pincode.trim(),
-        district: district.trim(),
-        discom: parsedDiscom,
-        category: parsedCategory,
-        systemType: parsedSystemType,
-        monthlyBill: monthlyBill ? Number(monthlyBill) : null,
-        roofAreaSqFt: roofAreaSqFt ? Number(roofAreaSqFt) : null,
-        message: message ? message.trim() : null,
-        status: "PENDING",
-      },
-    });
-
-    // Also persist to JSON file store to guarantee visibility in Admin Panel
+    // Save to PostgreSQL via Prisma Client as primary storage
+    let newInquiry;
     try {
-      const { saveContactInquiry } = await import("@/lib/data-store");
-      saveContactInquiry({
-        fullName: fullName.trim(),
-        phone: mobileNumber.trim(),
-        email: email ? email.trim() : "",
-        location: `${district.trim()} (Pincode: ${pincode.trim()})`,
-        discomRegion: parsedDiscom || district.trim(),
-        systemType: parsedSystemType,
-        monthlyBill: monthlyBill ? `₹${monthlyBill}/month` : "",
-        rooftopArea: roofAreaSqFt ? `${roofAreaSqFt} sq.ft` : "",
-        message: message || "Site Visit Inquiry",
-        inquiryType: "SITE_VISIT",
+      const prismaClient = prisma as any;
+      newInquiry = await prismaClient.siteVisitInquiry.create({
+        data: {
+          fullName: fullName.trim(),
+          mobileNumber: mobileNumber.trim(),
+          email: email ? email.trim() : null,
+          pincode: pincode.trim(),
+          district: district.trim(),
+          discom: parsedDiscom,
+          category: parsedCategory,
+          systemType: parsedSystemType,
+          monthlyBill: monthlyBill ? Number(monthlyBill) : null,
+          roofAreaSqFt: roofAreaSqFt ? Number(roofAreaSqFt) : null,
+          message: message ? message.trim() : null,
+          status: "PENDING",
+        },
       });
-    } catch (fsErr) {
-      console.warn("[Inquiries Route] File store sync notice:", fsErr);
+    } catch (dbErr) {
+      console.warn("[Inquiries Route] DB insertion notice (falling back to file store):", dbErr);
+      // Fallback to JSON file store ONLY if DB save fails
+      try {
+        const { saveContactInquiry } = await import("@/lib/data-store");
+        newInquiry = saveContactInquiry({
+          fullName: fullName.trim(),
+          phone: mobileNumber.trim(),
+          email: email ? email.trim() : "",
+          location: `${district.trim()} (Pincode: ${pincode.trim()})`,
+          discomRegion: parsedDiscom || district.trim(),
+          systemType: parsedSystemType,
+          monthlyBill: monthlyBill ? `₹${monthlyBill}/month` : "",
+          rooftopArea: roofAreaSqFt ? `${roofAreaSqFt} sq.ft` : "",
+          message: message || "Site Visit Inquiry",
+          inquiryType: "SITE_VISIT",
+        });
+      } catch (fsErr) {
+        console.error("[Inquiries Route] File store fallback error:", fsErr);
+      }
     }
 
     return NextResponse.json(

@@ -35,32 +35,7 @@ export async function POST(req: NextRequest) {
 
     const appType: ApplicationType = (type === "DEALERSHIP" || type === "PARTNER") ? "DEALERSHIP" : "FRANCHISE";
 
-    // Always write to file data-store
-    const fileRecord = savePartnershipApplication({
-      type: appType,
-      tier: appType === "DEALERSHIP" ? "TIER_2_AUTHORIZED_DEALER" : null,
-      applicantName: fullName,
-      businessName: body.businessName || undefined,
-      phone,
-      email,
-      location: district,
-      investmentRange: investmentCapacity || "₹2L–₹5L",
-      experience: businessExperience || undefined,
-      status: "PENDING",
-      // Include Dealership & Franchise specific properties
-      fullName,
-      contactPersonName: body.contactPersonName || fullName,
-      mobileNumber: phone,
-      emailAddress: email,
-      proposedCity: district,
-      primaryDistrict: district,
-      investmentCapacity,
-      businessBackground: businessExperience,
-      showroomSpace: showroomSpaceSqFt,
-      gstin: body.gstin,
-      productsInterested: body.interestedProducts || body.productsInterested,
-    });
-
+    // Primary: Try saving to Prisma DB first
     let dbRecord;
     try {
       if (type === "FRANCHISE") {
@@ -93,10 +68,38 @@ export async function POST(req: NextRequest) {
         });
       }
     } catch (err) {
-      console.warn("[PartnershipsApply API] DB notice (saved to JSON store):", err);
+      console.warn("[PartnershipsApply API] DB insertion notice (falling back to JSON store):", err);
     }
 
-    return NextResponse.json({ success: true, data: dbRecord || fileRecord }, { status: 201 });
+    // Fallback to file data-store ONLY if DB save failed
+    let record: any = dbRecord;
+    if (!record) {
+      record = savePartnershipApplication({
+        type: appType,
+        tier: appType === "DEALERSHIP" ? "TIER_2_AUTHORIZED_DEALER" : null,
+        applicantName: fullName,
+        businessName: body.businessName || undefined,
+        phone,
+        email,
+        location: district,
+        investmentRange: investmentCapacity || "₹2L–₹5L",
+        experience: businessExperience || undefined,
+        status: "PENDING",
+        fullName,
+        contactPersonName: body.contactPersonName || fullName,
+        mobileNumber: phone,
+        emailAddress: email,
+        proposedCity: district,
+        primaryDistrict: district,
+        investmentCapacity,
+        businessBackground: businessExperience,
+        showroomSpace: showroomSpaceSqFt,
+        gstin: body.gstin,
+        productsInterested: body.interestedProducts || body.productsInterested,
+      });
+    }
+
+    return NextResponse.json({ success: true, data: record }, { status: 201 });
   } catch (error: any) {
     console.error("Error in partnership application API:", error);
     return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });

@@ -34,11 +34,25 @@ export async function getPartnershipsAction() {
 
     const combined: PartnerApplication[] = [];
     const seenIds = new Set<string>();
+    const seenCompositeKeys = new Set<string>();
+
+    // Helper for composite key
+    const makeKey = (phone?: string | null, email?: string | null, name?: string | null) => {
+      const p = (phone || "").replace(/\D/g, "");
+      const e = (email || "").trim().toLowerCase();
+      const n = (name || "").trim().toLowerCase();
+      if (p && e) return `${p}_${e}`;
+      if (p && n) return `${p}_${n}`;
+      return null;
+    };
 
     // 1. Process PartnerApplication DB records
     for (const item of partnerAppList) {
       if (item.id && !seenIds.has(item.id)) {
         seenIds.add(item.id);
+        const compKey = makeKey(item.phone || item.mobileNumber, item.email || item.emailAddress, item.applicantName || item.fullName);
+        if (compKey) seenCompositeKeys.add(compKey);
+
         const resolvedType = (item.type === "PARTNER" || item.type === "DEALERSHIP") ? "DEALERSHIP" : "FRANCHISE";
         combined.push({
           id: item.id,
@@ -55,7 +69,6 @@ export async function getPartnershipsAction() {
           notes: item.notes || null,
           createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt),
           updatedAt: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : String(item.updatedAt || item.createdAt),
-          // Fallbacks for UI
           fullName: item.applicantName || item.fullName || "N/A",
           contactPersonName: item.applicantName || item.contactPersonName,
           mobileNumber: item.phone || item.mobileNumber || "N/A",
@@ -71,7 +84,12 @@ export async function getPartnershipsAction() {
     // 2. Process legacy PartnershipApplication DB records
     for (const item of legacyAppList) {
       if (item.id && !seenIds.has(item.id)) {
+        const compKey = makeKey(item.phone || item.mobileNumber, item.email || item.emailAddress, item.fullName || item.contactPersonName);
+        if (compKey && seenCompositeKeys.has(compKey)) continue;
+
         seenIds.add(item.id);
+        if (compKey) seenCompositeKeys.add(compKey);
+
         const legacyType = (item.type === "DEALERSHIP" || item.type === "PARTNER") ? "DEALERSHIP" : "FRANCHISE";
         combined.push({
           id: item.id,
@@ -88,7 +106,6 @@ export async function getPartnershipsAction() {
           notes: item.notes || null,
           createdAt: item.createdAt instanceof Date ? item.createdAt.toISOString() : String(item.createdAt),
           updatedAt: item.updatedAt instanceof Date ? item.updatedAt.toISOString() : String(item.updatedAt || item.createdAt),
-          // Fallbacks
           fullName: item.fullName || item.contactPersonName || "N/A",
           contactPersonName: item.contactPersonName || item.fullName,
           mobileNumber: item.phone || item.mobileNumber || "N/A",
@@ -107,7 +124,12 @@ export async function getPartnershipsAction() {
     // 3. Process JSON file records
     for (const item of jsonList) {
       if (item.id && !seenIds.has(item.id)) {
+        const compKey = makeKey(item.phone || item.mobileNumber, item.email || item.emailAddress, item.applicantName || item.fullName);
+        if (compKey && seenCompositeKeys.has(compKey)) continue;
+
         seenIds.add(item.id);
+        if (compKey) seenCompositeKeys.add(compKey);
+
         const resolvedType = (item.type === "PARTNER" || item.type === "DEALERSHIP") ? "DEALERSHIP" : "FRANCHISE";
         combined.push({
           ...item,
