@@ -41,23 +41,27 @@ export async function POST(req: Request) {
       status: "NEW",
     };
 
-    // Save to File Store fallback
-    const fileRecord = saveEligibilityLead(payload);
-
-    // Save to Prisma DB
-    let dbRecord;
+    // Save to Prisma DB first as primary storage
+    let record;
     try {
-      dbRecord = await (prisma as any).eligibilityLead.create({
-        data: payload,
-      });
+      if ((prisma as any).eligibilityLead) {
+        record = await (prisma as any).eligibilityLead.create({
+          data: payload,
+        });
+      }
     } catch (dbError) {
-      console.warn("[EligibilityLead API] DB insertion notice (file store active):", dbError);
+      console.warn("[EligibilityLead API] DB insertion notice (falling back to file store):", dbError);
+    }
+
+    // Fallback to File Store ONLY if DB save did not occur
+    if (!record) {
+      record = saveEligibilityLead(payload);
     }
 
     return NextResponse.json({
       success: true,
       message: "Congratulations! Your Consumer ID is pre-qualified for PM Surya Ghar Subsidy.",
-      data: dbRecord || fileRecord,
+      data: record,
     });
   } catch (error: any) {
     console.error("[EligibilityLead API Error]:", error);
@@ -80,11 +84,26 @@ export async function GET() {
 
     const fileLeads = getAllEligibilityLeads();
 
-    // Merge DB and File Store leads seamlessly without duplicates
+    // Smart deduplication: Merge DB and File Store leads seamlessly
     const combinedMap = new Map();
-    [...fileLeads, ...dbLeads].forEach((item) => {
+    const existingCompositeKeys = new Set();
+
+    dbLeads.forEach((item) => {
       if (item && item.id) {
         combinedMap.set(item.id, item);
+        const compKey = `${(item.consumerNumber || "").trim()}_${(item.phone || "").trim()}`;
+        if (compKey !== "_") existingCompositeKeys.add(compKey);
+      }
+    });
+
+    fileLeads.forEach((item) => {
+      if (item && item.id) {
+        const compKey = `${(item.consumerNumber || "").trim()}_${(item.phone || "").trim()}`;
+        // Avoid adding duplicate file record if DB record or identical composite key exists
+        if (!combinedMap.has(item.id) && !existingCompositeKeys.has(compKey)) {
+          combinedMap.set(item.id, item);
+          if (compKey !== "_") existingCompositeKeys.add(compKey);
+        }
       }
     });
 

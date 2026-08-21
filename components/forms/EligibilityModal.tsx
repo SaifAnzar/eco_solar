@@ -78,6 +78,7 @@ export default function EligibilityModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setErrorMessage(null);
 
     const cleanConsumerNumber = consumerNumber.replace(/\D/g, "").trim();
