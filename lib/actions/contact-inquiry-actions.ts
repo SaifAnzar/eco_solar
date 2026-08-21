@@ -6,6 +6,7 @@ import {
   getAllLeads,
   updateContactInquiryStatus,
   deleteContactInquiry,
+  deleteContactInquiryByPhone,
   ContactInquiryStatus,
   ContactInquiry,
 } from "@/lib/data-store";
@@ -27,24 +28,11 @@ export interface SubmitInquiryInput {
 
 export async function submitContactInquiryAction(input: SubmitInquiryInput) {
   try {
-    // 1. Save to File DataStore (Fallback & instant storage)
-    const saved = saveContactInquiry({
-      fullName: input.fullName,
-      phone: input.phone,
-      email: input.email || "",
-      location: input.location,
-      discomRegion: input.discomRegion || "",
-      systemType: input.systemType || "Rooftop Solar",
-      monthlyBill: input.monthlyBill || "",
-      rooftopArea: input.rooftopArea || "",
-      message: input.message || "",
-      inquiryType: input.inquiryType || (input.message?.includes("SITE VISIT") ? "SITE_VISIT" : "GENERAL_CONTACT"),
-    });
-
-    // 2. Persist to PostgreSQL Prisma DB if connection active
+    // 1. Try saving to PostgreSQL DB first as primary storage
+    let dbRecord;
     try {
       if (prisma) {
-        await prisma.siteVisitInquiry.create({
+        dbRecord = await prisma.siteVisitInquiry.create({
           data: {
             fullName: input.fullName,
             mobileNumber: input.phone,
@@ -57,7 +45,24 @@ export async function submitContactInquiryAction(input: SubmitInquiryInput) {
         });
       }
     } catch (dbErr) {
-      console.warn("[Contact Action] Prisma DB save notice (non-fatal):", dbErr);
+      console.warn("[Contact Action] Prisma DB save notice (falling back to file store):", dbErr);
+    }
+
+    // 2. Fallback to File DataStore ONLY if DB save failed
+    let saved: any = dbRecord;
+    if (!saved) {
+      saved = saveContactInquiry({
+        fullName: input.fullName,
+        phone: input.phone,
+        email: input.email || "",
+        location: input.location,
+        discomRegion: input.discomRegion || "",
+        systemType: input.systemType || "Rooftop Solar",
+        monthlyBill: input.monthlyBill || "",
+        rooftopArea: input.rooftopArea || "",
+        message: input.message || "",
+        inquiryType: input.inquiryType || (input.message?.includes("SITE VISIT") ? "SITE_VISIT" : "GENERAL_CONTACT"),
+      });
     }
 
     revalidatePath("/admin");
@@ -71,23 +76,6 @@ export async function submitContactInquiryAction(input: SubmitInquiryInput) {
 
 export async function getContactInquiriesAction() {
   try {
-    const fileList = getAllContactInquiries();
-    const leadList = getAllLeads().map((l) => ({
-      id: l.leadId,
-      fullName: l.customerName,
-      phone: l.phone,
-      email: l.email || "",
-      location: l.locationLabel || l.address || "Odisha",
-      discomRegion: l.discom || "TPCODL",
-      systemType: `${l.calculation?.systemKw || 50} kW Commercial / Solar Plant`,
-      monthlyBill: l.calculation?.monthlySavingsRs ? `₹${l.calculation.monthlySavingsRs.toLocaleString()}/month savings` : "",
-      rooftopArea: l.calculation?.requiredRoofAreaSqFt ? `${l.calculation.requiredRoofAreaSqFt} sq.ft` : "",
-      message: `Solar / Commercial Proposal Request for ${l.calculation?.systemKw || 50} kW (${l.address || l.locationLabel || "Odisha"})`,
-      inquiryType: "SITE_VISIT" as const,
-      status: "NEW" as ContactInquiryStatus,
-      createdAt: l.createdAt || new Date().toISOString(),
-    }));
-
     let dbList: any[] = [];
 
     try {
@@ -117,12 +105,58 @@ export async function getContactInquiriesAction() {
       console.warn("[Get Contact Action] Prisma DB query notice:", dbErr);
     }
 
-    // Merge and deduplicate by phone/id
+    const fileList = getAllContactInquiries();
+    const leadList = getAllLeads().map((l) => ({
+      id: l.leadId,
+      fullName: l.customerName,
+      phone: l.phone,
+      email: l.email || "",
+      location: l.locationLabel || l.address || "Odisha",
+      discomRegion: l.discom || "TPCODL",
+      systemType: `${l.calculation?.systemKw || 50} kW Commercial / Solar Plant`,
+      monthlyBill: l.calculation?.monthlySavingsRs ? `₹${l.calculation.monthlySavingsRs.toLocaleString()}/month savings` : "",
+      rooftopArea: l.calculation?.requiredRoofAreaSqFt ? `${l.calculation.requiredRoofAreaSqFt} sq.ft` : "",
+      message: `Solar / Commercial Proposal Request for ${l.calculation?.systemKw || 50} kW (${l.address || l.locationLabel || "Odisha"})`,
+      inquiryType: "SITE_VISIT" as const,
+      status: "NEW" as ContactInquiryStatus,
+      createdAt: l.createdAt || new Date().toISOString(),
+    }));
+
+    // Merge and deduplicate DB, Lead, and File records seamlessly
     const combinedMap = new Map<string, any>();
-    [...dbList, ...leadList, ...fileList].forEach((item) => {
-      const key = item.id || `${item.phone}_${item.createdAt}`;
-      if (!combinedMap.has(key)) {
-        combinedMap.set(key, item);
+    const seenCompositeKeys = new Set<string>();
+
+    const makeKey = (phone?: string, name?: string) => {
+      const p = (phone || "").replace(/\D/g, "");
+      const n = (name || "").trim().toLowerCase();
+      return p ? `${p}_${n}` : null;
+    };
+
+    dbList.forEach((item) => {
+      if (item && item.id) {
+        combinedMap.set(item.id, item);
+        const key = makeKey(item.phone, item.fullName);
+        if (key) seenCompositeKeys.add(key);
+      }
+    });
+
+    leadList.forEach((item) => {
+      if (item && item.id) {
+        const key = makeKey(item.phone, item.fullName);
+        if (!combinedMap.has(item.id) && (!key || !seenCompositeKeys.has(key))) {
+          combinedMap.set(item.id, item);
+          if (key) seenCompositeKeys.add(key);
+        }
+      }
+    });
+
+    fileList.forEach((item) => {
+      if (item && item.id) {
+        const key = makeKey(item.phone, item.fullName);
+        if (!combinedMap.has(item.id) && (!key || !seenCompositeKeys.has(key))) {
+          combinedMap.set(item.id, item);
+          if (key) seenCompositeKeys.add(key);
+        }
       }
     });
 
@@ -170,19 +204,23 @@ export async function deleteContactInquiryAction(id: string) {
   try {
     let ok = false;
 
-    // 1. Delete from PostgreSQL DB if present
+    // 1. Try deleting from PostgreSQL DB if present and clean up matching file store item
     try {
       if (prisma) {
-        await prisma.siteVisitInquiry.delete({
-          where: { id },
-        });
-        ok = true;
+        const dbItem = await prisma.siteVisitInquiry.findUnique({ where: { id } });
+        if (dbItem) {
+          await prisma.siteVisitInquiry.delete({ where: { id } });
+          ok = true;
+          if (dbItem.mobileNumber) {
+            deleteContactInquiryByPhone(dbItem.mobileNumber);
+          }
+        }
       }
     } catch (dbErr) {
       console.warn("[Delete Contact Action] DB delete notice (non-fatal):", dbErr);
     }
 
-    // 2. Delete from JSON file storage if present
+    // 2. Try deleting from JSON file storage
     const fileOk = deleteContactInquiry(id);
     if (fileOk) ok = true;
 

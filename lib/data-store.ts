@@ -223,6 +223,23 @@ export function deleteContactInquiry(id: string): boolean {
   return true;
 }
 
+export function deleteContactInquiryByPhone(phone: string): boolean {
+  const store = readContactInquiries();
+  const cleanPhone = (phone || "").replace(/\D/g, "");
+  if (!cleanPhone) return false;
+  let deletedAny = false;
+  Object.keys(store).forEach((key) => {
+    if ((store[key].phone || "").replace(/\D/g, "") === cleanPhone) {
+      delete store[key];
+      deletedAny = true;
+    }
+  });
+  if (deletedAny) {
+    writeContactInquiries(store);
+  }
+  return deletedAny;
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Lead Store
