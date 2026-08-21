@@ -7,9 +7,63 @@ import {
   updateContactInquiryStatus,
   deleteContactInquiry,
   deleteContactInquiryByPhone,
+  deleteLead,
+  deleteLeadByPhone,
   ContactInquiryStatus,
   ContactInquiry,
 } from "@/lib/data-store";
+
+export async function deleteContactInquiryAction(id: string) {
+  try {
+    let ok = false;
+    let targetPhone: string | null = null;
+
+    // 1. Check PostgreSQL DB first
+    try {
+      if (prisma) {
+        const dbItem = await prisma.siteVisitInquiry.findUnique({ where: { id } });
+        if (dbItem) {
+          targetPhone = dbItem.mobileNumber;
+          await prisma.siteVisitInquiry.delete({ where: { id } });
+          ok = true;
+        }
+      }
+    } catch (dbErr) {
+      console.warn("[Delete Contact Action] DB delete notice (non-fatal):", dbErr);
+    }
+
+    // 2. Check contact-inquiries.json for matching ID
+    const fileStore = getAllContactInquiries();
+    const targetInquiry = fileStore.find((item) => item.id === id);
+    if (targetInquiry && targetInquiry.phone) {
+      targetPhone = targetInquiry.phone;
+    }
+
+    // 3. Check leads.json for matching ID
+    const leadStore = getAllLeads();
+    const targetLead = leadStore.find((l) => l.leadId === id);
+    if (targetLead && targetLead.phone) {
+      targetPhone = targetLead.phone;
+    }
+
+    // Direct deletion by ID
+    if (deleteContactInquiry(id)) ok = true;
+    if (deleteLead(id)) ok = true;
+
+    // Cross-deletion by phone across ALL file stores to ensure zero reappearance
+    if (targetPhone) {
+      deleteContactInquiryByPhone(targetPhone);
+      deleteLeadByPhone(targetPhone);
+      ok = true;
+    }
+
+    revalidatePath("/admin/contact-leads");
+    return { success: ok || true };
+  } catch (error: any) {
+    console.error("[Delete Contact Error]:", error);
+    return { success: false, error: error.message || "Failed to delete inquiry." };
+  }
+}
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -197,37 +251,5 @@ export async function updateContactInquiryStatusAction(id: string, status: Conta
   } catch (error: any) {
     console.error("[Update Contact Status Error]:", error);
     return { success: false, error: error.message || "Failed to update status." };
-  }
-}
-
-export async function deleteContactInquiryAction(id: string) {
-  try {
-    let ok = false;
-
-    // 1. Try deleting from PostgreSQL DB if present and clean up matching file store item
-    try {
-      if (prisma) {
-        const dbItem = await prisma.siteVisitInquiry.findUnique({ where: { id } });
-        if (dbItem) {
-          await prisma.siteVisitInquiry.delete({ where: { id } });
-          ok = true;
-          if (dbItem.mobileNumber) {
-            deleteContactInquiryByPhone(dbItem.mobileNumber);
-          }
-        }
-      }
-    } catch (dbErr) {
-      console.warn("[Delete Contact Action] DB delete notice (non-fatal):", dbErr);
-    }
-
-    // 2. Try deleting from JSON file storage
-    const fileOk = deleteContactInquiry(id);
-    if (fileOk) ok = true;
-
-    revalidatePath("/admin/contact-leads");
-    return { success: ok || true };
-  } catch (error: any) {
-    console.error("[Delete Contact Error]:", error);
-    return { success: false, error: error.message || "Failed to delete inquiry." };
   }
 }

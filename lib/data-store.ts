@@ -294,6 +294,23 @@ export function deleteLead(leadId: string): boolean {
   return true;
 }
 
+export function deleteLeadByPhone(phone: string): boolean {
+  const store = readLeads();
+  const cleanPhone = (phone || "").replace(/\D/g, "");
+  if (!cleanPhone) return false;
+  let deletedAny = false;
+  Object.keys(store).forEach((key) => {
+    if ((store[key].phone || "").replace(/\D/g, "") === cleanPhone) {
+      delete store[key];
+      deletedAny = true;
+    }
+  });
+  if (deletedAny) {
+    writeLeads(store);
+  }
+  return deletedAny;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Solar Config Store
 // ─────────────────────────────────────────────────────────────────────────────
