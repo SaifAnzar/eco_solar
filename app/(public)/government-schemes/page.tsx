@@ -6,9 +6,9 @@ import { Award, CheckCircle2, ArrowRight, ShieldCheck, FileText, Banknote, Perce
 
 export default function GovernmentSchemesPage() {
   const subsidyTable = [
-    { capacity: "1 kW Rooftop Solar", centralSubsidy: "Up to ₹30,000", estEpcCost: "₹65,000", netCost: "₹35,000" },
-    { capacity: "2 kW Rooftop Solar", centralSubsidy: "Up to ₹60,000", estEpcCost: "₹1,30,000", netCost: "₹70,000" },
-    { capacity: "3 kW & Above Rooftop Solar", centralSubsidy: "Up to ₹78,000 (Capped)", estEpcCost: "₹1,95,000", netCost: "₹1,17,000" },
+    { capacity: "1 kW Rooftop Solar", centralSubsidy: "₹30,000", stateSubsidy: "₹20,000", totalSubsidy: "₹50,000", estEpcCost: "₹65,000", netCost: "₹15,000" },
+    { capacity: "2 kW Rooftop Solar", centralSubsidy: "₹60,000", stateSubsidy: "₹40,000", totalSubsidy: "₹1,00,000", estEpcCost: "₹1,30,000", netCost: "₹30,000" },
+    { capacity: "3 kW & Above Rooftop Solar", centralSubsidy: "₹78,000 (Capped)", stateSubsidy: "₹50,000 (Capped)", totalSubsidy: "₹1,28,000", estEpcCost: "₹1,95,000", netCost: "₹67,000" },
   ];
 
   const eligibilityCriteria = [
@@ -51,11 +51,11 @@ export default function GovernmentSchemesPage() {
       <section className="bg-slate-900 text-white py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
           <span className="text-xs font-mono uppercase tracking-widest text-amber-400 font-bold px-3 py-1 bg-amber-400/10 border border-amber-400/20 rounded-full inline-block">
-            NATIONAL SOLAR MISSION
+            NATIONAL SOLAR MISSION + ODISHA STATE SCHEME
           </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">PM Surya Ghar Muft Bijli Yojana</h1>
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">PM Surya Ghar &amp; Odisha State Subsidy</h1>
           <p className="text-sm sm:text-base text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Government of India scheme providing up to ₹78,000 central subsidy for residential rooftop solar installations. As an empanelled installer across all 4 Odisha DISCOMs, Pragati EcoSolar manages your complete portal application.
+            Combined Central Government (up to ₹78,000) &amp; Odisha State Government (up to ₹50,000) subsidies — total benefits up to <strong>₹1,28,000</strong> for residential rooftop solar.
           </p>
         </div>
       </section>
@@ -64,8 +64,8 @@ export default function GovernmentSchemesPage() {
       <section className="py-20 bg-white">
         <div className="max-w-5xl mx-auto px-4 space-y-8">
           <div className="text-center space-y-2">
-            <span className="text-xs font-mono uppercase text-emerald-700 font-bold tracking-widest">CENTRAL GOVERNMENT SUBSIDY RATES</span>
-            <h2 className="text-3xl font-extrabold text-slate-900">PM Surya Ghar Subsidy Breakdown</h2>
+            <span className="text-xs font-mono uppercase text-emerald-700 font-bold tracking-widest">CENTRAL &amp; STATE GOVERNMENT SUBSIDY RATES</span>
+            <h2 className="text-3xl font-extrabold text-slate-900">PM Surya Ghar &amp; Odisha State Subsidy Breakdown</h2>
           </div>
 
           <div className="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
@@ -73,18 +73,22 @@ export default function GovernmentSchemesPage() {
               <thead className="bg-slate-900 text-white uppercase">
                 <tr>
                   <th className="py-4 px-4">System Capacity</th>
-                  <th className="py-4 px-4">Central Subsidy Amount</th>
+                  <th className="py-4 px-4 text-emerald-300">Central Subsidy</th>
+                  <th className="py-4 px-4 text-blue-300">Odisha State Subsidy</th>
+                  <th className="py-4 px-4 text-amber-300">Total Subsidy</th>
                   <th className="py-4 px-4">Est. Gross EPC Cost</th>
-                  <th className="py-4 px-4">Net Out-of-Pocket Cost</th>
+                  <th className="py-4 px-4 text-emerald-400 font-extrabold">Net Out-of-Pocket Cost</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800 font-sans">
                 {subsidyTable.map((row, idx) => (
                   <tr key={idx} className="hover:bg-slate-50 font-mono text-xs">
                     <td className="py-4 px-4 font-bold text-slate-900 font-sans text-sm">{row.capacity}</td>
-                    <td className="py-4 px-4 text-emerald-600 font-extrabold text-sm">{row.centralSubsidy}</td>
+                    <td className="py-4 px-4 text-emerald-600 font-bold text-sm">{row.centralSubsidy}</td>
+                    <td className="py-4 px-4 text-blue-600 font-bold text-sm">{row.stateSubsidy}</td>
+                    <td className="py-4 px-4 text-amber-600 font-extrabold text-sm">{row.totalSubsidy}</td>
                     <td className="py-4 px-4 text-slate-500 line-through">{row.estEpcCost}</td>
-                    <td className="py-4 px-4 text-amber-700 font-extrabold text-sm">{row.netCost}</td>
+                    <td className="py-4 px-4 text-emerald-700 font-extrabold text-sm">{row.netCost}</td>
                   </tr>
                 ))}
               </tbody>
@@ -92,6 +96,7 @@ export default function GovernmentSchemesPage() {
           </div>
         </div>
       </section>
+
 
       {/* 3. Eligibility Criteria */}
       <section className="py-16 bg-[#FAFAFA]">

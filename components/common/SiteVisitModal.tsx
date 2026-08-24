@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { X, Calendar, MapPin, CheckCircle2, ShieldCheck, Zap, Phone, Loader2, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { submitContactInquiryAction } from "@/lib/actions/contact-inquiry-actions";
@@ -11,6 +11,7 @@ interface SiteVisitModalProps {
 }
 
 export default function SiteVisitModal({ isOpen, onClose }: SiteVisitModalProps) {
+  const dateInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
@@ -23,6 +24,7 @@ export default function SiteVisitModal({ isOpen, onClose }: SiteVisitModalProps)
     preferredDate: "",
     message: "",
   });
+
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -206,15 +208,107 @@ export default function SiteVisitModal({ isOpen, onClose }: SiteVisitModalProps)
                   </div>
                 </div>
 
-                <div className="space-y-1 text-xs">
-                  <label className="font-bold text-slate-700">Preferred Inspection Date (Optional)</label>
-                  <input
-                    type="date"
-                    value={form.preferredDate}
-                    onChange={(e) => setForm({ ...form, preferredDate: e.target.value })}
-                    className="w-full p-3 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
-                  />
+                {/* Preferred Inspection Date Selection */}
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <label className="font-bold text-slate-700">Preferred Inspection Date (Optional)</label>
+                    <span className="text-[10px] font-mono text-slate-400">Select date or choose quick option</span>
+                  </div>
+
+                  {/* Quick Preset Buttons */}
+                  <div className="flex flex-wrap gap-2 text-[11px] font-mono">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const tomorrow = new Date();
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        setForm({ ...form, preferredDate: tomorrow.toISOString().split("T")[0] });
+                      }}
+                      className={`px-3 py-1.5 rounded-lg border transition-all ${
+                        form.preferredDate === new Date(Date.now() + 86400000).toISOString().split("T")[0]
+                          ? "bg-emerald-600 text-white border-emerald-600 font-bold shadow-sm"
+                          : "bg-white text-slate-700 border-slate-200 hover:border-emerald-500"
+                      }`}
+                    >
+                      📅 Tomorrow
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const in2Days = new Date();
+                        in2Days.setDate(in2Days.getDate() + 2);
+                        setForm({ ...form, preferredDate: in2Days.toISOString().split("T")[0] });
+                      }}
+                      className={`px-3 py-1.5 rounded-lg border transition-all ${
+                        form.preferredDate === new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0]
+                          ? "bg-emerald-600 text-white border-emerald-600 font-bold shadow-sm"
+                          : "bg-white text-slate-700 border-slate-200 hover:border-emerald-500"
+                      }`}
+                    >
+                      🗓️ In 2 Days
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const d = new Date();
+                        const day = d.getDay();
+                        const diff = d.getDate() + (6 - day + (day === 6 ? 7 : 0));
+                        const sat = new Date(d.setDate(diff));
+                        setForm({ ...form, preferredDate: sat.toISOString().split("T")[0] });
+                      }}
+                      className="px-3 py-1.5 rounded-lg border bg-white text-slate-700 border-slate-200 hover:border-emerald-500 transition-all"
+                    >
+                      🎉 Coming Weekend
+                    </button>
+                  </div>
+
+                  {/* Custom Date Input displaying explicit DD / MM / YYYY */}
+                  <div
+                    onClick={() => {
+                      try {
+                        dateInputRef.current?.showPicker?.();
+                      } catch (err) {}
+                    }}
+                    className="relative flex items-center bg-white border border-slate-200 rounded-xl p-3 cursor-pointer hover:border-emerald-500 transition-all shadow-sm group"
+                  >
+                    <Calendar className="w-4 h-4 text-emerald-600 shrink-0 mr-2.5" />
+                    <span className={`text-xs font-mono flex-1 ${form.preferredDate ? "text-slate-900 font-extrabold" : "text-slate-500"}`}>
+                      {form.preferredDate
+                        ? new Date(form.preferredDate).toLocaleDateString("en-IN", { day: "2-digit", month: "2-digit", year: "numeric" }) + " (" + new Date(form.preferredDate).toLocaleDateString("en-IN", { weekday: "short" }) + ")"
+                        : "DD / MM / YYYY  (Click to pick inspection date)"}
+                    </span>
+                    <input
+                      ref={dateInputRef}
+                      type="date"
+                      min={new Date().toISOString().split("T")[0]}
+                      value={form.preferredDate}
+                      onChange={(e) => setForm({ ...form, preferredDate: e.target.value })}
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                    />
+                    <span className="text-[11px] font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 group-hover:bg-emerald-600 group-hover:text-white transition-all font-bold">
+                      Pick Date 📅
+                    </span>
+                  </div>
+
+                  {form.preferredDate && (
+                    <div className="text-[11px] font-mono text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 flex items-center justify-between">
+                      <span>
+                        Selected: <strong>{new Date(form.preferredDate).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}</strong>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setForm({ ...form, preferredDate: "" })}
+                        className="text-slate-400 hover:text-rose-600 underline text-[10px] ml-2"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  )}
+
                 </div>
+
 
                 <button
                   type="submit"

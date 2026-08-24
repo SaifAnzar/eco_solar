@@ -183,13 +183,6 @@ export default function Header() {
       iconBg: "bg-amber-50 text-amber-600 border-amber-200",
     },
     {
-      name: "About Us & Story",
-      desc: "Odisha solar leadership, DISCOM empanelment & core team",
-      href: "/about",
-      icon: Info,
-      iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200",
-    },
-    {
       name: "Projects Portfolio",
       desc: "120+ real installation site photos & videos across Odisha",
       href: "/projects",
@@ -225,14 +218,17 @@ export default function Header() {
     isDropdown?: boolean;
     dropdownType?: "services" | "partnerships" | "more";
   }> = [
+    // Non-Dropdown Navigation Group (Left Side)
+    { label: "About Us", href: "/about" },
+    { label: "Residential", href: "/residential" },
+    { label: "Commercial", href: "/commercial" },
+    // Dropdown Navigation Group (Right Side)
     {
       label: "Our Services",
       href: "/services",
       isDropdown: true,
       dropdownType: "services",
     },
-    { label: "Residential", href: "/residential" },
-    { label: "Commercial", href: "/commercial" },
     {
       label: "Partnerships",
       href: "#",
@@ -246,6 +242,11 @@ export default function Header() {
       dropdownType: "more",
     },
   ];
+
+
+
+
+
 
   return (
     <>

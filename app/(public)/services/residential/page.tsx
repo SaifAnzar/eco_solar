@@ -13,11 +13,11 @@ export const metadata = {
 
 export default function ResidentialServicesPage() {
   const subsidyTiers = [
-    { kw: "1 kW", cost: "₹65,000", subsidy: "₹30,000", net: "₹35,000", units: "~120 Units", payback: "2.4 Years" },
-    { kw: "2 kW", cost: "₹1,25,000", subsidy: "₹60,000", net: "₹65,000", units: "~240 Units", payback: "2.3 Years" },
-    { kw: "3 kW", cost: "₹1,80,000", subsidy: "₹78,000", net: "₹1,02,000", units: "~360 Units", payback: "2.3 Years" },
-    { kw: "5 kW", cost: "₹2,85,000", subsidy: "₹78,000 (Cap)", net: "₹2,07,000", units: "~600 Units", payback: "2.8 Years" },
-    { kw: "10 kW", cost: "₹5,50,000", subsidy: "₹78,000 (Cap)", net: "₹4,72,000", units: "~1,200 Units", payback: "3.2 Years" },
+    { kw: "1 kW", cost: "₹65,000", centralSubsidy: "₹30,000", stateSubsidy: "₹20,000", totalSubsidy: "₹50,000", net: "₹15,000", units: "~120 Units", payback: "1.8 Years" },
+    { kw: "2 kW", cost: "₹1,30,000", centralSubsidy: "₹60,000", stateSubsidy: "₹40,000", totalSubsidy: "₹1,00,000", net: "₹30,000", units: "~240 Units", payback: "1.5 Years" },
+    { kw: "3 kW", cost: "₹1,95,000", centralSubsidy: "₹78,000", stateSubsidy: "₹50,000", totalSubsidy: "₹1,28,000", net: "₹67,000", units: "~360 Units", payback: "1.8 Years" },
+    { kw: "5 kW", cost: "₹3,15,000", centralSubsidy: "₹78,000 (Cap)", stateSubsidy: "₹50,000 (Cap)", totalSubsidy: "₹1,28,000", net: "₹1,87,000", units: "~600 Units", payback: "2.5 Years" },
+    { kw: "10 kW", cost: "₹6,00,000", centralSubsidy: "₹78,000 (Cap)", stateSubsidy: "₹50,000 (Cap)", totalSubsidy: "₹1,28,000", net: "₹4,72,000", units: "~1,200 Units", payback: "3.2 Years" },
   ];
 
   return (
@@ -28,7 +28,7 @@ export default function ResidentialServicesPage() {
         <div className="bg-white p-8 sm:p-12 rounded-3xl border border-slate-200 shadow-xl space-y-6">
           <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-mono font-bold">
             <Home className="w-3.5 h-3.5" />
-            <span>PM SURYA GHAR MUFT BIJLI YOJANA</span>
+            <span>PM SURYA GHAR + ODISHA STATE SUBSIDY AUTHORIZED</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
@@ -36,7 +36,7 @@ export default function ResidentialServicesPage() {
           </h1>
 
           <p className="text-slate-600 text-base max-w-3xl leading-relaxed">
-            Eliminate your monthly electricity bill with high-efficiency rooftop solar under PM Surya Ghar. Pragati EcoSolar handles 100% of your National Portal subsidy registration, Tier-1 Waaree/Adani TOPCon hardware supply, structural installation, and net-metering.
+            Eliminate your monthly electricity bill with high-efficiency rooftop solar under PM Surya Ghar &amp; Odisha State Subsidy. Enjoy up to <strong>₹1,28,000 total combined subsidy</strong> (Central ₹78,000 + Odisha State ₹50,000). Pragati EcoSolar handles 100% of your National Portal &amp; DISCOM subsidy processing.
           </p>
 
           <div className="pt-2 flex flex-wrap gap-4">
@@ -95,14 +95,14 @@ export default function ResidentialServicesPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-4">
             <div>
               <span className="text-xs font-mono uppercase text-emerald-700 font-bold tracking-wider">
-                CENTRAL FINANCIAL ASSISTANCE (CFA)
+                CENTRAL + ODISHA STATE SUBSIDY BREAKDOWN
               </span>
               <h2 className="text-2xl font-bold text-slate-900 mt-1">
-                PM Surya Ghar Subsidy Breakdown Table
+                PM Surya Ghar &amp; Odisha State Subsidy Table
               </h2>
             </div>
             <span className="text-xs font-mono bg-emerald-50 text-emerald-800 px-3 py-1 rounded-md border border-emerald-200 font-bold mt-2 sm:mt-0">
-              Direct Bank Transfer (DBT)
+              Up to ₹1,28,000 Combined Benefits
             </span>
           </div>
 
@@ -111,9 +111,11 @@ export default function ResidentialServicesPage() {
               <thead>
                 <tr className="border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[10px] bg-[#FAFAFA]">
                   <th className="py-3 px-4">System Size</th>
-                  <th className="py-3 px-4">Turnkey System Cost</th>
+                  <th className="py-3 px-4">Turnkey Cost</th>
                   <th className="py-3 px-4 text-emerald-700">Central Subsidy</th>
-                  <th className="py-3 px-4 text-amber-700">Net Cost Payable</th>
+                  <th className="py-3 px-4 text-blue-700">Odisha State Subsidy</th>
+                  <th className="py-3 px-4 text-amber-700">Total Subsidy</th>
+                  <th className="py-3 px-4 text-emerald-800 font-extrabold">Net Cost Payable</th>
                   <th className="py-3 px-4">Est. Generation</th>
                   <th className="py-3 px-4">Payback Horizon</th>
                 </tr>
@@ -122,9 +124,11 @@ export default function ResidentialServicesPage() {
                 {subsidyTiers.map((tier, idx) => (
                   <tr key={idx} className="hover:bg-slate-50 transition-colors">
                     <td className="py-4 px-4 font-bold text-slate-900 text-sm font-sans">{tier.kw}</td>
-                    <td className="py-4 px-4">{tier.cost}</td>
-                    <td className="py-4 px-4 font-bold text-emerald-700 bg-emerald-50/50">{tier.subsidy}</td>
-                    <td className="py-4 px-4 font-bold text-amber-700 text-sm">{tier.net}</td>
+                    <td className="py-4 px-4 text-slate-500 line-through">{tier.cost}</td>
+                    <td className="py-4 px-4 font-bold text-emerald-700 bg-emerald-50/50">{tier.centralSubsidy}</td>
+                    <td className="py-4 px-4 font-bold text-blue-700 bg-blue-50/50">{tier.stateSubsidy}</td>
+                    <td className="py-4 px-4 font-extrabold text-amber-700 bg-amber-50/50">{tier.totalSubsidy}</td>
+                    <td className="py-4 px-4 font-extrabold text-emerald-800 text-sm">{tier.net}</td>
                     <td className="py-4 px-4 text-slate-700">{tier.units}</td>
                     <td className="py-4 px-4 font-bold text-slate-900">{tier.payback}</td>
                   </tr>
@@ -133,6 +137,7 @@ export default function ResidentialServicesPage() {
             </table>
           </div>
         </div>
+
 
         {/* On-Grid vs Hybrid System Visual Comparison (Task 16) */}
         <SystemTypeComparison />

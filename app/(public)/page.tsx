@@ -4,7 +4,7 @@ import AboutSection from "@/components/home/AboutSection";
 import MetricsStrip from "@/components/home/MetricsStrip";
 import ServicesSection from "@/components/home/ServicesSection";
 import DiscomLiaison from "@/components/home/DiscomLiaison";
-import HardwarePartners from "@/components/home/HardwarePartners";
+import BrandLogos from "@/components/home/BrandLogos";
 import FaqAccordion from "@/components/home/FaqAccordion";
 import { getSiteSettings } from "@/lib/actions/admin-actions";
 
@@ -40,11 +40,17 @@ export default async function HomePage() {
       {/* 5. DISCOM LIAISON & ZONES */}
       <DiscomLiaison />
 
-      {/* 6. HARDWARE STANDARDS & EPC COMPLIANCE */}
-      <HardwarePartners />
+      {/* 6. TRUSTED BRAND PARTNERS SCROLLING LOGO MARQUEE */}
+      <section className="py-8 bg-white border-y border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <BrandLogos />
+        </div>
+      </section>
 
       {/* 7. FAQ ACCORDION */}
       <FaqAccordion />
     </div>
   );
 }
+
+

@@ -8,10 +8,10 @@ export default function ResidentialSolarPage() {
   const [selectedType, setSelectedType] = useState<"ongrid" | "offgrid" | "hybrid">("ongrid");
 
   const onGridPackages = [
-    { name: "Basic Home", capacity: "1 kW", area: "~100 sq.ft", subsidy: "Up to ₹30,000", epcCost: "₹65,000", netCost: "₹35,000" },
-    { name: "Standard Home", capacity: "2 kW", area: "~200 sq.ft", subsidy: "Up to ₹60,000", epcCost: "₹1,30,000", netCost: "₹70,000" },
-    { name: "Premium Home", capacity: "3 kW", area: "~300 sq.ft", subsidy: "Up to ₹78,000", epcCost: "₹1,95,000", netCost: "₹1,17,000" },
-    { name: "Max Power", capacity: "5 kW", area: "~500 sq.ft", subsidy: "Up to ₹78,000", epcCost: "₹3,15,000", netCost: "₹2,37,000" },
+    { name: "Basic Home", capacity: "1 kW", area: "~100 sq.ft", centralSubsidy: "₹30,000", stateSubsidy: "₹20,000", totalSubsidy: "₹50,000", epcCost: "₹65,000", netCost: "₹15,000" },
+    { name: "Standard Home", capacity: "2 kW", area: "~200 sq.ft", centralSubsidy: "₹60,000", stateSubsidy: "₹40,000", totalSubsidy: "₹1,00,000", epcCost: "₹1,30,000", netCost: "₹30,000" },
+    { name: "Premium Home", capacity: "3 kW", area: "~300 sq.ft", centralSubsidy: "₹78,000", stateSubsidy: "₹50,000", totalSubsidy: "₹1,28,000", epcCost: "₹1,95,000", netCost: "₹67,000" },
+    { name: "Max Power", capacity: "5 kW", area: "~500 sq.ft", centralSubsidy: "₹78,000 (Cap)", stateSubsidy: "₹50,000 (Cap)", totalSubsidy: "₹1,28,000", epcCost: "₹3,15,000", netCost: "₹1,87,000" },
   ];
 
   const offGridPackages = [
@@ -21,9 +21,9 @@ export default function ResidentialSolarPage() {
   ];
 
   const hybridPackages = [
-    { name: "Basic Hybrid", capacity: "2 kW", battery: "4.8 kWh", subsidy: "Up to ₹60,000", netCost: "₹1,35,000" },
-    { name: "Standard Hybrid", capacity: "3 kW", battery: "7.2 kWh", subsidy: "Up to ₹78,000", netCost: "₹1,95,000" },
-    { name: "Premium Hybrid", capacity: "5 kW", battery: "9.6 kWh", subsidy: "Up to ₹78,000", netCost: "₹3,10,000" },
+    { name: "Basic Hybrid", capacity: "2 kW", battery: "4.8 kWh", centralSubsidy: "₹60,000", stateSubsidy: "₹40,000", totalSubsidy: "₹1,00,000", epcCost: "₹1,95,000", netCost: "₹95,000" },
+    { name: "Standard Hybrid", capacity: "3 kW", battery: "7.2 kWh", centralSubsidy: "₹78,000", stateSubsidy: "₹50,000", totalSubsidy: "₹1,28,000", epcCost: "₹2,75,000", netCost: "₹1,47,000" },
+    { name: "Premium Hybrid", capacity: "5 kW", battery: "9.6 kWh", centralSubsidy: "₹78,000 (Cap)", stateSubsidy: "₹50,000 (Cap)", totalSubsidy: "₹1,28,000", epcCost: "₹3,95,000", netCost: "₹2,67,000" },
   ];
 
   return (
@@ -32,11 +32,11 @@ export default function ResidentialSolarPage() {
       <section className="bg-slate-900 text-white py-16 sm:py-20 text-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-4">
           <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full inline-block">
-            PM SURYA GHAR AUTHORIZED
+            PM SURYA GHAR + ODISHA STATE SUBSIDY AUTHORIZED
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">Rooftop Solar Solutions for Homes</h1>
           <p className="text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Lower your monthly electricity bill by up to 90%. We install complete rooftop solar packages across Odisha with full PM Surya Ghar subsidy processing.
+            Lower your monthly electricity bill by up to 90%. Enjoy combined Central (up to ₹78,000) &amp; Odisha State (up to ₹50,000) subsidies — total benefits up to <strong>₹1,28,000</strong>!
           </p>
         </div>
       </section>
@@ -90,7 +90,7 @@ export default function ResidentialSolarPage() {
           {selectedType === "ongrid" && (
             <div className="space-y-6">
               <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs text-emerald-900">
-                <span className="font-bold">✨ PM Surya Ghar Subsidy Eligible: Up to ₹78,000 Direct Central Bank Credit</span>
+                <span className="font-bold">✨ Combined Subsidy Eligible: Up to ₹1,28,000 (Central ₹78,000 + Odisha State ₹50,000)</span>
                 <span className="font-mono text-[11px] bg-white px-2.5 py-1 rounded border border-emerald-300">No Batteries Required</span>
               </div>
 
@@ -101,9 +101,11 @@ export default function ResidentialSolarPage() {
                       <th className="py-4 px-4">Package</th>
                       <th className="py-4 px-4">Capacity</th>
                       <th className="py-4 px-4">Roof Area</th>
-                      <th className="py-4 px-4">Central Subsidy</th>
+                      <th className="py-4 px-4 text-emerald-300">Central Subsidy</th>
+                      <th className="py-4 px-4 text-blue-300">Odisha State Subsidy</th>
+                      <th className="py-4 px-4 text-amber-300">Total Subsidy</th>
                       <th className="py-4 px-4">Gross EPC Cost</th>
-                      <th className="py-4 px-4">Net Out-of-Pocket</th>
+                      <th className="py-4 px-4 text-emerald-400 font-extrabold">Net Out-of-Pocket</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -112,9 +114,11 @@ export default function ResidentialSolarPage() {
                         <td className="py-4 px-4 font-bold text-slate-900 font-sans text-sm">{pkg.name}</td>
                         <td className="py-4 px-4 font-bold text-emerald-700">{pkg.capacity}</td>
                         <td className="py-4 px-4 text-slate-600">{pkg.area}</td>
-                        <td className="py-4 px-4 text-emerald-600 font-bold">{pkg.subsidy}</td>
+                        <td className="py-4 px-4 text-emerald-600 font-bold">{pkg.centralSubsidy}</td>
+                        <td className="py-4 px-4 text-blue-600 font-bold">{pkg.stateSubsidy}</td>
+                        <td className="py-4 px-4 text-amber-600 font-extrabold">{pkg.totalSubsidy}</td>
                         <td className="py-4 px-4 text-slate-500 line-through">{pkg.epcCost}</td>
-                        <td className="py-4 px-4 text-amber-700 font-bold text-sm">{pkg.netCost}</td>
+                        <td className="py-4 px-4 text-emerald-700 font-extrabold text-sm">{pkg.netCost}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -162,8 +166,8 @@ export default function ResidentialSolarPage() {
           {selectedType === "hybrid" && (
             <div className="space-y-6">
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl flex items-center justify-between text-xs text-blue-900">
-                <span className="font-bold">🔋 Combined Net-Metering Savings + Battery Power Backup for Blackout Protection</span>
-                <span className="font-mono text-[11px] bg-white px-2.5 py-1 rounded border border-blue-300">Subsidy Eligible</span>
+                <span className="font-bold">🔋 Combined Net-Metering Savings + Battery Power Backup + Combined Central &amp; State Subsidy</span>
+                <span className="font-mono text-[11px] bg-white px-2.5 py-1 rounded border border-blue-300">Up to ₹1,28,000 Subsidy</span>
               </div>
 
               <div className="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
@@ -173,8 +177,11 @@ export default function ResidentialSolarPage() {
                       <th className="py-4 px-4">Package</th>
                       <th className="py-4 px-4">Capacity</th>
                       <th className="py-4 px-4">Battery Bank</th>
-                      <th className="py-4 px-4">Central Subsidy</th>
-                      <th className="py-4 px-4">Net Price</th>
+                      <th className="py-4 px-4 text-emerald-300">Central Subsidy</th>
+                      <th className="py-4 px-4 text-blue-300">Odisha State Subsidy</th>
+                      <th className="py-4 px-4 text-amber-300">Total Subsidy</th>
+                      <th className="py-4 px-4">Gross EPC Cost</th>
+                      <th className="py-4 px-4 text-emerald-400 font-extrabold">Net Out-of-Pocket</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -183,8 +190,11 @@ export default function ResidentialSolarPage() {
                         <td className="py-4 px-4 font-bold text-slate-900 font-sans text-sm">{pkg.name}</td>
                         <td className="py-4 px-4 font-bold text-emerald-700">{pkg.capacity}</td>
                         <td className="py-4 px-4 text-amber-700 font-bold">{pkg.battery}</td>
-                        <td className="py-4 px-4 text-emerald-600 font-bold">{pkg.subsidy}</td>
-                        <td className="py-4 px-4 text-amber-700 font-bold text-sm">{pkg.netCost}</td>
+                        <td className="py-4 px-4 text-emerald-600 font-bold">{pkg.centralSubsidy}</td>
+                        <td className="py-4 px-4 text-blue-600 font-bold">{pkg.stateSubsidy}</td>
+                        <td className="py-4 px-4 text-amber-600 font-extrabold">{pkg.totalSubsidy}</td>
+                        <td className="py-4 px-4 text-slate-500 line-through">{pkg.epcCost}</td>
+                        <td className="py-4 px-4 text-emerald-700 font-extrabold text-sm">{pkg.netCost}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -192,6 +202,7 @@ export default function ResidentialSolarPage() {
               </div>
             </div>
           )}
+
 
           {/* Warranty & Support Block */}
           <div className="bg-white border border-slate-200 rounded-3xl p-8 space-y-6 shadow-sm">

@@ -16,7 +16,8 @@
   "stateSubsidyTier1Amount": 20000,
   "stateSubsidyTier2Kw": 2,
   "stateSubsidyTier2Amount": 40000,
-  "stateSubsidyTier3PlusAmount": 60000,
+  "stateSubsidyTier3PlusAmount": 50000,
+
   "equipmentBands": [
     {
       "minKw": 1,

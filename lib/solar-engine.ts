@@ -169,13 +169,14 @@ export function calculateOdishaStateSubsidy(
   const t1Amount = stateSubsidyConfig?.tier1Amount ?? 20000;
   const t2Kw = stateSubsidyConfig?.tier2Kw ?? 2;
   const t2Amount = stateSubsidyConfig?.tier2Amount ?? 40000;
-  const t3PlusAmount = stateSubsidyConfig?.tier3PlusAmount ?? 60000;
+  const t3PlusAmount = stateSubsidyConfig?.tier3PlusAmount ?? 50000;
 
   if (kw <= t1Kw) return t1Amount;
   if (kw === t2Kw) return t2Amount;
   if (kw >= 3) return t3PlusAmount; // Flat cap for 3kW to 10kW residential (Odisha State Top-up)
   return 0;
 }
+
 
 /**
  * Core solar quote calculation engine.
