@@ -17,14 +17,16 @@ export async function deleteContactInquiryAction(id: string) {
   try {
     let ok = false;
     let targetPhone: string | null = null;
+    let targetMsg: string | null = null;
 
     // 1. Check PostgreSQL DB first
     try {
       if (prisma) {
         const dbItem = await prisma.siteVisitInquiry.findUnique({ where: { id } });
-        if (dbItem) {
+        if (dbItem?.mobileNumber) {
           targetPhone = dbItem.mobileNumber;
-          await prisma.siteVisitInquiry.delete({ where: { id } });
+          targetMsg = dbItem.message || "";
+          await prisma.siteVisitInquiry.delete({ where: { id } }).catch(() => {});
           ok = true;
         }
       }
@@ -32,11 +34,25 @@ export async function deleteContactInquiryAction(id: string) {
       console.warn("[Delete Contact Action] DB delete notice (non-fatal):", dbErr);
     }
 
+    if (!targetPhone && prisma) {
+      try {
+        const quoteItem = await prisma.solarQuoteRequest.findUnique({ where: { id } });
+        if (quoteItem?.phone) {
+          targetPhone = quoteItem.phone;
+          await prisma.solarQuoteRequest.delete({ where: { id } }).catch(() => {});
+          ok = true;
+        }
+      } catch (dbErr) {
+        console.warn("[Delete Contact Action] DB quote delete notice (non-fatal):", dbErr);
+      }
+    }
+
     // 2. Check contact-inquiries.json for matching ID
     const fileStore = getAllContactInquiries();
     const targetInquiry = fileStore.find((item) => item.id === id);
     if (targetInquiry && targetInquiry.phone) {
       targetPhone = targetInquiry.phone;
+      if (!targetMsg) targetMsg = targetInquiry.message || "";
     }
 
     // 3. Check leads.json for matching ID
@@ -48,22 +64,55 @@ export async function deleteContactInquiryAction(id: string) {
 
     // Direct deletion by ID
     if (deleteContactInquiry(id)) ok = true;
-    if (deleteLead(id)) ok = true;
 
-    // Cross-deletion by phone across ALL file stores to ensure zero reappearance
+    // Precise purge by phone and type category so that deleting GENERAL CONTACT never touches FREE SITE VISIT
     if (targetPhone) {
-      deleteContactInquiryByPhone(targetPhone);
-      deleteLeadByPhone(targetPhone);
+      const cleanPhone = targetPhone.replace(/\D/g, "");
+      const isGeneral = (targetMsg || "").includes("GENERAL CONTACT INQUIRY");
+
+      if (cleanPhone && prisma) {
+        try {
+          if (isGeneral) {
+            await prisma.siteVisitInquiry.deleteMany({
+              where: {
+                mobileNumber: { contains: cleanPhone },
+                message: { contains: "GENERAL CONTACT INQUIRY" },
+              },
+            });
+          } else {
+            await prisma.siteVisitInquiry.deleteMany({
+              where: {
+                mobileNumber: { contains: cleanPhone },
+                NOT: { message: { contains: "GENERAL CONTACT INQUIRY" } },
+              },
+            });
+            await prisma.solarQuoteRequest.deleteMany({
+              where: { phone: { contains: cleanPhone } },
+            });
+          }
+        } catch (e) {
+          console.warn("[Delete Contact Action] DB purge notice:", e);
+        }
+      }
+
+      if (isGeneral) {
+        deleteContactInquiryByPhone(targetPhone);
+      } else {
+        deleteLeadByPhone(targetPhone);
+      }
       ok = true;
     }
 
     revalidatePath("/admin/contact-leads");
+    revalidatePath("/admin/leads");
+    revalidatePath("/admin");
     return { success: ok || true };
   } catch (error: any) {
     console.error("[Delete Contact Error]:", error);
     return { success: false, error: error.message || "Failed to delete inquiry." };
   }
 }
+
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -139,21 +188,30 @@ export async function getContactInquiriesAction() {
           take: 100,
         });
 
-        dbList = rawDb.map((item) => ({
-          id: item.id,
-          fullName: item.fullName,
-          phone: item.mobileNumber,
-          email: item.email || "",
-          location: `${item.district} (Pincode: ${item.pincode})`,
-          discomRegion: item.discom || item.district,
-          systemType: item.systemType || "Rooftop Solar",
-          monthlyBill: item.monthlyBill ? `₹${item.monthlyBill}/month` : "",
-          rooftopArea: item.roofAreaSqFt ? `${item.roofAreaSqFt} sq.ft` : "",
-          message: item.message || "Site Visit Request",
-          inquiryType: "SITE_VISIT" as const,
-          status: (item.status === "PENDING" ? "NEW" : item.status) as ContactInquiryStatus,
-          createdAt: item.createdAt.toISOString(),
-        }));
+        dbList = rawDb.map((item) => {
+          const msg = item.message || "";
+          const isGeneralContact =
+            msg.includes("GENERAL CONTACT INQUIRY") ||
+            (msg.toLowerCase().includes("contact") && !msg.toLowerCase().includes("site visit"));
+          const resolvedInquiryType = isGeneralContact ? ("GENERAL_CONTACT" as const) : ("SITE_VISIT" as const);
+
+          return {
+            id: item.id,
+            fullName: item.fullName,
+            phone: item.mobileNumber,
+            email: item.email || "",
+            location: `${item.district} (Pincode: ${item.pincode})`,
+            discomRegion: item.discom || item.district,
+            systemType: item.systemType || "Rooftop Solar",
+            monthlyBill: item.monthlyBill ? `₹${item.monthlyBill}/month` : "",
+            rooftopArea: item.roofAreaSqFt ? `${item.roofAreaSqFt} sq.ft` : "",
+            message: item.message || "Site Visit Request",
+            inquiryType: resolvedInquiryType,
+            status: (item.status === "PENDING" ? "NEW" : item.status) as ContactInquiryStatus,
+            createdAt: item.createdAt.toISOString(),
+          };
+        });
+
       }
     } catch (dbErr) {
       console.warn("[Get Contact Action] Prisma DB query notice:", dbErr);
@@ -180,23 +238,24 @@ export async function getContactInquiriesAction() {
     const combinedMap = new Map<string, any>();
     const seenCompositeKeys = new Set<string>();
 
-    const makeKey = (phone?: string, name?: string) => {
+    const makeKey = (phone?: string, name?: string, type?: string) => {
       const p = (phone || "").replace(/\D/g, "");
       const n = (name || "").trim().toLowerCase();
-      return p ? `${p}_${n}` : null;
+      const t = type || "SITE_VISIT";
+      return p ? `${p}_${n}_${t}` : null;
     };
 
     dbList.forEach((item) => {
       if (item && item.id) {
         combinedMap.set(item.id, item);
-        const key = makeKey(item.phone, item.fullName);
+        const key = makeKey(item.phone, item.fullName, item.inquiryType);
         if (key) seenCompositeKeys.add(key);
       }
     });
 
     leadList.forEach((item) => {
       if (item && item.id) {
-        const key = makeKey(item.phone, item.fullName);
+        const key = makeKey(item.phone, item.fullName, item.inquiryType);
         if (!combinedMap.has(item.id) && (!key || !seenCompositeKeys.has(key))) {
           combinedMap.set(item.id, item);
           if (key) seenCompositeKeys.add(key);
@@ -206,13 +265,14 @@ export async function getContactInquiriesAction() {
 
     fileList.forEach((item) => {
       if (item && item.id) {
-        const key = makeKey(item.phone, item.fullName);
+        const key = makeKey(item.phone, item.fullName, item.inquiryType);
         if (!combinedMap.has(item.id) && (!key || !seenCompositeKeys.has(key))) {
           combinedMap.set(item.id, item);
           if (key) seenCompositeKeys.add(key);
         }
       }
     });
+
 
     const mergedList = Array.from(combinedMap.values()).sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()

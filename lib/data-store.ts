@@ -145,6 +145,25 @@ export function deletePartnership(id: string): boolean {
   return true;
 }
 
+export function deletePartnershipByPhone(phone: string): boolean {
+  const store = readPartnerships();
+  const cleanPhone = (phone || "").replace(/\D/g, "");
+  if (!cleanPhone) return false;
+  let deletedAny = false;
+  Object.keys(store).forEach((key) => {
+    const itemPhone = (store[key].phone || store[key].mobileNumber || "").replace(/\D/g, "");
+    if (itemPhone === cleanPhone) {
+      delete store[key];
+      deletedAny = true;
+    }
+  });
+  if (deletedAny) {
+    writePartnerships(store);
+  }
+  return deletedAny;
+}
+
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Contact Inquiries Store
@@ -511,6 +530,27 @@ export function deleteEligibilityLead(id: string): boolean {
   writeEligibilityLeads(store);
   return true;
 }
+
+export function deleteEligibilityLeadByPhone(phone: string, consumerNumber?: string): boolean {
+  const store = readEligibilityLeads();
+  const cleanPhone = (phone || "").replace(/\D/g, "");
+  const cleanCa = (consumerNumber || "").trim();
+  if (!cleanPhone && !cleanCa) return false;
+  let deletedAny = false;
+  Object.keys(store).forEach((key) => {
+    const itemPhone = (store[key].phone || "").replace(/\D/g, "");
+    const itemCa = (store[key].consumerNumber || "").trim();
+    if ((cleanPhone && itemPhone === cleanPhone) || (cleanCa && itemCa === cleanCa)) {
+      delete store[key];
+      deletedAny = true;
+    }
+  });
+  if (deletedAny) {
+    writeEligibilityLeads(store);
+  }
+  return deletedAny;
+}
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Approved Network Partners Store

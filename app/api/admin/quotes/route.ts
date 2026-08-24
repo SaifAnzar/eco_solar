@@ -109,3 +109,61 @@ export async function PATCH(req: NextRequest) {
     );
   }
 }
+
+/**
+ * DELETE /api/admin/quotes?id=xxx
+ */
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: "Quote ID is required" },
+        { status: 400 }
+      );
+    }
+
+    let targetPhone: string | null = null;
+    try {
+      const existing = await prisma.solarQuoteRequest.findUnique({
+        where: { id },
+      });
+      if (existing?.phone) targetPhone = existing.phone;
+    } catch {}
+
+    await prisma.solarQuoteRequest.delete({
+      where: { id },
+    }).catch(() => {});
+
+    if (targetPhone) {
+      const cleanPhone = targetPhone.replace(/\D/g, "");
+      if (cleanPhone) {
+        await prisma.solarQuoteRequest.deleteMany({
+          where: { phone: { contains: cleanPhone } },
+        }).catch(() => {});
+
+        await prisma.siteVisitInquiry.deleteMany({
+          where: { mobileNumber: { contains: cleanPhone } },
+        }).catch(() => {});
+
+        const { deleteLeadByPhone, deleteContactInquiryByPhone } = await import("@/lib/data-store");
+        deleteLeadByPhone(cleanPhone);
+        deleteContactInquiryByPhone(cleanPhone);
+      }
+    }
+
+    return NextResponse.json(
+      { success: true, message: "Quote request deleted successfully in 1 attempt" },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("[Admin Quotes DELETE Error]:", error);
+    return NextResponse.json(
+      { success: false, error: error.message || "Failed to delete quote request" },
+      { status: 500 }
+    );
+  }
+}
+

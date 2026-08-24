@@ -93,24 +93,43 @@ export default function AdminEligibilityLeadsPage() {
       "Yes, Delete"
     );
     if (!confirmed) return;
+
+    const targetLead = leads.find((l) => l.id === id);
+    const targetPhone = (targetLead?.phone || "").replace(/\D/g, "");
+    const targetCa = (targetLead?.consumerNumber || "").trim();
+
+    setLeads((prev) =>
+      prev.filter((l) => {
+        if (l.id === id) return false;
+        const lPhone = (l.phone || "").replace(/\D/g, "");
+        const lCa = (l.consumerNumber || "").trim();
+        if (targetPhone && lPhone === targetPhone) return false;
+        if (targetCa && lCa === targetCa) return false;
+        return true;
+      })
+    );
+
     try {
       const res = await fetch(`/api/leads/eligibility?id=${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        setLeads((prev) => prev.filter((l) => l.id !== id));
         if (selectedLead && selectedLead.id === id) {
           setSelectedLead(null);
         }
-        showToast("Eligibility record deleted successfully!", "success");
+        showToast("Eligibility record deleted successfully in 1 attempt!", "success");
+        fetchLeads();
       } else {
         showToast("Failed to delete record.", "error");
+        fetchLeads();
       }
     } catch (err) {
       console.error("Failed to delete lead:", err);
       showToast("Error deleting record.", "error");
+      fetchLeads();
     }
   };
+
 
   // Metrics
   const totalChecks = leads.length;

@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Users, Filter, Download, MessageSquare, CheckCircle2, Search, Loader2 } from "lucide-react";
-import { getLeads, updateLeadStatus } from "@/lib/actions/admin-actions";
-import { showToast } from "@/lib/toast";
+import { Users, Filter, Download, MessageSquare, CheckCircle2, Search, Loader2, Trash2 } from "lucide-react";
+import { getLeads, updateLeadStatus, deleteLeadAction } from "@/lib/actions/admin-actions";
+import { showToast, showConfirmDialog } from "@/lib/toast";
 
 export default function AdminLeadsPage() {
   const [leads, setLeads] = useState<any[]>([]);
@@ -34,6 +34,34 @@ export default function AdminLeadsPage() {
       showToast(res.error || "Failed to update lead status.", "error");
     }
   };
+
+  const handleDeleteLead = async (id: string) => {
+    const confirmed = await showConfirmDialog(
+      "Delete Lead Record?",
+      "Are you sure you want to delete this lead inquiry record?",
+      "Yes, Delete"
+    );
+    if (!confirmed) return;
+
+    const targetItem = leads.find((l) => l.id === id);
+    const targetPhone = targetItem?.mobileNumber?.replace(/\D/g, "");
+
+    setLeads((prev) =>
+      prev.filter(
+        (l) => l.id !== id && (!targetPhone || (l.mobileNumber || "").replace(/\D/g, "") !== targetPhone)
+      )
+    );
+    const res = await deleteLeadAction(id);
+    if (res.success) {
+      showToast("Lead record deleted successfully!", "success");
+      fetchLeads();
+    } else {
+      showToast(res.error || "Failed to delete lead record.", "error");
+      fetchLeads();
+    }
+  };
+
+
 
   const exportCSV = () => {
     if (leads.length === 0) return;
@@ -219,16 +247,27 @@ export default function AdminLeadsPage() {
                         </select>
                       </td>
                       <td className="p-3.5">
-                        <a
-                          href={whatsappUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-lg transition-all shadow-sm"
-                        >
-                          <MessageSquare className="w-3.5 h-3.5" />
-                          <span>WhatsApp</span>
-                        </a>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={whatsappUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-lg transition-all shadow-sm"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" />
+                            <span>WhatsApp</span>
+                          </a>
+
+                          <button
+                            onClick={() => handleDeleteLead(l.id)}
+                            className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition-colors border border-rose-200 cursor-pointer"
+                            title="Delete Lead Record"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </td>
+
                     </tr>
                   );
                 })}

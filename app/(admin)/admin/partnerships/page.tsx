@@ -149,24 +149,44 @@ export default function AdminPartnershipsPage() {
       "Are you sure you want to delete this partner application submission?",
       "Yes, Delete"
     );
+
     if (!confirmed) return;
     setUpdatingId(id);
     setActionMessage(null);
+
+    const targetApp = applications.find((a) => a.id === id);
+    const targetPhone = (targetApp?.phone || targetApp?.mobileNumber || "").replace(/\D/g, "");
+    const targetEmail = (targetApp?.email || targetApp?.emailAddress || "").trim().toLowerCase();
+
+    setApplications((prev) =>
+      prev.filter((app) => {
+        if (app.id === id) return false;
+        const appPhone = (app.phone || app.mobileNumber || "").replace(/\D/g, "");
+        const appEmail = (app.email || app.emailAddress || "").trim().toLowerCase();
+        if (targetPhone && appPhone === targetPhone) return false;
+        if (targetEmail && appEmail === targetEmail) return false;
+        return true;
+      })
+    );
+
     try {
       const res = await deletePartnershipAction(id);
       if (res.success) {
-        setApplications((prev) => prev.filter((app) => app.id !== id));
         if (selectedApp?.id === id) setSelectedApp(null);
-        showToast("Application record deleted successfully!", "success");
+        showToast("Application record deleted successfully in 1 attempt!", "success");
+        fetchApplications();
       } else {
         showToast(res.error || "Failed to delete application.", "error");
+        fetchApplications();
       }
     } catch (err: any) {
       showToast(err.message || "Failed to delete application.", "error");
+      fetchApplications();
     } finally {
       setUpdatingId(null);
     }
   };
+
 
   // Helper to determine if app is Dealership
   const isDealership = (app: NormalizedPartnerApp) => app.type === "DEALERSHIP" || app.type === "PARTNER";

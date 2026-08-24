@@ -61,7 +61,7 @@ const DISTRICT_LIST = [
 ];
 
 export default function AdminNetworkPage() {
-  const [activeTab, setActiveTab] = useState<"FRANCHISE" | "DEALER">("FRANCHISE");
+  const [activeTab, setActiveTab] = useState<"ALL" | "FRANCHISE" | "DEALER">("ALL");
   const [partners, setPartners] = useState<ApprovedPartnerItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -108,7 +108,7 @@ export default function AdminNetworkPage() {
 
   const handleOpenAddModal = () => {
     setEditingPartner(null);
-    setType(activeTab);
+    setType(activeTab === "DEALER" ? "DEALER" : "FRANCHISE");
     setName("");
     setContactPerson("");
     setPhone("");
@@ -236,7 +236,7 @@ export default function AdminNetworkPage() {
         method: "DELETE",
       });
       if (res.ok) {
-        setPartners((prev) => prev.filter((p) => p.id !== id));
+        fetchPartners();
         showToast("Partner record deleted successfully!", "success");
       } else {
         showToast("Failed to delete partner record.", "error");
@@ -255,7 +255,7 @@ export default function AdminNetworkPage() {
 
   // Filtered List for Table
   const filteredPartners = partners.filter((p) => {
-    if (p.type !== activeTab) return false;
+    if (activeTab !== "ALL" && p.type !== activeTab) return false;
 
     const query = searchTerm.toLowerCase();
     const matchesQuery =
@@ -268,6 +268,7 @@ export default function AdminNetworkPage() {
 
     return matchesQuery && matchesDistrict;
   });
+
 
   return (
     <div className="space-y-8 p-4 sm:p-6 md:p-8 font-sans">
@@ -345,21 +346,33 @@ export default function AdminNetworkPage() {
         </div>
       </div>
 
-      {/* Two-Tab Switcher & Filter Bar */}
+      {/* Three-Tab Switcher & Filter Bar */}
       <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
         
-        {/* Two Tabs */}
-        <div className="inline-flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200 gap-1 w-full md:w-auto">
+        {/* Three Tabs */}
+        <div className="inline-flex flex-wrap items-center p-1 bg-slate-100 rounded-xl border border-slate-200 gap-1 w-full md:w-auto">
+          <button
+            onClick={() => setActiveTab("ALL")}
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+              activeTab === "ALL"
+                ? "bg-slate-900 text-amber-400 shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            All Outlets ({partners.length})
+          </button>
+
           <button
             onClick={() => setActiveTab("FRANCHISE")}
             className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
               activeTab === "FRANCHISE"
-                ? "bg-slate-900 text-amber-400 shadow-sm"
+                ? "bg-amber-600 text-slate-950 shadow-sm"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
             Franchise Outlets ({franchiseCount})
           </button>
+
           <button
             onClick={() => setActiveTab("DEALER")}
             className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
@@ -407,7 +420,7 @@ export default function AdminNetworkPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-mono font-bold text-slate-500 uppercase tracking-wider">
-                <th className="py-3.5 px-4">Partner Name</th>
+                <th className="py-3.5 px-4">Partner Name &amp; Type</th>
                 <th className="py-3.5 px-4">Contact Person</th>
                 <th className="py-3.5 px-4">District</th>
                 <th className="py-3.5 px-4">Full Address</th>
@@ -433,10 +446,22 @@ export default function AdminNetworkPage() {
               ) : (
                 filteredPartners.map((partner) => (
                   <tr key={partner.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3.5 px-4">
-                      <div className="font-bold text-slate-900">{partner.name}</div>
-                      <span className="text-[10px] font-mono text-slate-400">ID: {partner.id}</span>
+                    <td className="py-3.5 px-4 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-900">{partner.name}</span>
+                        <span
+                          className={`text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded border ${
+                            partner.type === "FRANCHISE"
+                              ? "bg-amber-100 text-amber-900 border-amber-300"
+                              : "bg-emerald-100 text-emerald-900 border-emerald-300"
+                          }`}
+                        >
+                          {partner.type === "FRANCHISE" ? "Franchise Store" : "Authorized Dealer"}
+                        </span>
+                      </div>
+                      <span className="block text-[10px] font-mono text-slate-400">ID: {partner.id}</span>
                     </td>
+
                     <td className="py-3.5 px-4 whitespace-nowrap">{partner.contactPerson || "N/A"}</td>
                     <td className="py-3.5 px-4 whitespace-nowrap">
                       <span className="font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">

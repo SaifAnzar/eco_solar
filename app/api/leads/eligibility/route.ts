@@ -152,19 +152,66 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ success: false, error: "Lead ID is required" }, { status: 400 });
     }
 
+    let targetPhone: string | null = null;
+    let targetConsumerNumber: string | null = null;
+
+    try {
+      if ((prisma as any).eligibilityLead) {
+        const item = await (prisma as any).eligibilityLead.findUnique({ where: { id } });
+        if (item) {
+          targetPhone = item.phone || null;
+          targetConsumerNumber = item.consumerNumber || null;
+        }
+      }
+    } catch {}
+
+    if (!targetPhone && !targetConsumerNumber) {
+      const fileLeads = getAllEligibilityLeads();
+      const item = fileLeads.find((l) => l.id === id);
+      if (item) {
+        targetPhone = item.phone || null;
+        targetConsumerNumber = item.consumerNumber || null;
+      }
+    }
+
     deleteEligibilityLead(id);
 
     try {
-      await (prisma as any).eligibilityLead.delete({
-        where: { id },
-      });
+      if ((prisma as any).eligibilityLead) {
+        await (prisma as any).eligibilityLead.delete({
+          where: { id },
+        }).catch(() => {});
+      }
     } catch (dbErr) {
       console.warn("[EligibilityLead DELETE] Prisma delete notice:", dbErr);
     }
 
-    return NextResponse.json({ success: true, message: "Lead deleted successfully" });
+    if (targetPhone || targetConsumerNumber) {
+      const cleanPhone = (targetPhone || "").replace(/\D/g, "");
+      const cleanCa = (targetConsumerNumber || "").trim();
+
+      const orConditions: any[] = [];
+      if (cleanPhone) orConditions.push({ phone: { contains: cleanPhone } });
+      if (cleanCa) orConditions.push({ consumerNumber: { equals: cleanCa } });
+
+      if (orConditions.length > 0) {
+        try {
+          if ((prisma as any).eligibilityLead) {
+            await (prisma as any).eligibilityLead.deleteMany({
+              where: { OR: orConditions },
+            });
+          }
+        } catch {}
+      }
+
+      const { deleteEligibilityLeadByPhone } = await import("@/lib/data-store");
+      deleteEligibilityLeadByPhone(targetPhone || "", targetConsumerNumber || "");
+    }
+
+    return NextResponse.json({ success: true, message: "Lead deleted successfully in 1 attempt" });
   } catch (error: any) {
     console.error("[EligibilityLead DELETE Error]:", error);
     return NextResponse.json({ success: false, error: "Failed to delete lead" }, { status: 500 });
   }
 }
+

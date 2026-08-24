@@ -266,6 +266,102 @@ export async function updateLeadStatus(id: string, status: string) {
   }
 }
 
+export async function deleteLeadAction(id: string) {
+  try {
+    const db = prisma as any;
+    let targetPhone: string | null = null;
+
+    // 1. Look up target record by ID across all stores to extract phone number
+    try {
+      if (db?.siteVisitInquiry) {
+        const dbItem = await db.siteVisitInquiry.findUnique({ where: { id } });
+        if (dbItem?.mobileNumber) targetPhone = dbItem.mobileNumber;
+      }
+    } catch (e) {
+      console.warn("DB lookup notice in deleteLeadAction:", e);
+    }
+
+    if (!targetPhone) {
+      try {
+        if (db?.solarQuoteRequest) {
+          const quoteItem = await db.solarQuoteRequest.findUnique({ where: { id } });
+          if (quoteItem?.phone) targetPhone = quoteItem.phone;
+        }
+      } catch (e) {
+        console.warn("DB quote lookup notice in deleteLeadAction:", e);
+      }
+    }
+
+    if (!targetPhone) {
+      const allFileLeads = getAllLeads();
+      const fileLead = allFileLeads.find((l) => l.leadId === id);
+      if (fileLead?.phone) targetPhone = fileLead.phone;
+    }
+
+    if (!targetPhone) {
+      const allContactInquiries = getAllContactInquiries();
+      const contactInq = allContactInquiries.find((c) => c.id === id);
+      if (contactInq?.phone) targetPhone = contactInq.phone;
+    }
+
+    // 2. Delete primary record by ID from DB
+    try {
+      if (db?.siteVisitInquiry) {
+        await db.siteVisitInquiry.delete({ where: { id } }).catch(() => {});
+      }
+      if (db?.solarQuoteRequest) {
+        await db.solarQuoteRequest.delete({ where: { id } }).catch(() => {});
+      }
+    } catch (dbErr) {
+      console.warn("DB delete notice in deleteLeadAction:", dbErr);
+    }
+
+    // 3. Delete primary record by ID from file stores
+    const { deleteLead, deleteContactInquiry, deleteLeadByPhone, deleteContactInquiryByPhone } = await import(
+      "@/lib/data-store"
+    );
+    deleteLead(id);
+    deleteContactInquiry(id);
+
+    // 4. Purge ALL matching duplicate entries by phone across DB and File stores in ONE attempt
+    if (targetPhone) {
+      const cleanPhone = targetPhone.replace(/\D/g, "");
+      if (cleanPhone) {
+        // Delete all DB matching inquiries
+        try {
+          if (db?.siteVisitInquiry) {
+            await db.siteVisitInquiry.deleteMany({
+              where: { mobileNumber: { contains: cleanPhone } },
+            });
+          }
+          if (db?.solarQuoteRequest) {
+            await db.solarQuoteRequest.deleteMany({
+              where: { phone: { contains: cleanPhone } },
+            });
+          }
+        } catch (dbPurgeErr) {
+          console.warn("DB purge by phone notice:", dbPurgeErr);
+        }
+
+        // Delete all file matching leads & inquiries
+        deleteLeadByPhone(targetPhone);
+        deleteContactInquiryByPhone(targetPhone);
+      }
+    }
+
+    revalidatePath("/admin/leads");
+    revalidatePath("/admin/contact-leads");
+    revalidatePath("/admin");
+
+    return { success: true, message: "Lead record deleted successfully in 1 try." };
+  } catch (error: any) {
+    console.error("Error deleting lead:", error);
+    return { success: false, error: "Failed to delete lead record." };
+  }
+}
+
+
+
 // ─────────────────────────────────────────────────────────────────────────────
 // MODULE 3: SOLAR PACKAGES CMS ACTIONS
 // ─────────────────────────────────────────────────────────────────────────────

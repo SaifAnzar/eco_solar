@@ -7,6 +7,15 @@ import {
   deleteApprovedPartnerRecord,
 } from "@/lib/data-store";
 
+function getPartnerSignature(p: any): string {
+  if (!p) return "";
+  const type = (p.type || "").toUpperCase().trim();
+  const phone = (p.phone || "").replace(/\D/g, "");
+  const name = (p.name || "").toLowerCase().trim();
+  const district = (p.district || "").toLowerCase().trim();
+  return `${type}|${phone}|${name}|${district}`;
+}
+
 export async function GET() {
   try {
     let dbPartners: any[] = [];
@@ -22,17 +31,35 @@ export async function GET() {
 
     const filePartners = getAllApprovedPartners();
 
-    // Merge DB and File Store
-    const combinedMap = new Map();
-    [...filePartners, ...dbPartners].forEach((item) => {
-      if (item && item.id) {
-        combinedMap.set(item.id, item);
-      }
-    });
+    // Merge DB and File Store with signature deduplication
+    const idMap = new Map<string, any>();
+    const sigMap = new Map<string, any>();
 
-    const partners = Array.from(combinedMap.values()).sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    // Process file partners first
+    for (const item of filePartners) {
+      if (item && item.id) {
+        const sig = getPartnerSignature(item);
+        idMap.set(item.id, item);
+        if (sig && !sigMap.has(sig)) {
+          sigMap.set(sig, item);
+        }
+      }
+    }
+
+    // Process DB partners (takes precedence)
+    for (const item of dbPartners) {
+      if (item && item.id) {
+        const sig = getPartnerSignature(item);
+        idMap.set(item.id, item);
+        sigMap.set(sig, item);
+      }
+    }
+
+    // Filter to unique items matching signature map values
+    const uniqueIds = new Set(Array.from(sigMap.values()).map((item) => item.id));
+    const partners = Array.from(idMap.values())
+      .filter((item) => uniqueIds.has(item.id))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     return NextResponse.json({ success: true, partners });
   } catch (error: any) {
@@ -66,16 +93,22 @@ export async function POST(req: Request) {
       isActive: isActive !== undefined ? Boolean(isActive) : true,
     };
 
-    const fileRecord = saveApprovedPartner(payload as any);
-
-    let dbRecord;
+    let dbRecord: any = null;
     try {
-      dbRecord = await (prisma as any).approvedPartner.create({
-        data: payload,
-      });
+      if ((prisma as any).approvedPartner) {
+        dbRecord = await (prisma as any).approvedPartner.create({
+          data: payload,
+        });
+      }
     } catch (dbErr) {
       console.warn("[Admin Network API POST] DB insertion notice:", dbErr);
     }
+
+    // Save to file store using exact same ID if DB created it
+    const fileRecord = saveApprovedPartner({
+      ...payload,
+      ...(dbRecord && dbRecord.id ? { id: dbRecord.id } : {}),
+    } as any);
 
     return NextResponse.json({
       success: true,
@@ -100,13 +133,15 @@ export async function PATCH(req: Request) {
     updateApprovedPartnerRecord(id, updates);
 
     try {
-      await (prisma as any).approvedPartner.update({
-        where: { id },
-        data: {
-          ...updates,
-          updatedAt: new Date(),
-        },
-      });
+      if ((prisma as any).approvedPartner) {
+        await (prisma as any).approvedPartner.update({
+          where: { id },
+          data: {
+            ...updates,
+            updatedAt: new Date(),
+          },
+        });
+      }
     } catch (dbErr) {
       console.warn("[Admin Network API PATCH] DB update notice:", dbErr);
     }
@@ -127,12 +162,41 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ success: false, error: "Partner ID is required" }, { status: 400 });
     }
 
+    // Find record to get signature for purging legacy duplicates
+    const allFilePartners = getAllApprovedPartners();
+    const targetFileItem = allFilePartners.find((p) => p.id === id);
+    const targetSig = targetFileItem ? getPartnerSignature(targetFileItem) : "";
+
+    // Delete primary record from file store
     deleteApprovedPartnerRecord(id);
 
-    try {
-      await (prisma as any).approvedPartner.delete({
-        where: { id },
+    // Purge any legacy duplicate file records with matching signature
+    if (targetSig) {
+      allFilePartners.forEach((p) => {
+        if (p.id !== id && getPartnerSignature(p) === targetSig) {
+          deleteApprovedPartnerRecord(p.id);
+        }
       });
+    }
+
+    try {
+      if ((prisma as any).approvedPartner) {
+        // Delete primary record from DB
+        await (prisma as any).approvedPartner.delete({
+          where: { id },
+        });
+
+        // Purge legacy duplicates in DB if target info is known
+        if (targetFileItem) {
+          await (prisma as any).approvedPartner.deleteMany({
+            where: {
+              name: targetFileItem.name,
+              phone: targetFileItem.phone,
+              type: targetFileItem.type,
+            },
+          });
+        }
+      }
     } catch (dbErr) {
       console.warn("[Admin Network API DELETE] DB delete notice:", dbErr);
     }
@@ -143,3 +207,4 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ success: false, error: "Failed to delete partner" }, { status: 500 });
   }
 }
+

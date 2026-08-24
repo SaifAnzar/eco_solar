@@ -41,12 +41,28 @@ export default function AdminContactLeadsPage() {
 
   const handleDelete = async (id: string) => {
     const confirmed = await showConfirmDialog(
-      "Delete Contact Inquiry?",
-      "Are you sure you want to delete this site visit / contact inquiry record?",
+      "Delete Inquiry Record?",
+      "Are you sure you want to delete this inquiry record?",
       "Yes, Delete"
     );
     if (!confirmed) return;
-    setInquiries((prev) => prev.filter((item) => item.id !== id));
+    const targetItem = inquiries.find((item) => item.id === id);
+    const targetPhone = targetItem?.phone?.replace(/\D/g, "");
+    const targetIsGeneral = targetItem ? isGeneralInquiry(targetItem) : false;
+
+    setInquiries((prev) =>
+      prev.filter((item) => {
+        if (item.id === id) return false;
+        const itemPhone = (item.phone || "").replace(/\D/g, "");
+        const itemIsGeneral = isGeneralInquiry(item);
+        // Only remove matching phone IF it belongs to the SAME inquiry category
+        if (targetPhone && itemPhone === targetPhone && itemIsGeneral === targetIsGeneral) {
+          return false;
+        }
+        return true;
+      })
+    );
+
     const res = await deleteContactInquiryAction(id);
     if (res.success) {
       showToast("Record deleted successfully!", "success");
@@ -57,13 +73,14 @@ export default function AdminContactLeadsPage() {
     }
   };
 
-  const siteVisits = inquiries.filter(
-    (item) => item.inquiryType === "SITE_VISIT" || item.message?.includes("SITE VISIT")
-  );
 
-  const generalContacts = inquiries.filter(
-    (item) => item.inquiryType !== "SITE_VISIT" && !item.message?.includes("SITE VISIT")
-  );
+
+  const isGeneralInquiry = (item: any) =>
+    item.inquiryType === "GENERAL_CONTACT" ||
+    (item.message || "").includes("GENERAL CONTACT INQUIRY");
+
+  const siteVisits = inquiries.filter((item) => !isGeneralInquiry(item));
+  const generalContacts = inquiries.filter((item) => isGeneralInquiry(item));
 
   const currentTabItems = activeTab === "SITE_VISIT" ? siteVisits : generalContacts;
 
@@ -73,6 +90,7 @@ export default function AdminContactLeadsPage() {
     const locationMatch = (item.location || item.discomRegion || "").toLowerCase().includes(search.toLowerCase());
     return nameMatch || phoneMatch || locationMatch;
   });
+
 
   return (
     <div className="space-y-6 font-sans">
@@ -175,11 +193,16 @@ export default function AdminContactLeadsPage() {
                   <tr key={item.id} className="hover:bg-slate-50 transition-colors">
                     <td className="p-3.5 font-bold text-slate-900">
                       <div>{item.fullName}</div>
-                      {activeTab === "SITE_VISIT" && (
+                      {isGeneralInquiry(item) ? (
+                        <span className="inline-block mt-1 text-[9px] font-mono font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300">
+                          FREE CONSULTATION
+                        </span>
+                      ) : (
                         <span className="inline-block mt-1 text-[9px] font-mono font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-300">
                           FREE SITE VISIT
                         </span>
                       )}
+
                     </td>
 
                     <td className="p-3.5">

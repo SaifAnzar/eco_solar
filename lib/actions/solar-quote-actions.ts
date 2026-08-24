@@ -61,12 +61,45 @@ export async function updateSolarQuoteStatusAction(id: string, status: Applicati
 
 export async function deleteSolarQuoteRequestAction(id: string) {
   try {
-    await prisma.solarQuoteRequest.delete({
-      where: { id },
-    });
+    let targetPhone: string | null = null;
+    if (prisma) {
+      try {
+        const item = await prisma.solarQuoteRequest.findUnique({ where: { id } });
+        if (item?.phone) targetPhone = item.phone;
+        await prisma.solarQuoteRequest.delete({ where: { id } }).catch(() => {});
+      } catch (e) {
+        console.warn("[Delete Quote Action] DB notice:", e);
+      }
+    }
+
+    const { deleteLeadByPhone, deleteContactInquiryByPhone, deleteLead, deleteContactInquiry } = await import(
+      "@/lib/data-store"
+    );
+    deleteLead(id);
+    deleteContactInquiry(id);
+
+    if (targetPhone) {
+      const cleanPhone = targetPhone.replace(/\D/g, "");
+      if (cleanPhone && prisma) {
+        try {
+          await prisma.solarQuoteRequest.deleteMany({
+            where: { phone: { contains: cleanPhone } },
+          });
+          await prisma.siteVisitInquiry.deleteMany({
+            where: { mobileNumber: { contains: cleanPhone } },
+          });
+        } catch (e) {
+          console.warn("[Delete Quote Action] DB purge notice:", e);
+        }
+      }
+      deleteLeadByPhone(targetPhone);
+      deleteContactInquiryByPhone(targetPhone);
+    }
+
     return { success: true };
   } catch (error: any) {
     console.error("[Delete Solar Quote Error]:", error);
     return { success: false, error: error.message || "Failed to delete quote request" };
   }
 }
+

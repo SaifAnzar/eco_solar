@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAllApprovedPartners } from "@/lib/data-store";
 
+function getPartnerSignature(p: any): string {
+  if (!p) return "";
+  const type = (p.type || "").toUpperCase().trim();
+  const phone = (p.phone || "").replace(/\D/g, "");
+  const name = (p.name || "").toLowerCase().trim();
+  const district = (p.district || "").toLowerCase().trim();
+  return `${type}|${phone}|${name}|${district}`;
+}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -30,15 +39,32 @@ export async function GET(req: Request) {
 
     const filePartners = getAllApprovedPartners().filter((p) => p.isActive);
 
-    // Merge DB and File Store
-    const combinedMap = new Map();
-    [...filePartners, ...dbPartners].forEach((item) => {
-      if (item && item.id) {
-        combinedMap.set(item.id, item);
-      }
-    });
+    // Merge DB and File Store with signature deduplication
+    const idMap = new Map<string, any>();
+    const sigMap = new Map<string, any>();
 
-    let partners = Array.from(combinedMap.values()).filter((p) => p.isActive);
+    for (const item of filePartners) {
+      if (item && item.id && item.isActive) {
+        const sig = getPartnerSignature(item);
+        idMap.set(item.id, item);
+        if (sig && !sigMap.has(sig)) {
+          sigMap.set(sig, item);
+        }
+      }
+    }
+
+    for (const item of dbPartners) {
+      if (item && item.id && item.isActive) {
+        const sig = getPartnerSignature(item);
+        idMap.set(item.id, item);
+        sigMap.set(sig, item);
+      }
+    }
+
+    const uniqueIds = new Set(Array.from(sigMap.values()).map((item) => item.id));
+    let partners = Array.from(idMap.values())
+      .filter((item) => item.isActive && uniqueIds.has(item.id))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     if (typeParam === "FRANCHISE" || typeParam === "DEALER") {
       partners = partners.filter((p) => p.type === typeParam);
@@ -55,3 +81,4 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: false, error: "Failed to fetch partners" }, { status: 500 });
   }
 }
+

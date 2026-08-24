@@ -54,7 +54,7 @@ const DISTRICT_OPTIONS = [
 ];
 
 export default function PublicNetworkPage() {
-  const [activeTab, setActiveTab] = useState<"FRANCHISE" | "DEALER">("FRANCHISE");
+  const [activeTab, setActiveTab] = useState<"ALL" | "FRANCHISE" | "DEALER">("ALL");
   const [partners, setPartners] = useState<ApprovedPartnerItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -80,9 +80,13 @@ export default function PublicNetworkPage() {
     fetchNetwork();
   }, []);
 
+  const totalCount = partners.length;
+  const franchiseCount = partners.filter((p) => p.type === "FRANCHISE").length;
+  const dealerCount = partners.filter((p) => p.type === "DEALER").length;
+
   // Filtered list
   const filteredPartners = partners.filter((p) => {
-    if (p.type !== activeTab) return false;
+    if (activeTab !== "ALL" && p.type !== activeTab) return false;
 
     const query = searchTerm.toLowerCase();
     const matchesSearch =
@@ -116,21 +120,34 @@ export default function PublicNetworkPage() {
           </p>
         </div>
 
-        {/* Clean Segmented Tabs */}
+        {/* Clean 3-Segmented Tabs: ALL, FRANCHISE, DEALER */}
         <div className="flex justify-center">
-          <div className="inline-flex items-center p-1.5 bg-slate-200/80 rounded-2xl border border-slate-300/80 gap-1.5 shadow-inner">
+          <div className="inline-flex flex-wrap items-center justify-center p-1.5 bg-slate-200/80 rounded-2xl border border-slate-300/80 gap-1.5 shadow-inner">
             
+            <button
+              type="button"
+              onClick={() => setActiveTab("ALL")}
+              className={`px-5 py-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+                activeTab === "ALL"
+                  ? "bg-slate-900 text-amber-400 shadow-md"
+                  : "text-slate-700 hover:text-slate-900 hover:bg-slate-300/50"
+              }`}
+            >
+              <Store className="w-4 h-4 text-amber-400" />
+              <span>All Partners &amp; Outlets ({totalCount})</span>
+            </button>
+
             <button
               type="button"
               onClick={() => setActiveTab("FRANCHISE")}
               className={`px-5 py-3 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                 activeTab === "FRANCHISE"
-                  ? "bg-slate-900 text-amber-400 shadow-md"
+                  ? "bg-amber-600 text-slate-950 shadow-md"
                   : "text-slate-700 hover:text-slate-900 hover:bg-slate-300/50"
               }`}
             >
               <Building2 className="w-4 h-4" />
-              <span>Franchise Outlets &amp; Experience Centers</span>
+              <span>Franchise Outlets ({franchiseCount})</span>
             </button>
 
             <button
@@ -143,7 +160,7 @@ export default function PublicNetworkPage() {
               }`}
             >
               <Package className="w-4 h-4" />
-              <span>Authorized Channel Dealers</span>
+              <span>Authorized Dealers ({dealerCount})</span>
             </button>
 
           </div>
@@ -201,18 +218,28 @@ export default function PublicNetworkPage() {
                 <div className="space-y-3">
                   
                   {/* Top Badge & District */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <span
-                      className={`text-[10px] font-extrabold uppercase font-mono px-2.5 py-1 rounded-full border ${
+                      className={`text-[11px] font-extrabold uppercase font-mono px-3 py-1 rounded-full border inline-flex items-center gap-1.5 shadow-sm ${
                         partner.type === "FRANCHISE"
-                          ? "bg-amber-50 text-amber-800 border-amber-200"
-                          : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                          ? "bg-amber-100 text-amber-950 border-amber-300"
+                          : "bg-emerald-100 text-emerald-950 border-emerald-300"
                       }`}
                     >
-                      {partner.type === "FRANCHISE" ? "Franchise Store" : "Authorized Dealer"}
+                      {partner.type === "FRANCHISE" ? (
+                        <>
+                          <Building2 className="w-3.5 h-3.5 text-amber-700" />
+                          <span>FRANCHISE STORE</span>
+                        </>
+                      ) : (
+                        <>
+                          <Package className="w-3.5 h-3.5 text-emerald-700" />
+                          <span>AUTHORIZED DEALER</span>
+                        </>
+                      )}
                     </span>
 
-                    <span className="text-xs font-mono font-bold text-slate-500 flex items-center gap-1">
+                    <span className="text-xs font-mono font-bold text-slate-500 flex items-center gap-1 shrink-0">
                       <MapPin className="w-3.5 h-3.5 text-slate-400" />
                       {partner.district}
                     </span>
@@ -278,7 +305,10 @@ export default function PublicNetworkPage() {
                 Our Network is Expanding Across Odisha!
               </h3>
               <p className="text-sm text-slate-500 leading-relaxed">
-                No active {activeTab === "FRANCHISE" ? "Franchise Outlets" : "Authorized Dealers"} listed in this region yet. Are you interested in launching a business with Odisha&apos;s leading solar brand?
+                {activeTab === "ALL"
+                  ? "No active partner outlets listed in this region yet matching your search."
+                  : `No active ${activeTab === "FRANCHISE" ? "Franchise Outlets" : "Authorized Dealers"} listed in this region yet.`}{" "}
+                Are you interested in launching a business with Odisha&apos;s leading solar brand?
               </p>
             </div>
 
@@ -306,3 +336,4 @@ export default function PublicNetworkPage() {
     </div>
   );
 }
+

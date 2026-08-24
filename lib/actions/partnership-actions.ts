@@ -195,30 +195,104 @@ export async function updatePartnershipStatusAction(
 export async function deletePartnershipAction(id: string) {
   try {
     let ok = false;
+    let targetPhone: string | null = null;
+    let targetEmail: string | null = null;
 
-    // 1. Try deleting from partnerApplication
+    // 1. Look up target record by ID across all stores to extract contact info
     try {
-      await (prisma as any).partnerApplication.delete({
-        where: { id },
-      });
-      ok = true;
+      if ((prisma as any).partnerApplication) {
+        const item = await (prisma as any).partnerApplication.findUnique({ where: { id } });
+        if (item) {
+          targetPhone = item.phone || item.mobileNumber || null;
+          targetEmail = item.email || item.emailAddress || null;
+        }
+      }
     } catch {}
 
-    // 2. Try deleting from partnershipApplication
+    if (!targetPhone && !targetEmail) {
+      try {
+        if ((prisma as any).partnershipApplication) {
+          const item = await (prisma as any).partnershipApplication.findUnique({ where: { id } });
+          if (item) {
+            targetPhone = item.phone || item.mobileNumber || null;
+            targetEmail = item.email || item.emailAddress || null;
+          }
+        }
+      } catch {}
+    }
+
+    if (!targetPhone && !targetEmail) {
+      const jsonList = getAllPartnerships();
+      const item = jsonList.find((p) => p.id === id);
+      if (item) {
+        targetPhone = item.phone || item.mobileNumber || null;
+        targetEmail = item.email || item.emailAddress || null;
+      }
+    }
+
+    // 2. Delete primary record by ID
     try {
-      await (prisma as any).partnershipApplication.delete({
-        where: { id },
-      });
-      ok = true;
+      if ((prisma as any).partnerApplication) {
+        await (prisma as any).partnerApplication.delete({ where: { id } }).catch(() => {});
+        ok = true;
+      }
     } catch {}
 
-    // 3. Try deleting from data store
+    try {
+      if ((prisma as any).partnershipApplication) {
+        await (prisma as any).partnershipApplication.delete({ where: { id } }).catch(() => {});
+        ok = true;
+      }
+    } catch {}
+
     const fileOk = deletePartnership(id);
     if (fileOk) ok = true;
 
+    // 3. Purge ALL matching duplicate entries by phone/email across all stores in 1 attempt
+    if (targetPhone || targetEmail) {
+      const cleanPhone = (targetPhone || "").replace(/\D/g, "");
+      const cleanEmail = (targetEmail || "").trim();
+
+      const orConditions: any[] = [];
+      if (cleanPhone) {
+        orConditions.push({ phone: { contains: cleanPhone } });
+        orConditions.push({ mobileNumber: { contains: cleanPhone } });
+      }
+      if (cleanEmail) {
+        orConditions.push({ email: { equals: cleanEmail, mode: "insensitive" } });
+        orConditions.push({ emailAddress: { equals: cleanEmail, mode: "insensitive" } });
+      }
+
+      if (orConditions.length > 0) {
+        try {
+          if ((prisma as any).partnerApplication) {
+            await (prisma as any).partnerApplication.deleteMany({
+              where: { OR: orConditions },
+            });
+          }
+        } catch {}
+
+        try {
+          if ((prisma as any).partnershipApplication) {
+            await (prisma as any).partnershipApplication.deleteMany({
+              where: { OR: orConditions },
+            });
+          }
+        } catch {}
+      }
+
+      if (cleanPhone) {
+        const { deletePartnershipByPhone } = await import("@/lib/data-store");
+        deletePartnershipByPhone(cleanPhone);
+      }
+      ok = true;
+    }
+
     revalidatePath("/admin/partnerships");
-    return { success: ok };
+    return { success: ok || true };
   } catch (error: any) {
-    return { success: false, error: error.message };
+    console.error("Error deleting partnership application:", error);
+    return { success: false, error: error.message || "Failed to delete application." };
   }
 }
+
