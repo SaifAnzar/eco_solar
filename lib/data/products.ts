@@ -10,6 +10,7 @@ export interface ProductItem {
   alt: string;
   description: string;
   features: string[];
+  websiteUrl?: string;
 }
 
 export const PRODUCTS: ProductItem[] = [
@@ -21,6 +22,7 @@ export const PRODUCTS: ProductItem[] = [
     badge: "PM Surya Ghar Approved",
     image: "/images/products/waaree-panel.png",
     alt: "Waaree solar panel 600W mono PERC module",
+    websiteUrl: "https://www.waaree.com/",
     description: "Government-approved solar panel made in India. Required for getting the full ₹78,000 subsidy under the PM Surya Ghar scheme.",
     features: [
       "Made in India — qualifies for full government subsidy",
@@ -37,12 +39,30 @@ export const PRODUCTS: ProductItem[] = [
     badge: "Extra Power from Both Sides",
     image: "/images/products/adani-panel.png",
     alt: "Adani commercial bifacial solar panel",
+    websiteUrl: "https://www.adanisolar.com/",
     description: "Ideal for offices and factories. Generates electricity from both the front and back of the panel — giving you more power per panel.",
     features: [
       "Generates extra electricity from reflected light on the back",
       "Works well in Odisha's hot summer climate",
       "Best for factories, warehouses, and large buildings",
       "Business tax benefit of 80% in year one",
+    ],
+  },
+  {
+    id: "sunora-solar-inverter",
+    name: "Sunora Solar Inverter (1 kW – 50 kW)",
+    category: "inverters",
+    brand: "Sunora Power",
+    badge: "High-Efficiency MPPT",
+    image: "/images/products/sunora-inverter.jpg",
+    alt: "Sunora solar inverter system",
+    websiteUrl: "http://sunorapower.com/",
+    description: "High-efficiency Sunora solar inverter engineered for maximum power generation, smart tracking, and long-term reliable performance across residential & commercial solar setups.",
+    features: [
+      "Advanced MPPT tracking algorithm for maximum solar energy extraction",
+      "Smart digital display and real-time power generation monitoring",
+      "Empaneled & fully compatible with all 4 Odisha DISCOM net-metering systems",
+      "5-year comprehensive warranty with local engineer service support",
     ],
   },
   {
@@ -53,6 +73,7 @@ export const PRODUCTS: ProductItem[] = [
     badge: "Monitor from Your Phone",
     image: "/images/products/statcon-inverter.png",
     alt: "Statcon grid tied solar inverter system",
+    websiteUrl: "https://statconpowtech.com/",
     description: "Smart solar inverter that converts your solar energy into usable electricity. Track how much power you're making directly from your phone.",
     features: [
       "Very high efficiency — wastes almost no solar energy",
@@ -69,6 +90,7 @@ export const PRODUCTS: ProductItem[] = [
     badge: "Keeps Working During Power Cuts",
     image: "/images/products/servotech-inverter.png",
     alt: "Servotech hybrid solar inverter with battery integration",
+    websiteUrl: "https://servotech.in/",
     description: "The best choice for areas with frequent power cuts. Works with solar panels, a battery, and the electricity grid — so your home always has power.",
     features: [
       "Switches automatically to battery during power cuts",
@@ -85,6 +107,7 @@ export const PRODUCTS: ProductItem[] = [
     badge: "Cyclone-Safe — 150 km/h Rated",
     image: "/images/products/mounting-structure.png",
     alt: "Galvanized steel mounting structure and wall mounted panel",
+    websiteUrl: "/about",
     description: "Strong, rust-proof steel frames designed to hold your solar panels safely on any roof — flat, sloped, or RCC. Built to survive Odisha's strongest cyclones.",
     features: [
       "Rust-proof galvanized coating — lasts 25+ years outdoors",
@@ -101,6 +124,7 @@ export const PRODUCTS: ProductItem[] = [
     badge: "Heat & UV Resistant",
     image: "/images/brands/polycab.jpg",
     alt: "Polycab solar DC cable and ACDB/DCDB protection box",
+    websiteUrl: "https://polycab.com/",
     description: "Heavy-duty wires that safely carry electricity from your solar panels to your inverter. Built for outdoor use in Odisha's hot and humid weather.",
     features: [
       "Withstands extreme heat and direct outdoor sunlight",
@@ -117,6 +141,7 @@ export const PRODUCTS: ProductItem[] = [
     badge: "BIS Certified Safety",
     image: "/images/products/chemical-earthing.png",
     alt: "Chemical earthing rod installation for solar system safety",
+    websiteUrl: "/about",
     description: "A mandatory safety system that protects your solar panels, inverter, and home from lightning strikes and electrical faults. No maintenance needed.",
     features: [
       "Protects your solar system from lightning damage",
@@ -133,6 +158,7 @@ export const PRODUCTS: ProductItem[] = [
     badge: "Auto On/Off — No Wiring Needed",
     image: "/images/products/solar-street-light.png",
     alt: "Integrated solar LED street light system",
+    websiteUrl: "/services#lighting",
     description: "A complete solar street light that charges during the day and turns on automatically at night. No electricity wires needed. Perfect for roads, parking areas, and villages.",
     features: [
       "Long-life battery — provides light for 5+ years",

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Download, ArrowRight } from "lucide-react";
+import { ExternalLink, ArrowRight } from "lucide-react";
 import { ProductCategory } from "./ProductFilterTabs";
 
 export interface ProductItem {
@@ -14,6 +14,7 @@ export interface ProductItem {
   alt: string;
   description: string;
   features: string[];
+  websiteUrl?: string;
 }
 
 interface ProductCardProps {
@@ -41,26 +42,26 @@ export default function ProductCard({ product, onRequestQuote }: ProductCardProp
     setImgSrc(product.image);
   }, [product.image]);
 
-  const handleDownloadSpecSheet = () => {
-    const specContent = `PRAGATI ECOSOLAR - OFFICIAL SPECIFICATION SHEET\n` +
-      `------------------------------------------------------------\n` +
-      `Product Name: ${product.name}\n` +
-      `Brand / OEM: ${product.brand}\n` +
-      `Specification: ${product.badge}\n\n` +
-      `Features:\n` +
-      product.features.map((f, i) => `${i + 1}. ${f}`).join("\n") +
-      `\n\n------------------------------------------------------------\n` +
-      `Pragati EcoSolar HQ: HIG 42, Aryapalli, Patia, Bhubaneswar – 751024\n` +
-      `Technical Helpline: +91 9124318222 / 9124679222\n`;
+  const getBrandWebsiteUrl = (): string => {
+    if (product.websiteUrl) return product.websiteUrl;
+    const b = product.brand.toLowerCase();
+    if (b.includes("waaree")) return "https://www.waaree.com/";
+    if (b.includes("adani")) return "https://www.adanisolar.com/";
+    if (b.includes("sunora")) return "http://sunorapower.com/";
+    if (b.includes("statcon")) return "https://statconpowtech.com/";
+    if (b.includes("servotech")) return "https://servotech.in/";
+    if (b.includes("polycab")) return "https://polycab.com/";
+    if (b.includes("kei")) return "https://www.kei-ind.com/";
+    return "/about";
+  };
 
-    const blob = new Blob([specContent], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${product.id}_Spec_Sheet.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleKnowMore = () => {
+    const url = getBrandWebsiteUrl();
+    if (url.startsWith("http")) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      window.location.href = url;
+    }
   };
 
   return (
@@ -123,17 +124,18 @@ export default function ProductCard({ product, onRequestQuote }: ProductCardProp
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
-            onClick={handleDownloadSpecSheet}
-            className="border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-colors font-mono"
+            onClick={handleKnowMore}
+            className="border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-colors font-mono cursor-pointer"
+            title={`Visit ${product.brand} official website`}
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Spec Sheet</span>
+            <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+            <span>Know More</span>
           </button>
 
           <button
             type="button"
             onClick={() => onRequestQuote(product)}
-            className="bg-slate-900 hover:bg-emerald-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 font-mono"
+            className="bg-slate-900 hover:bg-emerald-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 font-mono cursor-pointer"
           >
             <span>Request Quote</span>
             <ArrowRight className="w-3.5 h-3.5" />
