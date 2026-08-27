@@ -25,6 +25,15 @@ export const metadata: Metadata = {
   },
   description:
     "Premier Rooftop Solar EPC Contractor in Odisha (HIG 42, Aryapalli, Patia, Bhubaneswar). Turnkey 3 kW to 100 kW+ solar installations under PM Surya Ghar & C&I CAPEX/OPEX models. Full TPCODL, TPNODL, TPSODL & TPWODL Net-Metering Liaison.",
+  icons: {
+    icon: [
+      { url: "/logo-p.png", type: "image/png" },
+      { url: "/favicon-p.png", type: "image/png" },
+      { url: "/favicon.ico" },
+    ],
+    shortcut: "/logo-p.png",
+    apple: "/logo-p.png",
+  },
   keywords: [
     "Pragati EcoSolar",
     "Solar EPC Bhubaneswar",
