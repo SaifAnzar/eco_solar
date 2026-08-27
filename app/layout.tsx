@@ -175,9 +175,10 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
-        <link rel="icon" href="/logo-p.png?v=2" type="image/png" sizes="any" />
-        <link rel="shortcut icon" href="/logo-p.png?v=2" type="image/png" />
-        <link rel="apple-touch-icon" href="/logo-p.png?v=2" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/logo-p.png?v=99" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/logo-p.png?v=99" />
+        <link rel="shortcut icon" href="/logo-p.png?v=99" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo-p.png?v=99" />
       </head>
       <body className="min-h-full flex flex-col bg-[#FAFAFA] text-slate-900 selection:bg-[#D97706] selection:text-white font-sans">
         <Script
