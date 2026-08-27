@@ -47,7 +47,7 @@ export default function ProductCard({ product, onRequestQuote }: ProductCardProp
     const b = product.brand.toLowerCase();
     if (b.includes("waaree")) return "https://www.waaree.com/";
     if (b.includes("adani")) return "https://www.adanisolar.com/";
-    if (b.includes("sunora")) return "http://sunorapower.com/";
+    if (b.includes("sunora")) return "https://sunorasolar.com/";
     if (b.includes("statcon")) return "https://statconpowtech.com/";
     if (b.includes("servotech")) return "https://servotech.in/";
     if (b.includes("polycab")) return "https://polycab.com/";

@@ -56,7 +56,7 @@ export const PRODUCTS: ProductItem[] = [
     badge: "High-Efficiency MPPT",
     image: "/images/products/sunora-inverter.jpg",
     alt: "Sunora solar inverter system",
-    websiteUrl: "http://sunorapower.com/",
+    websiteUrl: "https://sunorasolar.com/",
     description: "High-efficiency Sunora solar inverter engineered for maximum power generation, smart tracking, and long-term reliable performance across residential & commercial solar setups.",
     features: [
       "Advanced MPPT tracking algorithm for maximum solar energy extraction",
