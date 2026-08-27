@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.pragatiecosolar.in"),
+  metadataBase: new URL("https://pragatiecosolar.in"),
   title: {
     default: "Pragati EcoSolar | Rooftop Solar EPC Contractor Bhubaneswar, Odisha",
     template: "%s | Pragati EcoSolar",
@@ -27,12 +27,12 @@ export const metadata: Metadata = {
     "Premier Rooftop Solar EPC Contractor in Odisha (HIG 42, Aryapalli, Patia, Bhubaneswar). Turnkey 3 kW to 100 kW+ solar installations under PM Surya Ghar & C&I CAPEX/OPEX models. Full TPCODL, TPNODL, TPSODL & TPWODL Net-Metering Liaison.",
   icons: {
     icon: [
-      { url: "/favicon.ico?v=100" },
-      { url: "/icon.png?v=100", type: "image/png" },
-      { url: "/logo-p.png?v=100", type: "image/png" },
+      { url: "https://pragatiecosolar.in/icon.png?v=100", type: "image/png" },
+      { url: "https://pragatiecosolar.in/logo-p.png?v=100", type: "image/png" },
+      { url: "https://pragatiecosolar.in/favicon.ico?v=100" },
     ],
-    shortcut: "/icon.png?v=100",
-    apple: "/icon.png?v=100",
+    shortcut: "https://pragatiecosolar.in/icon.png?v=100",
+    apple: "https://pragatiecosolar.in/icon.png?v=100",
   },
   keywords: [
     "Pragati EcoSolar",
@@ -45,13 +45,13 @@ export const metadata: Metadata = {
     "Waaree Solar Dealer Bhubaneswar",
     "Adani Solar Dealer Odisha",
   ],
-  authors: [{ name: "Pragati EcoSolar", url: "https://www.pragatiecosolar.in" }],
+  authors: [{ name: "Pragati EcoSolar", url: "https://pragatiecosolar.in" }],
   creator: "MD Kalpna Sahoo",
   publisher: "Pragati EcoSolar",
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://www.pragatiecosolar.in",
+    url: "https://pragatiecosolar.in",
     siteName: "Pragati EcoSolar",
     title: "Pragati EcoSolar | Rooftop Solar EPC Contractor Bhubaneswar, Odisha",
     description:
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     images: ["https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?q=80&w=1200"],
   },
   alternates: {
-    canonical: "https://www.pragatiecosolar.in",
+    canonical: "https://pragatiecosolar.in",
   },
   robots: {
     index: true,
@@ -92,10 +92,10 @@ const jsonLdSchema = {
   "@graph": [
     {
       "@type": "Organization",
-      "@id": "https://www.pragatiecosolar.in/#organization",
+      "@id": "https://pragatiecosolar.in/#organization",
       name: "Pragati EcoSolar",
-      url: "https://www.pragatiecosolar.in",
-      logo: "https://www.pragatiecosolar.in/favicon.ico",
+      url: "https://pragatiecosolar.in",
+      logo: "https://pragatiecosolar.in/icon.png",
       email: "solarbee.bbsr@gmail.com",
       telephone: "+91-9124318222",
       vatID: "21ABIFP1344D1ZS",
