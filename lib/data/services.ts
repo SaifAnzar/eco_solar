@@ -27,7 +27,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     categoryLabel: "Rooftop Solar",
     badge: "UP TO ₹78,000 SUBSIDY",
     badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-    image: "/services/On-Grid%20Solar%20(Grid%20Connected).png",
+    image: "/services/on-grid.png",
     alt: "On-Grid Solar Grid Connected Rooftop System",
     capacityRange: "1 kW - 500 kW+",
     description:
@@ -48,7 +48,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     categoryLabel: "Rooftop Solar",
     badge: "100% INDEPENDENT",
     badgeColor: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30",
-    image: "/services/Off-Grid%20Solar%20(Battery%20Storage).png",
+    image: "/services/off-grid.png",
     alt: "Off-Grid Solar Battery Storage System",
     capacityRange: "2 kW - 50 kW",
     description:
@@ -69,7 +69,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     categoryLabel: "Rooftop Solar",
     badge: "SMART DUAL POWER",
     badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30",
-    image: "/services/Hybrid%20Solar%20(Grid%20+%20Battery).png",
+    image: "/services/hybrid.png",
     alt: "Hybrid Solar Grid and Battery System",
     capacityRange: "3 kW - 100 kW",
     description:
@@ -90,7 +90,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     categoryLabel: "Agriculture & Lighting",
     badge: "UP TO 90% SUBSIDY",
     badgeColor: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/30",
-    image: "/services/Solar%20Water%20Pumps%20(For%20Farms).png",
+    image: "/services/solar-pump.png",
     alt: "Solar Water Pumps for Agriculture",
     capacityRange: "3 HP - 10 HP PUMPS",
     description:
@@ -112,7 +112,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     categoryLabel: "Agriculture & Lighting",
     badge: "DUSK-TO-DAWN AUTO",
     badgeColor: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/30",
-    image: "/services/Solar%20Street%20Lights.png",
+    image: "/services/street-lights.png",
     alt: "Solar Street Lights System",
     capacityRange: "12W - 120W LED",
     description:
@@ -133,7 +133,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     categoryLabel: "Liaison & O&M",
     badge: "100% DISCOM APPROVAL",
     badgeColor: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30",
-    image: "/services/Net%20Metering%20&%20Govt%20Subsidy%20Help.png",
+    image: "/services/net-metering.png",
     alt: "Net Metering and Government Subsidy Approval",
     capacityRange: "ALL CAPACITY SIZES",
     description:
@@ -154,7 +154,7 @@ export const SERVICES_DATA: ServiceItem[] = [
     categoryLabel: "Liaison & O&M",
     badge: "25-YEAR SYSTEM HEALTH",
     badgeColor: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30",
-    image: "/services/Solar%20Care%20&%20Maintenance.png",
+    image: "/services/maintenance.png",
     alt: "Solar Maintenance and Panel Cleaning Service",
     capacityRange: "ANNUAL CARE (AMC)",
     description:

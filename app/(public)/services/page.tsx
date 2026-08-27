@@ -74,7 +74,7 @@ export default function ServicesPage() {
       title: "On-Grid Solar (Grid Connected)",
       subtitle: "Cut Your Monthly Electricity Bill up to 90%",
       desc: "Powers your home using free solar energy during the day. Any extra solar power your panels generate goes straight to the government electricity grid, giving you money-saving bill credits.",
-      image: "/services/On-Grid%20Solar%20(Grid%20Connected).png",
+      image: "/services/on-grid.png",
       bullets: [
         "Get up to ₹78,000 direct bank subsidy under PM Surya Ghar scheme",
         "Reduces your monthly electricity bills by up to 90%",
@@ -91,7 +91,7 @@ export default function ServicesPage() {
       title: "Off-Grid Solar (Battery Storage)",
       subtitle: "100% Free From Power Cuts & Electricity Bills",
       desc: "Generates solar power and stores it in batteries. Gives you non-stop 24/7 electricity even during long power cuts, storms, or in villages with no power lines.",
-      image: "/services/Off-Grid%20Solar%20(Battery%20Storage).png",
+      image: "/services/off-grid.png",
       bullets: [
         "100% power freedom — zero reliance on government electricity",
         "Includes fast-charging long-life Lithium batteries",
@@ -108,7 +108,7 @@ export default function ServicesPage() {
       title: "Hybrid Solar (Grid + Battery)",
       subtitle: "Save Big on Bills + Stay Powered During Power Cuts",
       desc: "The ultimate combination! Reduces your monthly electricity bill like On-Grid solar AND keeps your lights and fans running smoothly when the grid power fails.",
-      image: "/services/Hybrid%20Solar%20(Grid%20+%20Battery).png",
+      image: "/services/hybrid.png",
       bullets: [
         "Automatic switch to battery backup in less than a second during power cuts",
         "Fills battery first, then sells extra solar power to grid for bill savings",
@@ -125,7 +125,7 @@ export default function ServicesPage() {
       title: "Solar Water Pumps (For Farms)",
       subtitle: "Free Water Pumping for Crops, Farms & Borewells",
       desc: "Runs your water pump directly using free sunlight. Perfect for watering crops, filling fish ponds, and supplying water to farms without spending money on diesel or electricity.",
-      image: "/services/Solar%20Water%20Pumps%20(For%20Farms).png",
+      image: "/services/solar-pump.png",
       bullets: [
         "Zero electricity bill & zero expensive diesel engine fuel costs",
         "Pumps water automatically from morning to evening using sunlight",
@@ -142,7 +142,7 @@ export default function ServicesPage() {
       title: "Solar Street Lights",
       subtitle: "Automatic Outdoor Lighting for Roads & Colonies",
       desc: "All-in-one solar lights with built-in solar panels and batteries. Charges automatically during the day and turns ON automatically at night.",
-      image: "/services/Solar%20Street%20Lights.png",
+      image: "/services/street-lights.png",
       bullets: [
         "Turns ON at sunset & turns OFF at sunrise automatically",
         "No electric wiring or cabling required — easy setup anywhere outdoors",
@@ -159,7 +159,7 @@ export default function ServicesPage() {
       title: "Net Metering & Govt Subsidy Help",
       subtitle: "We Handle 100% Paperwork & Bank Subsidy Clearance",
       desc: "Don't worry about government forms or office visits! Our team handles 100% of the paperwork, electric board permissions, net meter fitting, and subsidy money transfer.",
-      image: "/services/Net%20Metering%20&%20Govt%20Subsidy%20Help.png",
+      image: "/services/net-metering.png",
       bullets: [
         "We register your subsidy application on the PM Surya Ghar national portal",
         "We get official permission from your local electricity department office",
@@ -176,7 +176,7 @@ export default function ServicesPage() {
       title: "Solar Care & Maintenance",
       subtitle: "Keep Your Solar System Running at 100% Power",
       desc: "Regular cleaning, health checkups, and fast repair services so your solar panels keep generating maximum electricity every single day for 25 years.",
-      image: "/services/Solar%20Care%20&%20Maintenance.png",
+      image: "/services/maintenance.png",
       bullets: [
         "Professional washing to clean dust & bird dirt off solar panels",
         "Regular safety checks to find & fix any problem before power drops",
