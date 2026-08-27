@@ -17,7 +17,7 @@ export default function ServicesSection() {
       capacityBadge: "1-10 kW PACKAGES",
       description:
         "Rooftop solar panel installation for your home with complete setup — from site inspection to net-metering approval. Cut your monthly electricity bill by up to 90% and claim up to ₹78,000 government subsidy.",
-      image: "/services/On-Grid%20Solar%20(Grid%20Connected).png",
+      image: "/services/on-grid.png",
       alt: "On-Grid rooftop solar panel installation on a home in Odisha",
       category: "residential" as const,
       type: "residential" as const,
@@ -36,7 +36,7 @@ export default function ServicesSection() {
       capacityBadge: "10-500 kW+ PACKAGES",
       description:
         "High-efficiency commercial solar installations designed for offices, factories, and commercial buildings. Slash business operational costs by 60–80% with 80% first-year accelerated depreciation tax benefits.",
-      image: "/services/Hybrid%20Solar%20(Grid%20+%20Battery).png",
+      image: "/services/hybrid.png",
       alt: "Commercial rooftop solar plant on an office building in Odisha",
       category: "commercial" as const,
       type: "commercial" as const,
@@ -55,7 +55,7 @@ export default function ServicesSection() {
       capacityBadge: "3-10 HP PUMP SYSTEMS",
       description:
         "Government-subsidized solar powered water pumps under PM-KUSUM scheme for reliable farm irrigation. Zero electricity bills and zero diesel expenses for Odisha agricultural land.",
-      image: "/services/Solar%20Water%20Pumps%20(For%20Farms).png",
+      image: "/services/solar-pump.png",
       alt: "Solar water pump installation on a farm in Odisha",
       category: "pumps" as const,
       type: "agricultural" as const,
@@ -74,7 +74,7 @@ export default function ServicesSection() {
       capacityBadge: "2-50 kW BATTERY SYSTEMS",
       description:
         "Standalone solar power systems with long-life Lithium/Tubular battery backup. Enjoy uninterrupted 24/7 electricity during severe weather and grid blackouts.",
-      image: "/services/Off-Grid%20Solar%20(Battery%20Storage).png",
+      image: "/services/off-grid.png",
       alt: "Off-Grid solar system with battery storage",
       category: "residential" as const,
       type: "residential" as const,
@@ -93,7 +93,7 @@ export default function ServicesSection() {
       capacityBadge: "12W - 120W AUTOMATIC",
       description:
         "All-in-one solar street lights with integrated solar panels and automatic dusk-to-dawn sensors. Ideal for housing colonies, village roads, and campus premises.",
-      image: "/services/Solar%20Street%20Lights.png",
+      image: "/services/street-lights.png",
       alt: "Automatic solar street lights system",
       category: "commercial" as const,
       type: "commercial" as const,
@@ -112,7 +112,7 @@ export default function ServicesSection() {
       capacityBadge: "100% DISCOM LIAISON",
       description:
         "Complete paperwork and DISCOM permission handling for TPCODL, TPNODL, TPSODL & TPWODL. We ensure bi-directional meter fitting & direct bank subsidy payout.",
-      image: "/services/Net%20Metering%20&%20Govt%20Subsidy%20Help.png",
+      image: "/services/net-metering.png",
       alt: "Net metering approval and government subsidy assistance",
       category: "residential" as const,
       type: "residential" as const,
@@ -131,7 +131,7 @@ export default function ServicesSection() {
       capacityBadge: "ANNUAL MAINTENANCE (AMC)",
       description:
         "Professional solar panel cleaning and health checkups to keep your solar plant running at peak power output for 25 years across Odisha.",
-      image: "/services/Solar%20Care%20&%20Maintenance.png",
+      image: "/services/maintenance.png",
       alt: "Solar panel cleaning and AMC service",
       category: "commercial" as const,
       type: "commercial" as const,
