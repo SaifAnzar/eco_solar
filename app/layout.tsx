@@ -170,13 +170,6 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <head>
-        <link rel="icon" type="image/x-icon" href="/favicon.ico?v=100" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/icon.png?v=100" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/icon.png?v=100" />
-        <link rel="shortcut icon" href="/icon.png?v=100" type="image/png" />
-        <link rel="apple-touch-icon" href="/icon.png?v=100" />
-      </head>
       <body className="min-h-full flex flex-col bg-[#FAFAFA] text-slate-900 selection:bg-[#D97706] selection:text-white font-sans">
         <Script
           id="json-ld-schema"
