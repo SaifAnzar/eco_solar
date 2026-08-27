@@ -17,9 +17,15 @@ const BRAND_PARTNERS = [
   },
   {
     name: "Sunora Power",
-    category: "Solar Panels",
-    logo: "/images/brands/sunora.png",
+    category: "Solar Panels & Systems",
+    logo: "/images/brands/sunora-logo-1.png",
     fallbackText: "Sunora Power",
+  },
+  {
+    name: "Luminous",
+    category: "Solar Inverters & Batteries",
+    logo: "/images/brands/luminous.png",
+    fallbackText: "Luminous",
   },
   {
     name: "Statcon Powtech",
@@ -60,8 +66,8 @@ export default function BrandPartnersGrid() {
         </span>
       </div>
 
-      {/* Logos Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 mt-6">
+      {/* Logos Grid (8 Brands: 2 Cols Mobile, 4 Cols Tablet/Desktop, 8 Cols Wide Screens) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4 mt-6">
         {BRAND_PARTNERS.map((brand) => (
           <div
             key={brand.name}

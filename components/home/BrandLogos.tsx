@@ -14,7 +14,11 @@ const BRAND_LOGOS = [
   },
   {
     name: "Sunora Power",
-    logo: "/images/brands/sunora.png",
+    logo: "/images/brands/sunora-logo-1.png",
+  },
+  {
+    name: "Luminous",
+    logo: "/images/brands/luminous.png",
   },
   {
     name: "Statcon Powtech",
