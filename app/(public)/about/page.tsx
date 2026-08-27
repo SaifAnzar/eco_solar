@@ -22,14 +22,19 @@ import {
   Users,
 } from "lucide-react";
 import { SITE_CONFIG } from "@/config/site";
+import { useSiteSettings } from "@/components/common/SiteSettingsContext";
 
 export default function AboutPage() {
+  const { settings } = useSiteSettings();
   const [activeTab, setActiveTab] = useState<"overview" | "values" | "timeline" | "leadership">("overview");
 
+  const address = settings.contactAddress || SITE_CONFIG.contact.address;
+  const workingHours = settings.workingHours || SITE_CONFIG.contact.workingHours;
+
   const stats = [
-    { label: "Rooftops Installed", value: SITE_CONFIG.stats.systemsInstalled, color: "text-amber-500" },
-    { label: "Total Capacity", value: SITE_CONFIG.stats.capacityDelivered, color: "text-emerald-600" },
-    { label: "Empanelled DISCOMs", value: "4 Zones", color: "text-blue-600" },
+    { label: "Rooftops Installed", value: settings.systemsInstalled || SITE_CONFIG.stats.systemsInstalled, color: "text-amber-500" },
+    { label: "Total Capacity", value: settings.capacityDelivered || SITE_CONFIG.stats.capacityDelivered, color: "text-emerald-600" },
+    { label: "Empanelled DISCOMs", value: settings.discomZonesCovered || "4 Zones", color: "text-blue-600" },
     { label: "Central Subsidy", value: "Up to ₹78,000", color: "text-purple-600" },
   ];
 
@@ -107,7 +112,7 @@ export default function AboutPage() {
                 Odisha&apos;s Authorized Solar EPC Partner
               </h1>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Empanelled installer under PM Surya Ghar Muft Bijli Yojana & licensed across TPCODL, TPNODL, TPSODL & TPWODL.
+                {settings.heroSubline || "Empanelled installer under PM Surya Ghar Muft Bijli Yojana & licensed across TPCODL, TPNODL, TPSODL & TPWODL."}
               </p>
             </div>
 
@@ -165,21 +170,21 @@ export default function AboutPage() {
             <div className="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
-                  OUR MISSION & IDENTITY
+                  OUR MISSION &amp; IDENTITY
                 </span>
                 <span className="text-xs text-slate-500 font-mono">Bhubaneswar, Odisha</span>
               </div>
               
               <h3 className="text-lg font-bold text-slate-900">
-                End-to-End Rooftop & Commercial Solar EPC Solutions
+                End-to-End Rooftop &amp; Commercial Solar EPC Solutions
               </h3>
 
               <div className="space-y-3 text-xs text-slate-700 leading-relaxed">
                 <p>
-                  Pragati EcoSolar is a full-service Solar EPC company based in Patia, Bhubaneswar. We manage the full project lifecycle — site assessment, structural design, procurement, installation, bi-directional DLMS net-metering approvals, and PM Surya Ghar central subsidy processing up to ₹78,000.
+                  Pragati EcoSolar is a full-service Solar EPC company. We manage the full project lifecycle — site assessment, structural design, procurement, installation, bi-directional DLMS net-metering approvals, and PM Surya Ghar central subsidy processing up to ₹78,000.
                 </p>
                 <p>
-                  Rather than dealing with multiple third-party contractors, our customers benefit from a single accountable team handling engineering, DISCOM clearance, and long-term after-sales O&M support across Odisha.
+                  Rather than dealing with multiple third-party contractors, our customers benefit from a single accountable team handling engineering, DISCOM clearance, and long-term after-sales O&amp;M support across Odisha.
                 </p>
               </div>
 
@@ -194,11 +199,11 @@ export default function AboutPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span>Tier-1 ALMM Module & Inverter Selection</span>
+                  <span>Tier-1 ALMM Module &amp; Inverter Selection</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span>In-House Electrical & Civil Engineering Team</span>
+                  <span>In-House Electrical &amp; Civil Engineering Team</span>
                 </div>
               </div>
             </div>
@@ -208,7 +213,7 @@ export default function AboutPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono text-amber-400 font-bold uppercase tracking-wider">
-                    HEADQUARTERS & LICENSING
+                    HEADQUARTERS &amp; LICENSING
                   </span>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30">
                     VERIFIED
@@ -218,10 +223,10 @@ export default function AboutPage() {
                 <div className="space-y-1">
                   <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
                     <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Patia, Bhubaneswar, Odisha</span>
+                    <span>Registered Office</span>
                   </h4>
                   <p className="text-[11px] text-slate-400 leading-tight">
-                    HIG/42, Aryapalli, Patia, Bhubaneswar, Odisha 751024
+                    {address}
                   </p>
                 </div>
 
@@ -241,7 +246,7 @@ export default function AboutPage() {
               </div>
 
               <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-                <span>Working: Mon–Sat (9 AM–7 PM)</span>
+                <span>Working: {workingHours}</span>
                 <Link href="/contact" className="text-emerald-400 font-bold hover:underline">
                   Contact →
                 </Link>

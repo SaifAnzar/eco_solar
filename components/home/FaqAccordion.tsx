@@ -3,15 +3,21 @@
 import React, { useState } from "react";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSiteSettings } from "@/components/common/SiteSettingsContext";
+import { SITE_CONFIG } from "@/config/site";
 
 export default function FaqAccordion() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const { settings } = useSiteSettings();
+
+  const phone = settings.contactPhone || SITE_CONFIG.contact.phone;
+  const rawPhone = phone.replace(/\D/g, "") || SITE_CONFIG.contact.phoneRaw;
 
   const faqs = [
     {
       question: "How much government subsidy will I get for solar?",
       answer:
-        "Under the PM Surya Ghar scheme, the government gives you money directly into your bank account: ₹30,000 for a 1 kW system, ₹60,000 for a 2 kW system, and ₹78,000 for systems of 3 kW or more. Pragati EcoSolar handles your entire application from our Bhubaneswar office — you don't have to do anything.",
+        "Under the PM Surya Ghar scheme, the government gives you money directly into your bank account: ₹30,000 for a 1 kW system, ₹60,000 for a 2 kW system, and ₹78,000 for systems of 3 kW or more. Pragati EcoSolar handles your entire application from our office — you don't have to do anything.",
     },
     {
       question: "How long does it take to get electricity meter approval in Odisha?",
@@ -108,14 +114,14 @@ export default function FaqAccordion() {
             </div>
             <div>
               <h4 className="text-base font-bold text-slate-900">Still have questions?</h4>
-              <p className="text-xs text-slate-600">Our team in Patia, Bhubaneswar is happy to help. Call us anytime.</p>
+              <p className="text-xs text-slate-600">Our engineering team is happy to help. Call us anytime.</p>
             </div>
           </div>
           <a
-            href="tel:+919124318222"
+            href={`tel:${rawPhone}`}
             className="py-2.5 px-5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all font-mono"
           >
-            Call +91 9124318222
+            Call {phone}
           </a>
         </div>
 

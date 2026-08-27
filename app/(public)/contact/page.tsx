@@ -3,10 +3,18 @@
 import React, { useState } from "react";
 import { MapPin, Phone, Mail, Clock, Zap, CheckCircle2, MessageSquare, PhoneCall, Calendar } from "lucide-react";
 import { SITE_CONFIG } from "@/config/site";
-import { saveLeadAndNotifyWhatsApp } from "@/lib/actions/lead-action";
 import { submitContactInquiryAction } from "@/lib/actions/contact-inquiry-actions";
+import { useSiteSettings } from "@/components/common/SiteSettingsContext";
 
 export default function ContactPage() {
+  const { settings } = useSiteSettings();
+
+  const address = settings.contactAddress || SITE_CONFIG.contact.address;
+  const phone = settings.contactPhone || SITE_CONFIG.contact.phone;
+  const email = settings.contactEmail || SITE_CONFIG.contact.email;
+  const workingHours = settings.workingHours || SITE_CONFIG.contact.workingHours;
+  const rawPhone = phone.replace(/\D/g, "") || SITE_CONFIG.contact.phoneRaw;
+
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
@@ -74,8 +82,8 @@ export default function ContactPage() {
                   <div className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
-                      <strong className="text-slate-900 block font-sans text-sm font-bold">Bhubaneswar Head Office</strong>
-                      <span>{SITE_CONFIG.contact.address}</span>
+                      <strong className="text-slate-900 block font-sans text-sm font-bold">Registered Office Address</strong>
+                      <span>{address}</span>
                     </div>
                   </div>
 
@@ -83,7 +91,7 @@ export default function ContactPage() {
                     <Phone className="w-5 h-5 text-emerald-600 shrink-0" />
                     <div>
                       <strong className="text-slate-900 block font-sans text-sm font-bold">Phone Number</strong>
-                      <a href={`tel:${SITE_CONFIG.contact.phoneRaw}`} className="hover:text-emerald-600">{SITE_CONFIG.contact.phone}</a>
+                      <a href={`tel:${rawPhone}`} className="hover:text-emerald-600">{phone}</a>
                     </div>
                   </div>
 
@@ -91,7 +99,7 @@ export default function ContactPage() {
                     <Mail className="w-5 h-5 text-emerald-600 shrink-0" />
                     <div>
                       <strong className="text-slate-900 block font-sans text-sm font-bold">Email Address</strong>
-                      <a href={`mailto:${SITE_CONFIG.contact.email}`} className="hover:text-emerald-600">{SITE_CONFIG.contact.email}</a>
+                      <a href={`mailto:${email}`} className="hover:text-emerald-600">{email}</a>
                     </div>
                   </div>
 
@@ -99,7 +107,7 @@ export default function ContactPage() {
                     <Clock className="w-5 h-5 text-amber-500 shrink-0" />
                     <div>
                       <strong className="text-slate-900 block font-sans text-sm font-bold">Working Hours</strong>
-                      <span>{SITE_CONFIG.contact.workingHours}</span>
+                      <span>{workingHours}</span>
                     </div>
                   </div>
                 </div>
@@ -121,14 +129,14 @@ export default function ContactPage() {
                 <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-900">Quick Actions</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
                   <a
-                    href="tel:+919124318222"
+                    href={`tel:${rawPhone}`}
                     className="p-3 bg-white border border-emerald-200 rounded-xl flex items-center justify-center gap-1.5 text-slate-900 font-bold hover:bg-emerald-100 transition-colors"
                   >
                     <PhoneCall className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Call Us</span>
                   </a>
                   <a
-                    href={`https://wa.me/${SITE_CONFIG.contact.whatsapp}?text=Hi%20Pragati%20EcoSolar,%20I%20want%20to%20inquire%20about%20rooftop%20solar.`}
+                    href={`https://wa.me/${rawPhone}?text=Hi%20Pragati%20EcoSolar,%20I%20want%20to%20inquire%20about%20rooftop%20solar.`}
                     target="_blank"
                     rel="noreferrer"
                     className="p-3 bg-emerald-600 text-white rounded-xl flex items-center justify-center gap-1.5 font-bold hover:bg-emerald-700 transition-colors"
@@ -151,7 +159,7 @@ export default function ContactPage() {
             <div id="contact-form" className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
               <div>
                 <span className="text-xs font-mono uppercase text-emerald-700 font-bold">SEND A MESSAGE</span>
-                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight mt-1">Free Consultation & Quote Request</h2>
+                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight mt-1">Free Consultation &amp; Quote Request</h2>
                 <p className="text-xs text-slate-600 mt-1">Fill in the complete contact form fields below to reach our engineering team.</p>
               </div>
 
@@ -236,7 +244,7 @@ export default function ContactPage() {
                         className="w-full p-3 bg-[#FAFAFA] border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-emerald-600 font-sans"
                       >
                         <option value="Residential">Residential (PM Surya Ghar)</option>
-                        <option value="Commercial">Commercial & Industrial</option>
+                        <option value="Commercial">Commercial &amp; Industrial</option>
                         <option value="Institutional">Institutional / NGO</option>
                         <option value="Agricultural">Agricultural Farmer</option>
                       </select>

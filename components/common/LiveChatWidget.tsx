@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { X, Send, Sparkles, User, Phone, MapPin, CheckCircle2, Bot, Loader2, MessageSquare } from "lucide-react";
+import { useSiteSettings } from "@/components/common/SiteSettingsContext";
+import { SITE_CONFIG } from "@/config/site";
 
 interface Message {
   id: string;
@@ -14,8 +16,11 @@ interface Message {
 
 export default function LiveChatWidget() {
   const pathname = usePathname();
+  const { settings } = useSiteSettings();
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(1);
+
+  const phone = settings.contactPhone || SITE_CONFIG.contact.phone;
 
   // Hide live chat widget completely on admin panel routes
   if (pathname?.startsWith("/admin")) {
@@ -127,7 +132,7 @@ export default function LiveChatWidget() {
       const fallbackMsg: Message = {
         id: `bot-err-${Date.now()}`,
         sender: "bot",
-        text: "Thank you for reaching out! You can also reach our engineering office in Bhubaneswar directly at +91 91243 18222.",
+        text: `Thank you for reaching out! You can also reach our engineering office directly at ${phone}.`,
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, fallbackMsg]);

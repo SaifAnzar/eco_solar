@@ -32,6 +32,7 @@ import {
 import dynamic from "next/dynamic";
 import SiteVisitModal from "../common/SiteVisitModal";
 import { SITE_CONFIG } from "@/config/site";
+import { useSiteSettings } from "@/components/common/SiteSettingsContext";
 
 const WhatsAppIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg
@@ -50,6 +51,7 @@ const SolarCalculatorModal = dynamic(() => import("../home/SolarCalculatorModal"
 
 export default function Header() {
   const pathname = usePathname();
+  const { settings } = useSiteSettings();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [isSiteVisitOpen, setIsSiteVisitOpen] = useState(false);
@@ -59,6 +61,10 @@ export default function Header() {
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobilePartnershipsOpen, setMobilePartnershipsOpen] = useState(false);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+
+  const whatsappPhone = settings.contactPhone
+    ? settings.contactPhone.replace(/\D/g, "")
+    : SITE_CONFIG.contact.whatsapp.replace(/\+/g, "");
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 12);
@@ -87,14 +93,6 @@ export default function Header() {
           window.scrollTo({ top: y, behavior: "smooth" });
         }
       }
-    }
-  };
-
-  const handleOpenLiveChat = () => {
-    setOpenDropdown(null);
-    setIsMobileMenuOpen(false);
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("open-live-chat"));
     }
   };
 
@@ -242,11 +240,6 @@ export default function Header() {
       dropdownType: "more",
     },
   ];
-
-
-
-
-
 
   return (
     <>
@@ -414,7 +407,7 @@ export default function Header() {
               {/* Desktop CTAs */}
               <div className="hidden xl:flex items-center gap-2 shrink-0">
                 <a
-                  href={`https://wa.me/${SITE_CONFIG.contact.whatsapp.replace(/\+/g, "")}?text=Hi%2C%20I%20am%20interested%20in%20Pragati%20EcoSolar%20services.`}
+                  href={`https://wa.me/${whatsappPhone}?text=Hi%2C%20I%20am%20interested%20in%20Pragati%20EcoSolar%20services.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-3.5 py-2 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5"
@@ -428,7 +421,7 @@ export default function Header() {
                     setOpenDropdown(null);
                     setIsSiteVisitOpen(true);
                   }}
-                  className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5"
+                  className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <Calendar className="w-3.5 h-3.5" />
                   <span>Book Free Visit</span>
@@ -439,7 +432,7 @@ export default function Header() {
                     setOpenDropdown(null);
                     setIsCalculatorOpen(true);
                   }}
-                  className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5"
+                  className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <FileText className="w-3.5 h-3.5 text-amber-400" />
                   <span>Get Quote</span>
@@ -536,7 +529,7 @@ export default function Header() {
 
             <div className="pt-4 border-t border-slate-100 space-y-2">
               <a
-                href={`https://wa.me/${SITE_CONFIG.contact.whatsapp.replace(/\+/g, "")}?text=Hi%2C%20I%20am%20interested%20in%20Pragati%20EcoSolar%20services.`}
+                href={`https://wa.me/${whatsappPhone}?text=Hi%2C%20I%20am%20interested%20in%20Pragati%20EcoSolar%20services.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md transition-colors"

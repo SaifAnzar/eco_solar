@@ -2,10 +2,19 @@
 
 import React from "react";
 import Link from "next/link";
-import { MapPin, Phone, Mail, Clock, Zap, ArrowRight, ShieldCheck } from "lucide-react";
+import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import { SITE_CONFIG } from "@/config/site";
+import { useSiteSettings } from "@/components/common/SiteSettingsContext";
 
 export default function Footer() {
+  const { settings } = useSiteSettings();
+
+  const address = settings.contactAddress || SITE_CONFIG.contact.address;
+  const phone = settings.contactPhone || SITE_CONFIG.contact.phone;
+  const email = settings.contactEmail || SITE_CONFIG.contact.email;
+  const workingHours = settings.workingHours || SITE_CONFIG.contact.workingHours;
+  const rawPhone = phone.replace(/\D/g, "") || SITE_CONFIG.contact.phoneRaw;
+
   return (
     <footer className="bg-slate-950 text-slate-300 font-sans border-t border-slate-800">
       {/* Upper Footer */}
@@ -23,7 +32,7 @@ export default function Footer() {
             </Link>
 
             <p className="text-xs text-slate-400 leading-relaxed">
-              {SITE_CONFIG.subline}
+              {settings.heroSubline || SITE_CONFIG.subline}
             </p>
 
             <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-2 text-xs">
@@ -49,7 +58,7 @@ export default function Footer() {
               <li><Link href="/about" className="hover:text-emerald-400 transition-colors">About Us</Link></li>
               <li><Link href="/how-it-works" className="hover:text-emerald-400 transition-colors">How It Works</Link></li>
               <li><Link href="/residential" className="hover:text-emerald-400 transition-colors">Residential Solar</Link></li>
-              <li><Link href="/commercial" className="hover:text-emerald-400 transition-colors">Commercial & Industrial</Link></li>
+              <li><Link href="/commercial" className="hover:text-emerald-400 transition-colors">Commercial &amp; Industrial</Link></li>
               <li><Link href="/projects" className="hover:text-emerald-400 transition-colors">Projects Portfolio</Link></li>
               <li><Link href="/government-schemes" className="hover:text-emerald-400 transition-colors">Government Schemes</Link></li>
               <li><Link href="/contact" className="hover:text-emerald-400 transition-colors">Contact Us</Link></li>
@@ -67,12 +76,12 @@ export default function Footer() {
               <li>• Solar EPC — Hybrid Systems</li>
               <li>• Solar Water Pumping Systems</li>
               <li>• Solar Street Lighting Solutions</li>
-              <li>• Net Metering & Subsidy Assistance</li>
-              <li>• Operation & Maintenance (O&M)</li>
+              <li>• Net Metering &amp; Subsidy Assistance</li>
+              <li>• Operation &amp; Maintenance (O&amp;M)</li>
             </ul>
           </div>
 
-          {/* Contact Details */}
+          {/* Contact Details (Dynamic CMS Values) */}
           <div className="lg:col-span-3 space-y-3">
             <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
               Registered Office
@@ -81,26 +90,26 @@ export default function Footer() {
             <div className="space-y-2.5 text-xs text-slate-300">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                <span>{SITE_CONFIG.contact.address}</span>
+                <span>{address}</span>
               </div>
 
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-emerald-500 shrink-0" />
-                <a href={`tel:${SITE_CONFIG.contact.phoneRaw}`} className="hover:text-emerald-400 font-mono">
-                  {SITE_CONFIG.contact.phone}
+                <a href={`tel:${rawPhone}`} className="hover:text-emerald-400 font-mono">
+                  {phone}
                 </a>
               </div>
 
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-emerald-500 shrink-0" />
-                <a href={`mailto:${SITE_CONFIG.contact.email}`} className="hover:text-emerald-400 font-mono">
-                  {SITE_CONFIG.contact.email}
+                <a href={`mailto:${email}`} className="hover:text-emerald-400 font-mono">
+                  {email}
                 </a>
               </div>
 
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>{SITE_CONFIG.contact.workingHours}</span>
+                <span>{workingHours}</span>
               </div>
             </div>
           </div>

@@ -128,9 +128,14 @@ export async function updateSiteSettings(data: {
       }
     }
 
+    revalidatePath("/", "layout");
     revalidatePath("/");
     revalidatePath("/about");
     revalidatePath("/contact");
+    revalidatePath("/services");
+    revalidatePath("/projects");
+    revalidatePath("/residential");
+    revalidatePath("/commercial");
     revalidatePath("/admin");
     revalidatePath("/admin/site-content");
     return { success: true, message: "Site content & settings saved successfully!", data: updated };
