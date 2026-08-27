@@ -57,16 +57,16 @@ export function AdminSidebar({ adminEmail }: AdminSidebarProps) {
       badge: "Applications",
     },
     {
-      label: "Eligibility Checks",
-      href: "/admin/eligibility-leads",
-      icon: ShieldCheck,
-      badge: "PM Surya Ghar",
-    },
-    {
       label: "Partner Directory",
       href: "/admin/network",
       icon: Store,
       badge: "Experience Centers",
+    },
+    {
+      label: "Eligibility Checks",
+      href: "/admin/eligibility-leads",
+      icon: ShieldCheck,
+      badge: "PM Surya Ghar",
     },
   ];
 

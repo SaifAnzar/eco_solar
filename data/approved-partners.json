@@ -1,1 +1,32 @@
-{}
+{
+  "cmtb2z3270001p8jowco39k3p": {
+    "type": "FRANCHISE",
+    "name": "saif agency",
+    "contactPerson": "saif",
+    "phone": "7735783533",
+    "email": "saif@gmail.com",
+    "district": "Khordha (Bhubaneswar)",
+    "fullAddress": "bbsr",
+    "pincode": null,
+    "googleMapUrl": null,
+    "isActive": true,
+    "id": "cmtb2z3270001p8jowco39k3p",
+    "createdAt": "2026-08-27T05:27:01.957Z",
+    "updatedAt": "2026-08-27T05:27:01.957Z"
+  },
+  "cmtb2zlqt0002p8jogghudeha": {
+    "type": "DEALER",
+    "name": "saif agkajn",
+    "contactPerson": "oakknfo",
+    "phone": "8854562314",
+    "email": "saibasi@gmail.com",
+    "district": "Khordha (Bhubaneswar)",
+    "fullAddress": "osnd",
+    "pincode": null,
+    "googleMapUrl": null,
+    "isActive": true,
+    "id": "cmtb2zlqt0002p8jogghudeha",
+    "createdAt": "2026-08-27T05:27:26.166Z",
+    "updatedAt": "2026-08-27T05:27:26.166Z"
+  }
+}

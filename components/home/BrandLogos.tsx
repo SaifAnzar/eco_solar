@@ -17,15 +17,15 @@ const BRAND_LOGOS = [
     logo: "/images/brands/sunora.png",
   },
   {
-    name: "Statcon Power",
+    name: "Statcon Powtech",
     logo: "/images/brands/statcon.jpg",
   },
   {
-    name: "Servotech Solar",
+    name: "Servotech",
     logo: "/images/brands/servotech.png",
   },
   {
-    name: "Polycab Wires",
+    name: "Polycab Solar",
     logo: "/images/brands/polycab.jpg",
   },
   {

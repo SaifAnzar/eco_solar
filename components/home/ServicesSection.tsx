@@ -2,25 +2,23 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, ArrowRight, Home, Building2, Sprout } from "lucide-react";
-import { RESIDENTIAL_IMAGE, COMMERCIAL_IMAGE, AGRICULTURAL_IMAGE } from "@/lib/constants";
-import SolarImageFallback from "@/components/common/SolarImageFallback";
+import { CheckCircle2, Home, Building2, Sprout } from "lucide-react";
 import KusumModal from "@/components/forms/KusumModal";
 
 export default function ServicesSection() {
-  const [activeTab, setActiveTab] = useState<"all" | "residential" | "commercial">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "residential" | "commercial" | "agricultural">("all");
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isKusumOpen, setIsKusumOpen] = useState(false);
 
   const services = [
     {
       id: "residential",
-      title: "Solar for Your Home",
+      title: "Solar for Your Home (On-Grid)",
       capacityBadge: "1-10 kW PACKAGES",
       description:
         "Rooftop solar panel installation for your home with complete setup — from site inspection to net-metering approval. Cut your monthly electricity bill by up to 90% and claim up to ₹78,000 government subsidy.",
-      image: RESIDENTIAL_IMAGE,
-      alt: "Rooftop solar panel installation on a home in Odisha",
-      icon: Home,
+      image: "/services/On-Grid%20Solar%20(Grid%20Connected).png",
+      alt: "On-Grid rooftop solar panel installation on a home in Odisha",
       category: "residential" as const,
       type: "residential" as const,
       features: [
@@ -38,9 +36,8 @@ export default function ServicesSection() {
       capacityBadge: "10-500 kW+ PACKAGES",
       description:
         "High-efficiency commercial solar installations designed for offices, factories, and commercial buildings. Slash business operational costs by 60–80% with 80% first-year accelerated depreciation tax benefits.",
-      image: COMMERCIAL_IMAGE,
+      image: "/services/Hybrid%20Solar%20(Grid%20+%20Battery).png",
       alt: "Commercial rooftop solar plant on an office building in Odisha",
-      icon: Building2,
       category: "commercial" as const,
       type: "commercial" as const,
       features: [
@@ -58,11 +55,10 @@ export default function ServicesSection() {
       capacityBadge: "3-10 HP PUMP SYSTEMS",
       description:
         "Government-subsidized solar powered water pumps under PM-KUSUM scheme for reliable farm irrigation. Zero electricity bills and zero diesel expenses for Odisha agricultural land.",
-      image: AGRICULTURAL_IMAGE,
+      image: "/services/Solar%20Water%20Pumps%20(For%20Farms).png",
       alt: "Solar water pump installation on a farm in Odisha",
-      icon: Sprout,
       category: "pumps" as const,
-      type: "residential" as const,
+      type: "agricultural" as const,
       features: [
         "Up to 90% government subsidy under PM-KUSUM",
         "Heavy-duty surface & borewell pump integration",
@@ -72,12 +68,93 @@ export default function ServicesSection() {
       ctaHref: "#",
       isModalTrigger: true,
     },
+    {
+      id: "off-grid",
+      title: "Off-Grid Solar (Battery Storage)",
+      capacityBadge: "2-50 kW BATTERY SYSTEMS",
+      description:
+        "Standalone solar power systems with long-life Lithium/Tubular battery backup. Enjoy uninterrupted 24/7 electricity during severe weather and grid blackouts.",
+      image: "/services/Off-Grid%20Solar%20(Battery%20Storage).png",
+      alt: "Off-Grid solar system with battery storage",
+      category: "residential" as const,
+      type: "residential" as const,
+      features: [
+        "100% power independence from electricity grid",
+        "Fast-charging Lithium battery storage options",
+        "Perfect for farmhouses, shops, & remote areas",
+      ],
+      ctaText: "Get Battery Solar Quote →",
+      ctaHref: "/contact?type=quote",
+      isModalTrigger: false,
+    },
+    {
+      id: "street-lights",
+      title: "Solar Street Lights",
+      capacityBadge: "12W - 120W AUTOMATIC",
+      description:
+        "All-in-one solar street lights with integrated solar panels and automatic dusk-to-dawn sensors. Ideal for housing colonies, village roads, and campus premises.",
+      image: "/services/Solar%20Street%20Lights.png",
+      alt: "Automatic solar street lights system",
+      category: "commercial" as const,
+      type: "commercial" as const,
+      features: [
+        "Automatic ON at sunset & OFF at sunrise",
+        "Zero cabling, wiring or monthly electric bills",
+        "Rust-proof steel poles & IP65 waterproof rating",
+      ],
+      ctaText: "Request Lighting Quote →",
+      ctaHref: "/contact?type=quote",
+      isModalTrigger: false,
+    },
+    {
+      id: "net-metering",
+      title: "Net Metering & Govt Subsidy Help",
+      capacityBadge: "100% DISCOM LIAISON",
+      description:
+        "Complete paperwork and DISCOM permission handling for TPCODL, TPNODL, TPSODL & TPWODL. We ensure bi-directional meter fitting & direct bank subsidy payout.",
+      image: "/services/Net%20Metering%20&%20Govt%20Subsidy%20Help.png",
+      alt: "Net metering approval and government subsidy assistance",
+      category: "residential" as const,
+      type: "residential" as const,
+      features: [
+        "PM Surya Ghar portal filing & verification",
+        "DISCOM bi-directional net meter installation",
+        "Direct bank subsidy transfer guarantee",
+      ],
+      ctaText: "Start Subsidy Process →",
+      ctaHref: "/contact?type=site-visit",
+      isModalTrigger: false,
+    },
+    {
+      id: "maintenance",
+      title: "Solar Care & Maintenance",
+      capacityBadge: "ANNUAL MAINTENANCE (AMC)",
+      description:
+        "Professional solar panel cleaning and health checkups to keep your solar plant running at peak power output for 25 years across Odisha.",
+      image: "/services/Solar%20Care%20&%20Maintenance.png",
+      alt: "Solar panel cleaning and AMC service",
+      category: "commercial" as const,
+      type: "commercial" as const,
+      features: [
+        "High-pressure de-mineralized panel washing",
+        "Thermal scanning & inverter health inspection",
+        "Fast 24-hour technician dispatch support",
+      ],
+      ctaText: "Book Maintenance Inspection →",
+      ctaHref: "/contact?type=site-visit",
+      isModalTrigger: false,
+    },
   ];
+
+  const handleCardSelect = (id: string) => {
+    setSelectedCardId((prev) => (prev === id ? null : id));
+  };
 
   const displayedServices = services.filter((service) => {
     if (activeTab === "all") return true;
     if (activeTab === "residential") return service.type === "residential";
     if (activeTab === "commercial") return service.type === "commercial";
+    if (activeTab === "agricultural") return service.type === "agricultural";
     return true;
   });
 
@@ -100,7 +177,7 @@ export default function ServicesSection() {
 
         {/* Segmented Showcase Toggle Control */}
         <div className="flex justify-center mb-12">
-          <div className="inline-flex items-center p-1.5 bg-slate-200/80 rounded-2xl border border-slate-300/80 gap-1">
+          <div className="inline-flex flex-wrap items-center justify-center p-1.5 bg-slate-200/80 rounded-2xl border border-slate-300/80 gap-1">
             <button
               onClick={() => setActiveTab("all")}
               className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
@@ -133,84 +210,85 @@ export default function ServicesSection() {
               <Building2 className="w-3.5 h-3.5" />
               <span>Commercial &amp; Industrial</span>
             </button>
+            <button
+              onClick={() => setActiveTab("agricultural")}
+              className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
+                activeTab === "agricultural"
+                  ? "bg-cyan-600 text-white shadow-md"
+                  : "text-slate-700 hover:text-cyan-700 hover:bg-slate-300/50"
+              }`}
+            >
+              <Sprout className="w-3.5 h-3.5" />
+              <span>Agriculture &amp; Pumps</span>
+            </button>
           </div>
         </div>
 
-        {/* Minimalist Services Cards Grid */}
+        {/* Minimalist Cards Grid with Click Selection & Tiny Corner Images */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayedServices.map((service) => {
-            const Icon = service.icon;
+            const isSelected = selectedCardId === service.id;
             return (
               <div
                 key={service.id}
-                className="bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group"
+                onClick={() => handleCardSelect(service.id)}
+                className={`bg-white border rounded-2xl p-6 shadow-sm transition-all duration-300 flex flex-col justify-between group cursor-pointer relative overflow-hidden ${
+                  isSelected
+                    ? "ring-4 ring-emerald-500/80 border-emerald-500 shadow-xl scale-[1.02] z-10 bg-emerald-50/10"
+                    : "border-slate-200/80 hover:shadow-lg hover:border-emerald-500/30"
+                }`}
               >
                 <div>
-                  {/* Card Image */}
-                  <div className="aspect-[16/10] w-full overflow-hidden relative bg-slate-950">
-                    <img
-                      src={service.image}
-                      alt={service.alt}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                      onError={(e) => {
-                        // Fallback to root path if /images/ alias has an issue
-                        if (service.image.startsWith("/images/")) {
-                          e.currentTarget.src = service.image.replace("/images/", "/");
-                        }
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-slate-950/20 pointer-events-none" />
-
-                    {/* Capacity Badge */}
-                    <div className="absolute top-3.5 left-3.5">
-                      <span className="bg-slate-900/90 text-amber-400 font-extrabold text-[10px] font-mono px-3 py-1 rounded-full shadow-md border border-slate-700/80 backdrop-blur-xs">
-                        {service.capacityBadge}
-                      </span>
+                  {/* Header Row: Tiny Image Thumbnail on Left Side Corner */}
+                  <div className="flex items-start gap-3.5 mb-4">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 border border-slate-200/90 shadow-2xs bg-slate-100 p-1 group-hover:border-emerald-400/50 transition-colors">
+                      <img
+                        src={service.image}
+                        alt={service.alt}
+                        className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
 
-                    <div className="absolute bottom-3.5 left-3.5">
-                      <div className="p-2.5 rounded-xl bg-emerald-600/90 backdrop-blur-xs text-white shadow-md border border-emerald-500/30">
-                        <Icon className="w-4 h-4" />
-                      </div>
+                    <div className="flex-1 space-y-1">
+                      <span className="inline-block bg-slate-900 text-amber-400 font-extrabold text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-slate-700 shadow-2xs">
+                        {service.capacityBadge}
+                      </span>
+                      <h3 className="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-emerald-600 transition-colors leading-snug">
+                        {service.title}
+                      </h3>
                     </div>
                   </div>
 
-                  {/* Minimalist Card Content */}
-                  <div className="p-6 space-y-4">
-                    <h3 className="text-xl font-extrabold text-slate-900 group-hover:text-emerald-600 transition-colors">
-                      {service.title}
-                    </h3>
+                  {/* Minimalist Card Description */}
+                  <p className="text-xs text-slate-600 leading-relaxed font-normal mb-4">
+                    {service.description}
+                  </p>
 
-                    <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                      {service.description}
-                    </p>
-
-                    {/* 3 Bullet Points */}
-                    <div className="space-y-2 pt-3 border-t border-slate-100">
-                      {service.features.map((feat, idx) => (
-                        <div key={idx} className="flex items-start space-x-2 text-xs text-slate-700 font-medium">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>{feat}</span>
-                        </div>
-                      ))}
-                    </div>
+                  {/* Feature Bullet Points */}
+                  <div className="space-y-2 pt-3 border-t border-slate-100">
+                    {service.features.map((feat, idx) => (
+                      <div key={idx} className="flex items-start space-x-2 text-xs text-slate-700 font-medium">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <span>{feat}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
                 {/* Card Action CTA Button */}
-                <div className="p-6 pt-0">
+                <div className="pt-5 mt-4 border-t border-slate-100" onClick={(e) => e.stopPropagation()}>
                   {service.isModalTrigger ? (
                     <button
                       type="button"
                       onClick={() => setIsKusumOpen(true)}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 text-xs cursor-pointer shadow-sm"
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 text-xs cursor-pointer shadow-2xs"
                     >
                       <span>{service.ctaText}</span>
                     </button>
                   ) : (
                     <Link
                       href={service.ctaHref}
-                      className="w-full bg-slate-900 hover:bg-emerald-600 text-white font-extrabold py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 text-xs shadow-sm"
+                      className="w-full bg-slate-900 hover:bg-emerald-600 text-white font-extrabold py-2.5 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 text-xs shadow-2xs"
                     >
                       <span>{service.ctaText}</span>
                     </Link>

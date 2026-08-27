@@ -22,22 +22,22 @@ const BRAND_PARTNERS = [
     fallbackText: "Sunora Power",
   },
   {
-    name: "Statcon Energiaa",
+    name: "Statcon Powtech",
     category: "Inverters & PCUs",
     logo: "/images/brands/statcon.jpg",
-    fallbackText: "Statcon Power",
+    fallbackText: "Statcon Powtech",
   },
   {
-    name: "Servotech Power Systems",
+    name: "Servotech",
     category: "EV & Solar Inverters",
     logo: "/images/brands/servotech.png",
     fallbackText: "Servotech",
   },
   {
-    name: "Polycab Wires",
+    name: "Polycab Solar",
     category: "Solar DC & AC Cables",
     logo: "/images/brands/polycab.jpg",
-    fallbackText: "Polycab Wires",
+    fallbackText: "Polycab Solar",
   },
   {
     name: "KEI Cables",
@@ -65,7 +65,7 @@ export default function BrandPartnersGrid() {
         {BRAND_PARTNERS.map((brand) => (
           <div
             key={brand.name}
-            className="group flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md hover:border-emerald-400/40 transition-all duration-300 min-h-[95px]"
+            className="group flex flex-col items-center justify-between p-3 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md hover:border-emerald-400/40 transition-all duration-300 min-h-[115px]"
           >
             <div className="relative w-full h-11 flex items-center justify-center p-1 rounded-lg bg-white/90 dark:bg-slate-950/80 shadow-2xs group-hover:scale-105 transition-transform duration-300">
               <img
@@ -83,9 +83,14 @@ export default function BrandPartnersGrid() {
                 {brand.fallbackText}
               </span>
             </div>
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 text-center group-hover:text-emerald-600 dark:group-hover:text-emerald-400 font-bold tracking-tight">
-              {brand.category}
-            </span>
+            <div className="flex flex-col items-center mt-2.5 gap-0.5 w-full text-center">
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-200 tracking-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                {brand.name}
+              </span>
+              <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 leading-tight">
+                {brand.category}
+              </span>
+            </div>
           </div>
         ))}
       </div>
