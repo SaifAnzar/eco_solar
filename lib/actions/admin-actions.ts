@@ -197,9 +197,14 @@ export async function getLeads(filters?: { district?: string; discom?: string; s
     const combinedMap = new Map<string, any>();
     const seenCompositeKeys = new Set<string>();
 
+    const normalizePhone = (phone?: string) => {
+      const digits = (phone || "").replace(/\D/g, "");
+      return digits.length >= 10 ? digits.slice(-10) : digits;
+    };
+
     const makeKey = (phone?: string, name?: string) => {
-      const p = (phone || "").replace(/\D/g, "");
-      const n = (name || "").trim().toLowerCase();
+      const p = normalizePhone(phone);
+      const n = (name || "").trim().toLowerCase().slice(0, 5);
       return p ? `${p}_${n}` : null;
     };
 

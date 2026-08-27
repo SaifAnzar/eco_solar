@@ -238,24 +238,28 @@ export async function getContactInquiriesAction() {
     const combinedMap = new Map<string, any>();
     const seenCompositeKeys = new Set<string>();
 
-    const makeKey = (phone?: string, name?: string, type?: string) => {
-      const p = (phone || "").replace(/\D/g, "");
-      const n = (name || "").trim().toLowerCase();
-      const t = type || "SITE_VISIT";
-      return p ? `${p}_${n}_${t}` : null;
+    const normalizePhone = (phone?: string) => {
+      const digits = (phone || "").replace(/\D/g, "");
+      return digits.length >= 10 ? digits.slice(-10) : digits;
+    };
+
+    const makeKey = (phone?: string, name?: string) => {
+      const p = normalizePhone(phone);
+      const n = (name || "").trim().toLowerCase().slice(0, 5);
+      return p ? `${p}_${n}` : null;
     };
 
     dbList.forEach((item) => {
       if (item && item.id) {
         combinedMap.set(item.id, item);
-        const key = makeKey(item.phone, item.fullName, item.inquiryType);
+        const key = makeKey(item.phone, item.fullName);
         if (key) seenCompositeKeys.add(key);
       }
     });
 
     leadList.forEach((item) => {
       if (item && item.id) {
-        const key = makeKey(item.phone, item.fullName, item.inquiryType);
+        const key = makeKey(item.phone, item.fullName);
         if (!combinedMap.has(item.id) && (!key || !seenCompositeKeys.has(key))) {
           combinedMap.set(item.id, item);
           if (key) seenCompositeKeys.add(key);
@@ -265,7 +269,7 @@ export async function getContactInquiriesAction() {
 
     fileList.forEach((item) => {
       if (item && item.id) {
-        const key = makeKey(item.phone, item.fullName, item.inquiryType);
+        const key = makeKey(item.phone, item.fullName);
         if (!combinedMap.has(item.id) && (!key || !seenCompositeKeys.has(key))) {
           combinedMap.set(item.id, item);
           if (key) seenCompositeKeys.add(key);
