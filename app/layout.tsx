@@ -27,12 +27,12 @@ export const metadata: Metadata = {
     "Premier Rooftop Solar EPC Contractor in Odisha (HIG 42, Aryapalli, Patia, Bhubaneswar). Turnkey 3 kW to 100 kW+ solar installations under PM Surya Ghar & C&I CAPEX/OPEX models. Full TPCODL, TPNODL, TPSODL & TPWODL Net-Metering Liaison.",
   icons: {
     icon: [
-      { url: "/logo-p.png", type: "image/png" },
-      { url: "/favicon-p.png", type: "image/png" },
-      { url: "/favicon.ico" },
+      { url: "/favicon.ico?v=100" },
+      { url: "/icon.png?v=100", type: "image/png" },
+      { url: "/logo-p.png?v=100", type: "image/png" },
     ],
-    shortcut: "/logo-p.png",
-    apple: "/logo-p.png",
+    shortcut: "/icon.png?v=100",
+    apple: "/icon.png?v=100",
   },
   keywords: [
     "Pragati EcoSolar",
@@ -175,10 +175,11 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
-        <link rel="icon" type="image/png" sizes="32x32" href="/logo-p.png?v=99" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/logo-p.png?v=99" />
-        <link rel="shortcut icon" href="/logo-p.png?v=99" type="image/png" />
-        <link rel="apple-touch-icon" href="/logo-p.png?v=99" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico?v=100" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/icon.png?v=100" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icon.png?v=100" />
+        <link rel="shortcut icon" href="/icon.png?v=100" type="image/png" />
+        <link rel="apple-touch-icon" href="/icon.png?v=100" />
       </head>
       <body className="min-h-full flex flex-col bg-[#FAFAFA] text-slate-900 selection:bg-[#D97706] selection:text-white font-sans">
         <Script
