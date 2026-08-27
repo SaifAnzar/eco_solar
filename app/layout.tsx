@@ -174,7 +174,11 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-
+      <head>
+        <link rel="icon" href="/logo-p.png?v=2" type="image/png" sizes="any" />
+        <link rel="shortcut icon" href="/logo-p.png?v=2" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo-p.png?v=2" />
+      </head>
       <body className="min-h-full flex flex-col bg-[#FAFAFA] text-slate-900 selection:bg-[#D97706] selection:text-white font-sans">
         <Script
           id="json-ld-schema"
