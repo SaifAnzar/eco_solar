@@ -1,5 +1,7 @@
 import React from "react";
 import { Hero } from "@/components/hero/Hero";
+import VideoHero from "@/components/home/VideoHero";
+// import AnimatedSolarHero from "@/components/home/AnimatedSolarHero"; // preserved — SVG engine hero
 import AboutSection from "@/components/home/AboutSection";
 import MetricsStrip from "@/components/home/MetricsStrip";
 import ServicesSection from "@/components/home/ServicesSection";
@@ -15,13 +17,19 @@ export default async function HomePage() {
   const settings = settingsRes.data;
 
   return (
-    <div className="w-full font-sans bg-[#FAFAFA]">
-      {/* 1. HERO SECTION (With dynamic CMS headline, subline & isolated ROI calculator card) */}
-      <Hero
+    <div className="w-full font-sans">
+      {/* 1. VIDEO HERO — dual seamless crossfade video background */}
+      <VideoHero />
+
+      {/* PRESERVED: SVG animated hero (commented out) */}
+      {/* <AnimatedSolarHero /> */}
+
+      {/* PRESERVED: Original CMS Hero (commented out) */}
+      {/* <Hero
         heroHeadline={settings?.heroHeadline}
         heroSubline={settings?.heroSubline}
         typewriterWords={settings?.typewriterWords}
-      />
+      /> */}
 
       {/* 2. ABOUT SECTION (Company credentials & core EPC values) */}
       <AboutSection />
@@ -41,11 +49,7 @@ export default async function HomePage() {
       <DiscomLiaison />
 
       {/* 6. TRUSTED BRAND PARTNERS SCROLLING LOGO MARQUEE */}
-      <section className="py-8 bg-white border-y border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <BrandLogos />
-        </div>
-      </section>
+      <BrandLogos />
 
       {/* 7. FAQ ACCORDION */}
       <FaqAccordion />

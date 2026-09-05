@@ -2,11 +2,28 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Home, Building2, Sprout } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2, Home, Building2, Sprout, ArrowRight, Zap } from "lucide-react";
 import KusumModal from "@/components/forms/KusumModal";
 
+const TABS = [
+  { key: "all",          label: "All Solutions",        icon: Zap,       color: "slate" },
+  { key: "residential",  label: "Residential",          icon: Home,      color: "emerald" },
+  { key: "commercial",   label: "Commercial & Industrial", icon: Building2, color: "amber" },
+  { key: "agricultural", label: "Agriculture & Pumps",  icon: Sprout,    color: "cyan" },
+] as const;
+
+type TabKey = typeof TABS[number]["key"];
+
+const TAB_ACTIVE: Record<string, string> = {
+  all:          "bg-slate-900 text-white shadow-lg",
+  residential:  "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/20",
+  commercial:   "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/20",
+  agricultural: "bg-gradient-to-r from-cyan-500 to-sky-500 text-white shadow-lg shadow-cyan-500/20",
+};
+
 export default function ServicesSection() {
-  const [activeTab, setActiveTab] = useState<"all" | "residential" | "commercial" | "agricultural">("all");
+  const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isKusumOpen, setIsKusumOpen] = useState(false);
 
@@ -14,294 +31,256 @@ export default function ServicesSection() {
     {
       id: "residential",
       title: "Solar for Your Home (On-Grid)",
-      capacityBadge: "1-10 kW PACKAGES",
-      description:
-        "Rooftop solar panel installation for your home with complete setup — from site inspection to net-metering approval. Cut your monthly electricity bill by up to 90% and claim up to ₹78,000 government subsidy.",
+      capacityBadge: "1–10 kW",
+      description: "Rooftop solar with complete setup — site inspection to net-metering approval. Cut monthly bills by 90% and claim up to ₹78,000 government subsidy.",
       image: "/services/on-grid.png",
       alt: "On-Grid rooftop solar panel installation on a home in Odisha",
-      category: "residential" as const,
       type: "residential" as const,
-      features: [
-        "Up to ₹78,000 direct bank subsidy",
-        "Tier-1 Waaree & Adani panels with 25-yr warranty",
-        "Complete DISCOM net-metering hassle-free",
-      ],
-      ctaText: "Calculate Home Savings →",
+      features: ["Up to ₹78,000 direct bank subsidy", "Tier-1 Waaree & Adani panels, 25-yr warranty", "Complete DISCOM net-metering handled"],
+      ctaText: "Calculate Home Savings",
       ctaHref: "/calculator?type=residential",
       isModalTrigger: false,
+      accent: "from-emerald-500 to-teal-500",
+      glow: "rgba(16,185,129,0.15)",
     },
     {
       id: "commercial",
       title: "Solar for Offices & Factories",
-      capacityBadge: "10-500 kW+ PACKAGES",
-      description:
-        "High-efficiency commercial solar installations designed for offices, factories, and commercial buildings. Slash business operational costs by 60–80% with 80% first-year accelerated depreciation tax benefits.",
+      capacityBadge: "10–500 kW+",
+      description: "High-efficiency commercial installations for offices, factories, and buildings. Cut operational costs 60–80% with 80% first-year accelerated depreciation.",
       image: "/services/hybrid.png",
       alt: "Commercial rooftop solar plant on an office building in Odisha",
-      category: "commercial" as const,
       type: "commercial" as const,
-      features: [
-        "80% first-year tax depreciation benefit",
-        "Smart online solar monitoring app",
-        "Full ROI payback within 3 to 4 years",
-      ],
-      ctaText: "Calculate Business ROI →",
+      features: ["80% first-year tax depreciation benefit", "Smart online solar monitoring app", "Full ROI payback within 3–4 years"],
+      ctaText: "Calculate Business ROI",
       ctaHref: "/calculator?type=commercial",
       isModalTrigger: false,
+      accent: "from-amber-400 to-orange-500",
+      glow: "rgba(245,158,11,0.15)",
     },
     {
       id: "agricultural",
       title: "Solar Water Pumps for Farmers",
-      capacityBadge: "3-10 HP PUMP SYSTEMS",
-      description:
-        "Government-subsidized solar powered water pumps under PM-KUSUM scheme for reliable farm irrigation. Zero electricity bills and zero diesel expenses for Odisha agricultural land.",
+      capacityBadge: "3–10 HP",
+      description: "Government-subsidized solar pumps under PM-KUSUM for reliable farm irrigation. Zero electricity bills, zero diesel expenses for Odisha farmland.",
       image: "/services/solar-pump.png",
       alt: "Solar water pump installation on a farm in Odisha",
-      category: "pumps" as const,
       type: "agricultural" as const,
-      features: [
-        "Up to 90% government subsidy under PM-KUSUM",
-        "Heavy-duty surface & borewell pump integration",
-        "All-weather cyclone resistant structure",
-      ],
-      ctaText: "Pre-Register PM-KUSUM Interest →",
+      features: ["Up to 90% subsidy under PM-KUSUM", "Heavy-duty surface & borewell pump integration", "All-weather cyclone resistant structure"],
+      ctaText: "Pre-Register PM-KUSUM Interest",
       ctaHref: "#",
       isModalTrigger: true,
+      accent: "from-cyan-500 to-sky-500",
+      glow: "rgba(6,182,212,0.15)",
     },
     {
       id: "off-grid",
       title: "Off-Grid Solar (Battery Storage)",
-      capacityBadge: "2-50 kW BATTERY SYSTEMS",
-      description:
-        "Standalone solar power systems with long-life Lithium/Tubular battery backup. Enjoy uninterrupted 24/7 electricity during severe weather and grid blackouts.",
+      capacityBadge: "2–50 kW",
+      description: "Standalone solar systems with Lithium/Tubular battery backup. Enjoy 24/7 uninterrupted electricity during severe weather and grid blackouts.",
       image: "/services/off-grid.png",
       alt: "Off-Grid solar system with battery storage",
-      category: "residential" as const,
       type: "residential" as const,
-      features: [
-        "100% power independence from electricity grid",
-        "Fast-charging Lithium battery storage options",
-        "Perfect for farmhouses, shops, & remote areas",
-      ],
-      ctaText: "Get Battery Solar Quote →",
+      features: ["100% power independence from grid", "Fast-charging Lithium battery options", "Perfect for farmhouses, shops & remote areas"],
+      ctaText: "Get Battery Solar Quote",
       ctaHref: "/contact?type=quote",
       isModalTrigger: false,
+      accent: "from-violet-500 to-purple-600",
+      glow: "rgba(139,92,246,0.15)",
     },
     {
       id: "street-lights",
       title: "Solar Street Lights",
-      capacityBadge: "12W - 120W AUTOMATIC",
-      description:
-        "All-in-one solar street lights with integrated solar panels and automatic dusk-to-dawn sensors. Ideal for housing colonies, village roads, and campus premises.",
+      capacityBadge: "12W–120W Auto",
+      description: "All-in-one solar street lights with integrated panels and automatic dusk-to-dawn sensors for housing colonies, village roads, and campus premises.",
       image: "/services/street-lights.png",
       alt: "Automatic solar street lights system",
-      category: "commercial" as const,
       type: "commercial" as const,
-      features: [
-        "Automatic ON at sunset & OFF at sunrise",
-        "Zero cabling, wiring or monthly electric bills",
-        "Rust-proof steel poles & IP65 waterproof rating",
-      ],
-      ctaText: "Request Lighting Quote →",
+      features: ["Auto ON at sunset & OFF at sunrise", "Zero cabling or monthly bills", "Rust-proof steel, IP65 waterproof rating"],
+      ctaText: "Request Lighting Quote",
       ctaHref: "/contact?type=quote",
       isModalTrigger: false,
+      accent: "from-rose-500 to-pink-600",
+      glow: "rgba(244,63,94,0.15)",
     },
     {
       id: "net-metering",
-      title: "Net Metering & Govt Subsidy Help",
-      capacityBadge: "100% DISCOM LIAISON",
-      description:
-        "Complete paperwork and DISCOM permission handling for TPCODL, TPNODL, TPSODL & TPWODL. We ensure bi-directional meter fitting & direct bank subsidy payout.",
+      title: "Net Metering & Govt Subsidy",
+      capacityBadge: "100% DISCOM",
+      description: "Complete paperwork and DISCOM handling for all Odisha zones. We ensure bi-directional meter fitting and direct bank subsidy payout.",
       image: "/services/net-metering.png",
       alt: "Net metering approval and government subsidy assistance",
-      category: "residential" as const,
       type: "residential" as const,
-      features: [
-        "PM Surya Ghar portal filing & verification",
-        "DISCOM bi-directional net meter installation",
-        "Direct bank subsidy transfer guarantee",
-      ],
-      ctaText: "Start Subsidy Process →",
+      features: ["PM Surya Ghar portal filing & verification", "DISCOM bi-directional net meter install", "Direct bank subsidy transfer guarantee"],
+      ctaText: "Start Subsidy Process",
       ctaHref: "/contact?type=site-visit",
       isModalTrigger: false,
+      accent: "from-emerald-500 to-cyan-500",
+      glow: "rgba(16,185,129,0.15)",
     },
     {
       id: "maintenance",
       title: "Solar Care & Maintenance",
-      capacityBadge: "ANNUAL MAINTENANCE (AMC)",
-      description:
-        "Professional solar panel cleaning and health checkups to keep your solar plant running at peak power output for 25 years across Odisha.",
+      capacityBadge: "Annual AMC",
+      description: "Professional panel cleaning and health checkups to keep your solar plant running at peak output for 25 years across Odisha.",
       image: "/services/maintenance.png",
       alt: "Solar panel cleaning and AMC service",
-      category: "commercial" as const,
       type: "commercial" as const,
-      features: [
-        "High-pressure de-mineralized panel washing",
-        "Thermal scanning & inverter health inspection",
-        "Fast 24-hour technician dispatch support",
-      ],
-      ctaText: "Book Maintenance Inspection →",
+      features: ["High-pressure de-mineralized panel wash", "Thermal scanning & inverter inspection", "Fast 24-hour technician dispatch support"],
+      ctaText: "Book Maintenance Inspection",
       ctaHref: "/contact?type=site-visit",
       isModalTrigger: false,
+      accent: "from-slate-600 to-slate-800",
+      glow: "rgba(100,116,139,0.15)",
     },
   ];
 
-  const handleCardSelect = (id: string) => {
-    setSelectedCardId((prev) => (prev === id ? null : id));
-  };
-
-  const displayedServices = services.filter((service) => {
+  const displayed = services.filter(s => {
     if (activeTab === "all") return true;
-    if (activeTab === "residential") return service.type === "residential";
-    if (activeTab === "commercial") return service.type === "commercial";
-    if (activeTab === "agricultural") return service.type === "agricultural";
-    return true;
+    return s.type === activeTab;
   });
 
   return (
-    <section id="services" className="py-16 md:py-24 bg-[#FAFAFA] relative font-sans border-t border-slate-200/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-bold px-3.5 py-1 bg-emerald-50 border border-emerald-200 rounded-full inline-block">
-            WHAT WE INSTALL
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Solar Solutions for Every Home &amp; Business
-          </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-            Select a solution to calculate savings directly or pre-register for government subsidy programs.
-          </p>
-        </div>
-
-        {/* Segmented Showcase Toggle Control */}
-        <div className="flex justify-center mb-12">
-          <div className="inline-flex flex-wrap items-center justify-center p-1.5 bg-slate-200/80 rounded-2xl border border-slate-300/80 gap-1">
-            <button
-              onClick={() => setActiveTab("all")}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
-                activeTab === "all"
-                  ? "bg-slate-900 text-white shadow-md"
-                  : "text-slate-700 hover:text-slate-900 hover:bg-slate-300/50"
-              }`}
-            >
-              All Solutions ({services.length})
-            </button>
-            <button
-              onClick={() => setActiveTab("residential")}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
-                activeTab === "residential"
-                  ? "bg-emerald-600 text-white shadow-md"
-                  : "text-slate-700 hover:text-emerald-700 hover:bg-slate-300/50"
-              }`}
-            >
-              <Home className="w-3.5 h-3.5" />
-              <span>Residential Solar</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("commercial")}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
-                activeTab === "commercial"
-                  ? "bg-amber-600 text-white shadow-md"
-                  : "text-slate-700 hover:text-amber-700 hover:bg-slate-300/50"
-              }`}
-            >
-              <Building2 className="w-3.5 h-3.5" />
-              <span>Commercial &amp; Industrial</span>
-            </button>
-            <button
-              onClick={() => setActiveTab("agricultural")}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
-                activeTab === "agricultural"
-                  ? "bg-cyan-600 text-white shadow-md"
-                  : "text-slate-700 hover:text-cyan-700 hover:bg-slate-300/50"
-              }`}
-            >
-              <Sprout className="w-3.5 h-3.5" />
-              <span>Agriculture &amp; Pumps</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Minimalist Cards Grid with Click Selection & Tiny Corner Images */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayedServices.map((service) => {
-            const isSelected = selectedCardId === service.id;
-            return (
-              <div
-                key={service.id}
-                onClick={() => handleCardSelect(service.id)}
-                className={`bg-white border rounded-2xl p-6 shadow-sm transition-all duration-300 flex flex-col justify-between group cursor-pointer relative overflow-hidden ${
-                  isSelected
-                    ? "ring-4 ring-emerald-500/80 border-emerald-500 shadow-xl scale-[1.02] z-10 bg-emerald-50/10"
-                    : "border-slate-200/80 hover:shadow-lg hover:border-emerald-500/30"
-                }`}
-              >
-                <div>
-                  {/* Header Row: Tiny Image Thumbnail on Left Side Corner */}
-                  <div className="flex items-start gap-3.5 mb-4">
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 border border-slate-200/90 shadow-2xs bg-slate-100 p-1 group-hover:border-emerald-400/50 transition-colors">
-                      <img
-                        src={service.image}
-                        alt={service.alt}
-                        className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-
-                    <div className="flex-1 space-y-1">
-                      <span className="inline-block bg-slate-900 text-amber-400 font-extrabold text-[10px] font-mono px-2.5 py-0.5 rounded-full border border-slate-700 shadow-2xs">
-                        {service.capacityBadge}
-                      </span>
-                      <h3 className="text-base sm:text-lg font-extrabold text-slate-900 group-hover:text-emerald-600 transition-colors leading-snug">
-                        {service.title}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Minimalist Card Description */}
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal mb-4">
-                    {service.description}
-                  </p>
-
-                  {/* Feature Bullet Points */}
-                  <div className="space-y-2 pt-3 border-t border-slate-100">
-                    {service.features.map((feat, idx) => (
-                      <div key={idx} className="flex items-start space-x-2 text-xs text-slate-700 font-medium">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                        <span>{feat}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Card Action CTA Button */}
-                <div className="pt-5 mt-4 border-t border-slate-100" onClick={(e) => e.stopPropagation()}>
-                  {service.isModalTrigger ? (
-                    <button
-                      type="button"
-                      onClick={() => setIsKusumOpen(true)}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 text-xs cursor-pointer shadow-2xs"
-                    >
-                      <span>{service.ctaText}</span>
-                    </button>
-                  ) : (
-                    <Link
-                      href={service.ctaHref}
-                      className="w-full bg-slate-900 hover:bg-emerald-600 text-white font-extrabold py-2.5 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 text-xs shadow-2xs"
-                    >
-                      <span>{service.ctaText}</span>
-                    </Link>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
+    <section id="services" className="relative py-20 sm:py-28 overflow-hidden"
+      style={{ background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)" }}>
+      {/* Background blobs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full blur-3xl opacity-40"
+          style={{ background: "radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%)" }} />
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full blur-3xl opacity-40"
+          style={{ background: "radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)" }} />
       </div>
 
-      {/* Pre-Register PM-KUSUM Interest Modal Popup */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Section Header */}
+        <motion.div className="text-center max-w-3xl mx-auto mb-14 space-y-4"
+          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.6 }}>
+          <span className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-[0.18em] text-emerald-700 bg-emerald-50 border border-emerald-200 px-3.5 py-1.5 rounded-full">
+            <Zap className="w-3.5 h-3.5" />
+            What We Install
+          </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
+            Solar Solutions for Every{" "}
+            <span className="bg-clip-text text-transparent"
+              style={{ backgroundImage: "linear-gradient(90deg,#10b981,#06b6d4)" }}>
+              Home & Business
+            </span>
+          </h2>
+          <p className="text-slate-500 text-base leading-relaxed">
+            Select a solution to calculate savings or pre-register for government subsidy programs.
+          </p>
+        </motion.div>
+
+        {/* Filter Tabs */}
+        <motion.div className="flex justify-center mb-12"
+          initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}>
+          <div className="inline-flex flex-wrap items-center justify-center gap-2 p-2 rounded-2xl border border-slate-200 bg-white shadow-sm">
+            {TABS.map(tab => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.key;
+              return (
+                <button key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${isActive ? TAB_ACTIVE[tab.key] : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"}`}>
+                  <Icon className="w-3.5 h-3.5" />
+                  {tab.label}
+                  {tab.key === "all" && (
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md ${isActive ? "bg-white/20" : "bg-slate-100 text-slate-500"}`}>
+                      {services.length}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* Cards Grid */}
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <AnimatePresence mode="popLayout">
+            {displayed.map((service, idx) => {
+              const isSelected = selectedCardId === service.id;
+              return (
+                <motion.div key={service.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3, delay: idx * 0.04 }}
+                  onClick={() => setSelectedCardId(prev => prev === service.id ? null : service.id)}
+                  className={`group relative bg-white rounded-2xl border overflow-hidden cursor-pointer flex flex-col transition-all duration-300 ${
+                    isSelected
+                      ? "ring-2 shadow-xl border-transparent"
+                      : "border-slate-200/80 hover:border-transparent hover:shadow-xl"
+                  }`}
+                  style={isSelected ? {
+                    borderColor: service.glow,
+                    boxShadow: `0 20px 40px ${service.glow}, 0 4px 16px rgba(0,0,0,0.08)`,
+                  } : undefined}
+                  whileHover={{ y: -4 }}
+                >
+                  {/* Top gradient bar */}
+                  <div className={`h-1 w-full bg-gradient-to-r ${service.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSelected ? "opacity-100" : ""}`} />
+
+                  {/* Image */}
+                  <div className="relative h-44 overflow-hidden bg-slate-100">
+                    <img src={service.image} alt={service.alt}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0"
+                      style={{ background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)" }} />
+                    {/* Badge */}
+                    <span className="absolute bottom-3 left-3 text-[10px] font-mono font-bold text-white bg-slate-900/80 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-white/10">
+                      {service.capacityBadge}
+                    </span>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex flex-col flex-1 p-5 gap-3">
+                    <h3 className="text-base font-extrabold text-slate-900 leading-snug group-hover:text-slate-800">
+                      {service.title}
+                    </h3>
+                    <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">
+                      {service.description}
+                    </p>
+
+                    {/* Features */}
+                    <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                      {service.features.map((feat, fi) => (
+                        <div key={fi} className="flex items-start gap-2 text-xs text-slate-700">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                          <span>{feat}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* CTA */}
+                    <div className="mt-auto pt-4" onClick={e => e.stopPropagation()}>
+                      {service.isModalTrigger ? (
+                        <button type="button" onClick={() => setIsKusumOpen(true)}
+                          className={`w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r ${service.accent} shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] cursor-pointer`}>
+                          {service.ctaText}
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      ) : (
+                        <Link href={service.ctaHref}
+                          className={`w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r ${service.accent} shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02]`}>
+                          {service.ctaText}
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
       <KusumModal isOpen={isKusumOpen} onClose={() => setIsKusumOpen(false)} />
     </section>
   );
