@@ -1,6 +1,7 @@
 import React from "react";
 import { Hero } from "@/components/hero/Hero";
 import VideoHero from "@/components/home/VideoHero";
+import HeroCarousel from "@/components/home/HeroCarousel";
 // import AnimatedSolarHero from "@/components/home/AnimatedSolarHero"; // preserved — SVG engine hero
 import AboutSection from "@/components/home/AboutSection";
 import MetricsStrip from "@/components/home/MetricsStrip";
@@ -18,8 +19,11 @@ export default async function HomePage() {
 
   return (
     <div className="w-full font-sans">
-      {/* 1. VIDEO HERO — dual seamless crossfade video background */}
-      <VideoHero />
+      {/* 1. HERO CAROUSEL — 4-slide solar vertical showcase */}
+      <HeroCarousel />
+
+      {/* PRESERVED: Video Hero (commented out) */}
+      {/* <VideoHero /> */}
 
       {/* PRESERVED: SVG animated hero (commented out) */}
       {/* <AnimatedSolarHero /> */}
