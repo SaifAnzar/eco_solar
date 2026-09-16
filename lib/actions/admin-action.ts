@@ -24,7 +24,7 @@ async function requireAdmin() {
 
 export async function getLeadsAction() {
   await requireAdmin();
-  return getAllLeads();
+  return await getAllLeads();
 }
 
 export async function deleteLeadAction(
@@ -35,7 +35,7 @@ export async function deleteLeadAction(
   const leadId = formData.get("leadId") as string;
   if (!leadId) return { success: false, message: "Lead ID is required." };
 
-  const deleted = deleteLead(leadId);
+  const deleted = await deleteLead(leadId);
   return deleted
     ? { success: true, message: `Lead ${leadId} deleted successfully.` }
     : { success: false, message: `Lead ${leadId} not found.` };
@@ -47,7 +47,7 @@ export async function deleteLeadAction(
 
 export async function getSolarConfigAction(): Promise<SolarConfigOverride> {
   await requireAdmin();
-  return getSolarConfig();
+  return await getSolarConfigAsync();
 }
 
 export async function saveSolarConfigAction(
@@ -102,11 +102,12 @@ export async function saveSolarConfigAction(
       return { success: false, message: "Equipment bands must be a non-empty array." };
     }
 
-    saveSolarConfig(config);
+    await saveSolarConfig(config);
     revalidatePath("/calculator");
     revalidatePath("/");
-    return { success: true, message: "Solar calculator configuration saved successfully!" };
-  } catch (err) {
+    revalidatePath("/admin/calculator");
+    return { success: true, message: "Solar calculator configuration saved successfully to PostgreSQL!" };
+  } catch (err: any) {
     console.error("[Admin] saveSolarConfigAction error:", err);
     return { success: false, message: "Failed to save configuration. Please check the values." };
   }

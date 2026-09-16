@@ -1,11 +1,11 @@
 "use server";
 
-import { getSolarConfig, saveSolarConfig, SolarConfigOverride } from "@/lib/data-store";
+import { getSolarConfigAsync, saveSolarConfig, SolarConfigOverride } from "@/lib/data-store";
 import { revalidatePath } from "next/cache";
 
 export async function getSolarConfigAction() {
   try {
-    const config = getSolarConfig();
+    const config = await getSolarConfigAsync();
     return { success: true, data: config };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -14,10 +14,11 @@ export async function getSolarConfigAction() {
 
 export async function saveSolarConfigAction(config: SolarConfigOverride) {
   try {
-    saveSolarConfig(config);
+    await saveSolarConfig(config);
     revalidatePath("/calculator");
     revalidatePath("/");
-    return { success: true, message: "Solar config saved successfully!" };
+    revalidatePath("/admin/calculator");
+    return { success: true, message: "Solar config saved successfully to PostgreSQL database!" };
   } catch (error: any) {
     return { success: false, error: error.message };
   }

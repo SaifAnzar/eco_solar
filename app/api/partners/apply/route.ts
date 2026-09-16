@@ -93,19 +93,8 @@ export async function POST(req: NextRequest) {
 // GET /api/partners/apply
 export async function GET() {
   try {
-    const jsonList = getAllPartnerships();
-    let dbList: any[] = [];
-    try {
-      dbList = await (prisma as any).partnerApplication.findMany({
-        orderBy: { createdAt: "desc" },
-      });
-    } catch (dbError) {
-      console.warn("[PartnersApply API] DB fetch notice:", dbError);
-    }
-    
-    // Combine both DB and JSON store records
-    const combined = [...dbList, ...jsonList];
-    return NextResponse.json({ success: true, data: combined });
+    const list = await getAllPartnerships();
+    return NextResponse.json({ success: true, data: list });
   } catch (error: any) {
     console.error("Error fetching partner applications:", error);
     return NextResponse.json(

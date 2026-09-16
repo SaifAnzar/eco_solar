@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const inquiry = saveContactInquiry({
+    const inquiry = await saveContactInquiry({
       fullName,
       phone,
       email: email || "",
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
-    const inquiries = getAllContactInquiries();
+    const inquiries = await getAllContactInquiries();
     return NextResponse.json({ success: true, inquiries }, { status: 200 });
   } catch (error: any) {
     console.error("[API Contact GET Error]:", error);
@@ -85,7 +85,7 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const updated = updateContactInquiryStatus(id, status);
+    const updated = await updateContactInquiryStatus(id, status);
     if (!updated) {
       return NextResponse.json(
         { error: "Inquiry not found." },
@@ -115,7 +115,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    const deleted = deleteContactInquiry(id);
+    const deleted = await deleteContactInquiry(id);
     if (!deleted) {
       return NextResponse.json(
         { error: "Inquiry not found." },

@@ -256,4 +256,30 @@ model ApprovedPartner {
   @@index([isActive])
 }
 
+model SolarConfig {
+  id                          String   @id @default("default")
+  panelWp                     Float    @default(600)
+  panelUnitRate               Float    @default(14033.25)
+  roofAreaPerKw               Float    @default(90)
+  residentialBenchmarkRate    Float    @default(65000)
+  commercialBenchmarkRate     Float    @default(55000)
+  gridTariffRate              Float    @default(7.0)
+  defaultPsh                  Float    @default(4.5)
+  performanceRatio            Float    @default(0.78)
+  subsidyTier1Kw              Float    @default(1)
+  subsidyTier1Amount          Float    @default(30000)
+  subsidyTier2Kw              Float    @default(2)
+  subsidyTier2Amount          Float    @default(60000)
+  subsidyTier3PlusAmount      Float    @default(78000)
+  stateSubsidyTier1Kw         Float    @default(1)
+  stateSubsidyTier1Amount     Float    @default(20000)
+  stateSubsidyTier2Kw         Float    @default(2)
+  stateSubsidyTier2Amount     Float    @default(40000)
+  stateSubsidyTier3PlusAmount Float    @default(60000)
+  equipmentBands              Json?
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+}
+
+
 

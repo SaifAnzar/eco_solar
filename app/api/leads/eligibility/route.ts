@@ -82,7 +82,7 @@ export async function GET() {
       console.warn("[EligibilityLead GET] Prisma fallback to file store:", dbErr);
     }
 
-    const fileLeads = getAllEligibilityLeads();
+    const fileLeads = await getAllEligibilityLeads();
 
     // Smart deduplication: Merge DB and File Store leads seamlessly
     const combinedMap = new Map();
@@ -166,7 +166,7 @@ export async function DELETE(req: Request) {
     } catch {}
 
     if (!targetPhone && !targetConsumerNumber) {
-      const fileLeads = getAllEligibilityLeads();
+      const fileLeads = await getAllEligibilityLeads();
       const item = fileLeads.find((l) => l.id === id);
       if (item) {
         targetPhone = item.phone || null;

@@ -163,7 +163,8 @@ export async function getLeads(filters?: { district?: string; discom?: string; s
       console.warn("DB query notice in getLeads:", e);
     }
 
-    const fileLeads = getAllLeads().map((l) => ({
+    const rawFileLeads = await getAllLeads();
+    const fileLeads = rawFileLeads.map((l) => ({
       id: l.leadId,
       fullName: l.customerName,
       mobileNumber: l.phone,
@@ -178,13 +179,14 @@ export async function getLeads(filters?: { district?: string; discom?: string; s
       createdAt: l.createdAt || new Date().toISOString(),
     }));
 
-    const fileContactInquiries = getAllContactInquiries().map((c) => ({
+    const rawFileInquiries = await getAllContactInquiries();
+    const fileContactInquiries = rawFileInquiries.map((c) => ({
       id: c.id,
       fullName: c.fullName,
       mobileNumber: c.phone,
       email: c.email || "",
-      pincode: c.location.match(/\d{6}/)?.[0] || "751024",
-      district: c.discomRegion || c.location,
+      pincode: c.location?.match(/\d{6}/)?.[0] || "751024",
+      district: c.discomRegion || c.location || "Odisha",
       discom: c.discomRegion || "TPCODL",
       category: "RESIDENTIAL",
       systemType: c.systemType || "Rooftop Solar",
@@ -303,13 +305,13 @@ export async function deleteLeadAction(id: string) {
     }
 
     if (!targetPhone) {
-      const allFileLeads = getAllLeads();
+      const allFileLeads = await getAllLeads();
       const fileLead = allFileLeads.find((l) => l.leadId === id);
       if (fileLead?.phone) targetPhone = fileLead.phone;
     }
 
     if (!targetPhone) {
-      const allContactInquiries = getAllContactInquiries();
+      const allContactInquiries = await getAllContactInquiries();
       const contactInq = allContactInquiries.find((c) => c.id === id);
       if (contactInq?.phone) targetPhone = contactInq.phone;
     }

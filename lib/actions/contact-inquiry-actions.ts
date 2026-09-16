@@ -47,23 +47,23 @@ export async function deleteContactInquiryAction(id: string) {
       }
     }
 
-    // 2. Check contact-inquiries.json for matching ID
-    const fileStore = getAllContactInquiries();
+    // 2. Check contact-inquiries from data store
+    const fileStore = await getAllContactInquiries();
     const targetInquiry = fileStore.find((item) => item.id === id);
     if (targetInquiry && targetInquiry.phone) {
       targetPhone = targetInquiry.phone;
       if (!targetMsg) targetMsg = targetInquiry.message || "";
     }
 
-    // 3. Check leads.json for matching ID
-    const leadStore = getAllLeads();
+    // 3. Check leads from data store
+    const leadStore = await getAllLeads();
     const targetLead = leadStore.find((l) => l.leadId === id);
     if (targetLead && targetLead.phone) {
       targetPhone = targetLead.phone;
     }
 
     // Direct deletion by ID
-    if (deleteContactInquiry(id)) ok = true;
+    if (await deleteContactInquiry(id)) ok = true;
 
     // Precise purge by phone and type category so that deleting GENERAL CONTACT never touches FREE SITE VISIT
     if (targetPhone) {
@@ -96,9 +96,9 @@ export async function deleteContactInquiryAction(id: string) {
       }
 
       if (isGeneral) {
-        deleteContactInquiryByPhone(targetPhone);
+        await deleteContactInquiryByPhone(targetPhone);
       } else {
-        deleteLeadByPhone(targetPhone);
+        await deleteLeadByPhone(targetPhone);
       }
       ok = true;
     }
@@ -154,7 +154,7 @@ export async function submitContactInquiryAction(input: SubmitInquiryInput) {
     // 2. Fallback to File DataStore ONLY if DB save failed
     let saved: any = dbRecord;
     if (!saved) {
-      saved = saveContactInquiry({
+      saved = await saveContactInquiry({
         fullName: input.fullName,
         phone: input.phone,
         email: input.email || "",
@@ -217,8 +217,9 @@ export async function getContactInquiriesAction() {
       console.warn("[Get Contact Action] Prisma DB query notice:", dbErr);
     }
 
-    const fileList = getAllContactInquiries();
-    const leadList = getAllLeads().map((l) => ({
+    const fileList = await getAllContactInquiries();
+    const rawLeads = await getAllLeads();
+    const leadList = rawLeads.map((l) => ({
       id: l.leadId,
       fullName: l.customerName,
       phone: l.phone,
@@ -307,7 +308,7 @@ export async function updateContactInquiryStatusAction(id: string, status: Conta
     }
 
     // 2. Update in JSON file storage if present
-    const fileOk = updateContactInquiryStatus(id, status);
+    const fileOk = await updateContactInquiryStatus(id, status);
     if (fileOk) ok = true;
 
     revalidatePath("/admin/contact-leads");

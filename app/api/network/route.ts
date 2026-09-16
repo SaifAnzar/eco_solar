@@ -37,7 +37,7 @@ export async function GET(req: Request) {
       console.warn("[Network API GET] DB fallback to file store:", dbErr);
     }
 
-    const filePartners = getAllApprovedPartners().filter((p) => p.isActive);
+    const filePartners = (await getAllApprovedPartners()).filter((p) => p.isActive);
 
     // Merge DB and File Store with signature deduplication
     const idMap = new Map<string, any>();

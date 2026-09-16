@@ -149,8 +149,8 @@ export async function DELETE(req: NextRequest) {
         }).catch(() => {});
 
         const { deleteLeadByPhone, deleteContactInquiryByPhone } = await import("@/lib/data-store");
-        deleteLeadByPhone(cleanPhone);
-        deleteContactInquiryByPhone(cleanPhone);
+        await deleteLeadByPhone(cleanPhone);
+        await deleteContactInquiryByPhone(cleanPhone);
       }
     }
 

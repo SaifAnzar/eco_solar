@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       // Fallback to JSON file store ONLY if DB save fails
       try {
         const { saveContactInquiry } = await import("@/lib/data-store");
-        newInquiry = saveContactInquiry({
+        newInquiry = await saveContactInquiry({
           fullName: fullName.trim(),
           phone: mobileNumber.trim(),
           email: email ? email.trim() : "",

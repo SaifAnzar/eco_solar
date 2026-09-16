@@ -1,7 +1,7 @@
 "use server";
 
 import { calculateSolarQuote, SolarCalculationResult } from "../solar-engine";
-import { getSolarConfig } from "../data-store";
+import { getSolarConfigAsync } from "../data-store";
 import { fetchPincodeDetails, mapDistrictToDiscom, PincodeDetails } from "../pincode";
 import { estimateKwFromBill } from "../solar-calculations";
 
@@ -86,8 +86,8 @@ export async function lookupPincodeAndCalculate(
 
     const peakSunHours = isOdisha ? 4.6 : 4.5;
 
-    // Load admin-configurable solar parameters
-    const solarConfig = getSolarConfig();
+    // Load admin-configurable solar parameters directly from PostgreSQL database
+    const solarConfig = await getSolarConfigAsync();
 
     // Calculate target system capacity (kW) using binary search inverse formula
     let targetKw = directKwInput || 3;

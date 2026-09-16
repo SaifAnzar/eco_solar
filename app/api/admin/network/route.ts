@@ -29,7 +29,7 @@ export async function GET() {
       console.warn("[Admin Network API GET] DB fallback to file store:", dbErr);
     }
 
-    const filePartners = getAllApprovedPartners();
+    const filePartners = await getAllApprovedPartners();
 
     // Merge DB and File Store with signature deduplication
     const idMap = new Map<string, any>();
@@ -163,7 +163,7 @@ export async function DELETE(req: Request) {
     }
 
     // Find record to get signature for purging legacy duplicates
-    const allFilePartners = getAllApprovedPartners();
+    const allFilePartners = await getAllApprovedPartners();
     const targetFileItem = allFilePartners.find((p) => p.id === id);
     const targetSig = targetFileItem ? getPartnerSignature(targetFileItem) : "";
 

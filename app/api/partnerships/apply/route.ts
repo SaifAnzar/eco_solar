@@ -35,9 +35,26 @@ export async function POST(req: NextRequest) {
 
     const appType: ApplicationType = (type === "DEALERSHIP" || type === "PARTNER") ? "DEALERSHIP" : "FRANCHISE";
 
-    // Primary: Try saving to Prisma DB first
+    // Primary: Try saving to Prisma DB first (save to PartnerApplication and PartnershipApplication)
     let dbRecord;
     try {
+      if ((prisma as any).partnerApplication) {
+        await (prisma as any).partnerApplication.create({
+          data: {
+            type: appType === "DEALERSHIP" ? "PARTNER" : "FRANCHISE",
+            applicantName: fullName,
+            businessName: body.businessName || null,
+            phone,
+            email,
+            location: district,
+            investmentRange: investmentCapacity || "₹2L–₹5L",
+            experience: businessExperience || null,
+            status: "PENDING",
+            notes: notes || null,
+          },
+        });
+      }
+
       if (type === "FRANCHISE") {
         dbRecord = await prisma.partnershipApplication.create({
           data: {
@@ -68,7 +85,7 @@ export async function POST(req: NextRequest) {
         });
       }
     } catch (err) {
-      console.warn("[PartnershipsApply API] DB insertion notice (falling back to JSON store):", err);
+      console.warn("[PartnershipsApply API] DB insertion notice:", err);
     }
 
     // Fallback to file data-store ONLY if DB save failed

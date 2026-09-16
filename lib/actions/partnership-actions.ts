@@ -12,7 +12,7 @@ import { revalidatePath } from "next/cache";
 
 export async function getPartnershipsAction() {
   try {
-    const jsonList = getAllPartnerships();
+    const jsonList = await getAllPartnerships();
     let partnerAppList: any[] = [];
     let legacyAppList: any[] = [];
 
@@ -222,7 +222,7 @@ export async function deletePartnershipAction(id: string) {
     }
 
     if (!targetPhone && !targetEmail) {
-      const jsonList = getAllPartnerships();
+      const jsonList = await getAllPartnerships();
       const item = jsonList.find((p) => p.id === id);
       if (item) {
         targetPhone = item.phone || item.mobileNumber || null;
@@ -245,7 +245,7 @@ export async function deletePartnershipAction(id: string) {
       }
     } catch {}
 
-    const fileOk = deletePartnership(id);
+    const fileOk = await deletePartnership(id);
     if (fileOk) ok = true;
 
     // 3. Purge ALL matching duplicate entries by phone/email across all stores in 1 attempt

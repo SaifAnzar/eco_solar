@@ -1,5 +1,5 @@
 import React from "react";
-import { getSolarConfig } from "@/lib/data-store";
+import { getSolarConfigAsync } from "@/lib/data-store";
 import { CalculatorConfigEditor } from "@/components/admin/CalculatorConfigEditor";
 import { TariffConfigEditor } from "@/components/admin/TariffConfigEditor";
 
@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function AdminCalculatorPage() {
-  const config = getSolarConfig();
+  const config = await getSolarConfigAsync();
 
   return (
     <div className="space-y-10 max-w-5xl font-sans">
