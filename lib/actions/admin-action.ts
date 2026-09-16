@@ -4,7 +4,7 @@ import { getSession } from "../session";
 import {
   getAllLeads,
   deleteLead,
-  getSolarConfig,
+  getSolarConfigAsync,
   saveSolarConfig,
   type SolarConfigOverride,
 } from "../data-store";

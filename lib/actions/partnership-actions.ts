@@ -182,7 +182,7 @@ export async function updatePartnershipStatusAction(
     } catch {}
 
     // 3. Try updating in JSON data store
-    const fileOk = updatePartnershipStatus(id, status, notes);
+    const fileOk = await updatePartnershipStatus(id, status, notes);
     if (fileOk) ok = true;
 
     revalidatePath("/admin/partnerships");
